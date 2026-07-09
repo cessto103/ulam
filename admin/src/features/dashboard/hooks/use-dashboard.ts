@@ -13,6 +13,11 @@ type DashboardStats = {
     total_posts: number
     total_recipes: number
   }
+  revenue: {
+    total: number
+    this_month: number
+    payments_count: number
+  }
   ai_usage: {
     meal_plans_this_month: number
     prompt_tokens: number
@@ -28,6 +33,25 @@ export function useDashboardStats() {
     queryFn: async () => {
       const { data } = await apiClient.get<DashboardStats>('/admin/dashboard/stats')
       return data
+    },
+  })
+}
+
+export type GrowthPoint = {
+  date: string
+  signups: number
+  posts: number
+}
+
+export function useGrowthQuery(days = 30) {
+  return useQuery({
+    queryKey: ['admin-dashboard-growth', days],
+    queryFn: async () => {
+      const { data } = await apiClient.get<{ days: number; series: GrowthPoint[] }>(
+        '/admin/dashboard/growth',
+        { params: { days } }
+      )
+      return data.series
     },
   })
 }

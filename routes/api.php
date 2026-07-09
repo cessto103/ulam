@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Admin\ListingReportController as AdminListingReport
 use App\Http\Controllers\Api\Admin\MarketController as AdminMarketController;
 use App\Http\Controllers\Api\Admin\MarketPriceController as AdminMarketPriceController;
 use App\Http\Controllers\Api\Admin\PostCommentController as AdminPostCommentController;
+use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
 use App\Http\Controllers\Api\Admin\TindahanController as AdminTindahanController;
@@ -132,9 +133,15 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout']);
     Route::get('/me',      [AdminAuthController::class, 'me']);
+    Route::patch('/profile',        [AdminAuthController::class, 'updateProfile']);
+    Route::post('/change-password', [AdminAuthController::class, 'changePassword']);
 
     Route::get('/dashboard/stats',          [AdminDashboardController::class, 'stats']);
+    Route::get('/dashboard/growth',         [AdminDashboardController::class, 'growth']);
     Route::get('/dashboard/xp-leaderboard', [AdminDashboardController::class, 'xpLeaderboard']);
+
+    Route::get('/payments',      [AdminPaymentController::class, 'index']);
+    Route::get('/payments/{id}', [AdminPaymentController::class, 'show']);
 
     Route::get('/users',           [AdminUserController::class, 'index']);
     Route::post('/users',          [AdminUserController::class, 'store']);

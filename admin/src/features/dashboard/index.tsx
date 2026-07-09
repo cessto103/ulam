@@ -20,6 +20,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { GrowthChart } from './components/growth-chart'
 import { XpLeaderboard } from './components/xp-leaderboard'
 import { useDashboardStats } from './hooks/use-dashboard'
 
@@ -27,6 +28,22 @@ export function Dashboard() {
   const { data: stats, isLoading } = useDashboardStats()
 
   const tiles = [
+    {
+      title: 'Revenue (this month)',
+      value: stats ? `₱${stats.revenue.this_month.toLocaleString()}` : undefined,
+      icon: Coins,
+      description: stats
+        ? `₱${stats.revenue.total.toLocaleString()} all-time · ${stats.revenue.payments_count} payments`
+        : undefined,
+    },
+    {
+      title: 'Premium Users',
+      value: stats?.users.premium,
+      icon: UserCheck,
+      description: stats
+        ? `₱${stats.users.estimated_mrr.toLocaleString()} est. MRR`
+        : undefined,
+    },
     {
       title: 'Total Users',
       value: stats?.users.total,
@@ -37,14 +54,6 @@ export function Dashboard() {
       value: stats?.users.active_today,
       icon: UserCheck,
       description: 'Opened the app today',
-    },
-    {
-      title: 'Premium Users',
-      value: stats?.users.premium,
-      icon: Coins,
-      description: stats
-        ? `₱${stats.users.estimated_mrr.toLocaleString()} est. MRR`
-        : undefined,
     },
     {
       title: 'Banned Users',
@@ -99,6 +108,18 @@ export function Dashboard() {
             </Card>
           ))}
         </div>
+
+        <Card className='mt-4'>
+          <CardHeader>
+            <CardTitle>Growth — last 30 days</CardTitle>
+            <CardDescription>
+              New user signups and community posts per day.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <GrowthChart days={30} />
+          </CardContent>
+        </Card>
 
         <div className='mt-4 grid grid-cols-1 gap-4 lg:grid-cols-7'>
           <Card className='col-span-1 lg:col-span-4'>

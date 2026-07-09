@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -88,6 +89,31 @@ class UpgradeController extends Controller
                 'plan'             => 'premium',
                 'premium_expires_at' => $expiry,
             ]);
+        }
+
+        // Record the payment in the ledger. Keyed on PayMongo's payment id so
+        // webhook retries don't double-record.
+        $payment = $event['data'] ?? [];
+        $paymentId = $payment['id'] ?? null;
+        $amount = $payment['attributes']['amount'] ?? self::PLANS[$plan]['amount'] ?? 0;
+
+        $record = [
+            'user_id' => $userId,
+            'provider' => 'paymongo',
+            'plan_type' => $plan,
+            'amount' => $amount,
+            'currency' => 'PHP',
+            'status' => 'paid',
+            'paid_at' => now(),
+            'meta' => $meta ?: null,
+        ];
+
+        if ($paymentId) {
+            Payment::firstOrCreate(['provider_payment_id' => $paymentId], $record);
+        } else {
+            // No payment id in the event — record anyway (a null key would wrongly
+            // dedupe against any earlier id-less payment via firstOrCreate).
+            Payment::create($record);
         }
 
         return response()->json(['received' => true]);
