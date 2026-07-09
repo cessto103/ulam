@@ -1,0 +1,228 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Achievement;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class UserController extends Controller
+{
+    public function me(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'id'                           => $user->id,
+            'name'                         => $user->name,
+            'username'                     => $user->username,
+            'email'                        => $user->email,
+            'avatar'                       => $user->avatar,
+            'plan'                         => $user->plan,
+            'household_size'               => $user->household_size,
+            'municipality'                 => $user->municipality,
+            'province'                     => $user->province,
+            'xp'                           => $user->xp,
+            'level'                        => $user->level,
+            'streak_days'                  => $user->streak_days,
+            'ai_meal_plans_used_this_month' => $user->ai_meal_plans_used_this_month,
+            'onboarding_completed'          => (bool) $user->onboarding_completed,
+        ]);
+    }
+
+    public function uploadAvatar(Request $request)
+    {
+        $request->validate(['avatar' => ['required', 'image', 'max:3072']]);
+
+        $user = $request->user();
+
+        if ($user->avatar && str_starts_with($user->avatar, '/storage/')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $user->avatar));
+        }
+
+        $path = $request->file('avatar')->store("avatars/{$user->id}", 'public');
+        $url  = '/storage/' . $path;
+        $user->update(['avatar' => $url]);
+
+        return response()->json(['avatar' => $url]);
+    }
+
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'user' => [
+                'id'                 => $user->id,
+                'name'               => $user->name,
+                'username'           => $user->username,
+                'email'              => $user->email,
+                'avatar'             => $user->avatar,
+                'bio'                => $user->bio,
+                'plan'               => $user->plan,
+                'is_premium'         => $user->isPremium(),
+                'premium_expires_at' => $user->premium_expires_at,
+                'household_size'     => $user->household_size,
+                'barangay'           => $user->barangay,
+                'municipality'       => $user->municipality,
+                'province'           => $user->province,
+                'region'             => $user->region,
+                'dietary_preferences' => $user->dietary_preferences,
+                'xp'                 => $user->xp,
+                'level'              => $user->level,
+                'streak_days'        => $user->streak_days,
+                'ai_plans_remaining' => $user->isPremium() ? null : max(0, 3 - $user->ai_meal_plans_used_this_month),
+                'created_at'         => $user->created_at,
+            ],
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'name'                   => ['sometimes', 'string', 'max:255'],
+            'username'               => ['sometimes', 'string', 'max:30', 'regex:/^[a-zA-Z0-9_]+$/', "unique:users,username,{$request->user()->id}"],
+            'bio'                    => ['nullable', 'string', 'max:300'],
+            'household_size'         => ['nullable', 'integer', 'min:1', 'max:20'],
+            'barangay'               => ['nullable', 'string', 'max:100'],
+            'municipality'           => ['nullable', 'string', 'max:100'],
+            'province'               => ['nullable', 'string', 'max:100'],
+            'region'                 => ['nullable', 'string', 'max:100'],
+            'latitude'               => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude'              => ['nullable', 'numeric', 'between:-180,180'],
+            'dietary_preferences'    => ['nullable', 'array'],
+            'dietary_preferences.*'  => ['string', 'max:50'],
+            'onboarding_completed'   => ['sometimes', 'boolean'],
+        ]);
+
+        $request->user()->update($validated);
+
+        return response()->json(['user' => $request->user()->fresh()]);
+    }
+
+    public function achievements(Request $request)
+    {
+        $user   = $request->user();
+        $earned = $user->achievements()->withPivot('earned_at')->get()->keyBy('id');
+
+        $all = Achievement::where('is_active', true)
+            ->orderBy('category')
+            ->orderBy('xp_reward')
+            ->get()
+            ->map(function ($a) use ($earned) {
+                $pivot        = $earned[$a->id] ?? null;
+                $a->is_earned = (bool) $pivot;
+                $a->earned_at = $pivot?->pivot->earned_at;
+                return $a;
+            });
+
+        return response()->json(['achievements' => $all]);
+    }
+
+    public function stats(Request $request)
+    {
+        $user = $request->user();
+
+        $totalSaved = $user->budgetPeriods()
+            ->with('dailyLogs')
+            ->get()
+            ->flatMap->dailyLogs
+            ->where('saved_amount', '>', 0)
+            ->sum('saved_amount');
+
+        return response()->json([
+            'stats' => [
+                'total_saved'          => round($totalSaved, 2),
+                'meal_plans_generated' => $user->mealPlans()->count(),
+                'posts_count'          => $user->posts()->count(),
+                'xp'                   => $user->xp,
+                'level'                => $user->level,
+                'streak_days'          => $user->streak_days,
+                'achievements_count'   => $user->achievements()->count(),
+            ],
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json(['users' => []]);
+        }
+
+        $me = $request->user();
+
+        $followingIds = \App\Models\Connection::where('requester_id', $me->id)
+            ->where('status', 'connected')
+            ->pluck('recipient_id');
+
+        $users = \App\Models\User::where('id', '!=', $me->id)
+            ->where(function ($q2) use ($q) {
+                $q2->where('name', 'like', "%{$q}%")
+                   ->orWhere('username', 'like', "%{$q}%");
+            })
+            ->select('id', 'name', 'username', 'avatar', 'municipality', 'level')
+            ->limit(20)
+            ->get()
+            ->map(fn($u) => [
+                'id'           => $u->id,
+                'name'         => $u->name,
+                'username'     => $u->username,
+                'avatar'       => $u->avatar,
+                'municipality' => $u->municipality,
+                'level'        => $u->level,
+                'is_following' => $followingIds->contains($u->id),
+            ]);
+
+        return response()->json(['users' => $users]);
+    }
+
+    public function leaderboard(Request $request)
+    {
+        $user       = $request->user();
+        $scope      = $request->get('scope', 'municipality');
+        $scopeValue = $scope === 'barangay' ? $user->barangay : $user->municipality;
+
+        // Fall back to municipality scope if barangay is unset
+        if (! $scopeValue && $scope === 'barangay') {
+            $scope      = 'municipality';
+            $scopeValue = $user->municipality;
+        }
+
+        if (! $scopeValue) {
+            // No location set — return global top-10 by XP
+            $scopeValue = null;
+        }
+
+        $query = \App\Models\User::select('id', 'name', 'username', 'avatar', 'level', 'xp', 'municipality')
+            ->orderByDesc('xp')
+            ->limit(10);
+
+        if ($scopeValue) {
+            $query->where($scope === 'barangay' ? 'barangay' : 'municipality', $scopeValue);
+        }
+
+        $topUsers   = $query->get();
+        $myRankRow  = $topUsers->search(fn ($u) => $u->id === $user->id);
+
+        // If user isn't in top-10, find their actual rank
+        $myRank = $myRankRow !== false ? $myRankRow + 1 : DB::table('users')
+            ->when($scopeValue, fn ($q) => $q->where($scope === 'barangay' ? 'barangay' : 'municipality', $scopeValue))
+            ->where('xp', '>', $user->xp)
+            ->count() + 1;
+
+        return response()->json([
+            'leaderboard' => $topUsers->map(fn ($u, $i) => [
+                'rank'     => $i + 1,
+                'user'     => $u,
+                'xp'       => $u->xp,
+                'is_me'    => $u->id === $user->id,
+            ]),
+            'my_rank'     => $myRank,
+            'scope'        => $scope,
+            'scope_value'  => $scopeValue,
+        ]);
+    }
+}

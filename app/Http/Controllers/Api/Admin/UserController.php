@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Http\Controllers\Api\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class UserController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $q = $request->string('search');
+            $query->where(function ($w) use ($q) {
+                $w->where('name', 'like', "%{$q}%")
+                    ->orWhere('username', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->string('role'));
+        }
+
+        if ($request->filled('plan')) {
+            $query->where('plan', $request->string('plan'));
+        }
+
+        if ($request->filled('banned')) {
+            $request->boolean('banned')
+                ? $query->whereNotNull('banned_at')
+                : $query->whereNull('banned_at');
+        }
+
+        return response()->json(
+            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+        );
+    }
+
+    public function show(int $id)
+    {
+        return response()->json(['user' => User::findOrFail($id)]);
+    }
+
+    // Filament's UserResource allows create — this is also how admin accounts get
+    // bootstrapped/promoted, since there's no separate "invite an admin" flow.
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:30', 'unique:users,username', 'regex:/^[a-zA-Z0-9_]+$/'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', 'in:user,admin'],
+            'plan' => ['sometimes', 'in:libre,premium'],
+        ]);
+
+        $user = User::create([
+            ...$validated,
+            'password' => Hash::make($validated['password']),
+            'plan' => $validated['plan'] ?? 'libre',
+            'xp' => 0,
+            'level' => 1,
+            'onboarding_completed' => true,
+        ]);
+
+        return response()->json(['user' => $user], 201);
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'username' => ['sometimes', 'string', 'max:30'],
+            'email' => ['sometimes', 'email', 'max:255'],
+            'bio' => ['nullable', 'string', 'max:160'],
+            'household_size' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'barangay' => ['nullable', 'string', 'max:100'],
+            'municipality' => ['nullable', 'string', 'max:100'],
+            'province' => ['nullable', 'string', 'max:100'],
+            'region' => ['nullable', 'string', 'max:50'],
+            'role' => ['sometimes', 'in:user,admin'],
+            'plan' => ['sometimes', 'in:libre,premium'],
+            'premium_expires_at' => ['nullable', 'date'],
+            'xp' => ['sometimes', 'integer', 'min:0'],
+            'level' => ['sometimes', 'integer', 'min:1'],
+            'streak_days' => ['sometimes', 'integer', 'min:0'],
+        ]);
+
+        $user->update($validated);
+
+        return response()->json(['user' => $user->fresh()]);
+    }
+
+    public function destroy(int $id)
+    {
+        User::findOrFail($id)->delete();
+
+        return response()->json(['message' => 'User deleted.']);
+    }
+
+    public function ban(Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'ban_reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update(['banned_at' => now(), 'ban_reason' => $validated['ban_reason']]);
+
+        return response()->json(['user' => $user->fresh()]);
+    }
+
+    public function unban(int $id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['banned_at' => null, 'ban_reason' => null]);
+
+        return response()->json(['user' => $user->fresh()]);
+    }
+}

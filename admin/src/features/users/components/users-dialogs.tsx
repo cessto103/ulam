@@ -1,0 +1,70 @@
+import { UsersActionDialog } from './users-action-dialog'
+import { UsersBanDialog } from './users-ban-dialog'
+import { UsersDeleteDialog } from './users-delete-dialog'
+import { useUsers } from './users-provider'
+import { UsersUnbanDialog } from './users-unban-dialog'
+
+export function UsersDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow } = useUsers()
+  return (
+    <>
+      <UsersActionDialog
+        key='user-add'
+        open={open === 'add'}
+        onOpenChange={() => setOpen('add')}
+      />
+
+      {currentRow && (
+        <>
+          <UsersActionDialog
+            key={`user-edit-${currentRow.id}`}
+            open={open === 'edit'}
+            onOpenChange={() => {
+              setOpen('edit')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            currentRow={currentRow}
+          />
+
+          <UsersDeleteDialog
+            key={`user-delete-${currentRow.id}`}
+            open={open === 'delete'}
+            onOpenChange={() => {
+              setOpen('delete')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            currentRow={currentRow}
+          />
+
+          <UsersBanDialog
+            key={`user-ban-${currentRow.id}`}
+            open={open === 'ban'}
+            onOpenChange={() => {
+              setOpen('ban')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            currentRow={currentRow}
+          />
+
+          <UsersUnbanDialog
+            key={`user-unban-${currentRow.id}`}
+            open={open === 'unban'}
+            onOpenChange={() => {
+              setOpen('unban')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            currentRow={currentRow}
+          />
+        </>
+      )}
+    </>
+  )
+}
