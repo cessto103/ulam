@@ -1,5 +1,15 @@
 # uLam Admin — Changelog
 
+## v1.12.0 (2026-07-14)
+
+Dashboard lockdown: one door, with a second lock.
+
+### Added
+- **Two-factor authentication (Google Authenticator/TOTP)** — new Settings → Security page: scan a QR (or enter the key manually), confirm a code, and from then on admin sign-in requires password **plus** a fresh 6-digit code. The sign-in form shows the code field automatically when the server demands it. Codes are one-time (replay of a just-used code is rejected server-side), the secret is stored encrypted, and disabling 2FA requires both the password and a current code.
+
+### Removed
+- **The Filament admin panel** (backend) — an unmaintained second dashboard whose login page was publicly served at `/admin`. The React SPA is now the only admin surface.
+
 ## v1.11.0 (2026-07-13)
 
 Admin coverage for the app's new booster and store-moderation features — both previously backend-only.

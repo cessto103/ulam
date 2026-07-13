@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,6 +24,7 @@ import { PasswordInput } from '@/components/password-input'
 const formSchema = z.object({
   login: z.string().min(1, 'Please enter your email or username.'),
   password: z.string().min(1, 'Please enter your password.'),
+  otp: z.string().optional(),
 })
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -36,12 +38,14 @@ export function UserAuthForm({
 }: UserAuthFormProps) {
   const navigate = useNavigate()
   const { auth } = useAuthStore()
+  const [needsOtp, setNeedsOtp] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       login: '',
       password: '',
+      otp: '',
     },
   })
 
@@ -49,7 +53,7 @@ export function UserAuthForm({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       const { data: body } = await apiClient.post<{ user: AuthUser; token: string }>(
         '/admin/login',
-        data
+        { ...data, otp: data.otp || undefined }
       )
       return body
     },
@@ -60,6 +64,11 @@ export function UserAuthForm({
       toast.success(`Welcome back, ${body.user.name}!`)
     },
     onError: (error: any) => {
+      if (error?.response?.data?.requires_2fa) {
+        setNeedsOtp(true)
+        toast.info(error.response.data.message ?? 'Enter your authenticator code.')
+        return
+      }
       const message =
         error?.response?.data?.message ?? 'Could not sign in. Please try again.'
       toast.error(message)
@@ -103,6 +112,27 @@ export function UserAuthForm({
             </FormItem>
           )}
         />
+        {needsOtp && (
+          <FormField
+            control={form.control}
+            name='otp'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Authenticator code</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='123456'
+                    inputMode='numeric'
+                    maxLength={6}
+                    autoFocus
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <Button className='mt-2' disabled={isPending}>
           {isPending ? <Loader2 className='animate-spin' /> : <LogIn />}
           Sign in

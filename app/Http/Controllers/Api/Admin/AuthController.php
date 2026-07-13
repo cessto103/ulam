@@ -14,6 +14,7 @@ class AuthController extends Controller
         $request->validate([
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'otp' => ['nullable', 'string'],
         ]);
 
         $field = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -25,6 +26,29 @@ class AuthController extends Controller
 
         if (! $user->isAdmin() || $user->isBanned()) {
             return response()->json(['message' => 'Not authorized as admin.'], 403);
+        }
+
+        // Two-factor gate: no token leaves this endpoint without a fresh,
+        // never-before-used authenticator code once 2FA is on.
+        if ($user->twofa_enabled_at) {
+            if (! $request->filled('otp')) {
+                return response()->json([
+                    'requires_2fa' => true,
+                    'message' => 'Enter the 6-digit code from your authenticator app.',
+                ], 401);
+            }
+
+            $google2fa = new \PragmaRX\Google2FA\Google2FA();
+            $ts = $google2fa->verifyKeyNewer($user->twofa_secret, trim($request->otp), (int) ($user->twofa_last_ts ?? 0));
+
+            if ($ts === false) {
+                return response()->json([
+                    'requires_2fa' => true,
+                    'message' => 'Incorrect authenticator code.',
+                ], 401);
+            }
+
+            $user->update(['twofa_last_ts' => $ts]);
         }
 
         $token = $user->createToken('admin-panel')->plainTextToken;

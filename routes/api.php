@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Api\Admin\BoostController as AdminBoostController;
 use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCommentController;
 use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
+use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\GovernmentPriceReferenceController as AdminGovernmentPriceReferenceController;
@@ -286,6 +287,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/boosts',               [AdminBoostController::class, 'index']);
     Route::post('/boosts/{id}/approve', [AdminBoostController::class, 'approve']);
     Route::post('/boosts/{id}/reject',  [AdminBoostController::class, 'reject']);
+
+    Route::get('/2fa/status',   [AdminTwoFactorController::class, 'status']);
+    Route::post('/2fa/setup',   [AdminTwoFactorController::class, 'setup']);
+    Route::post('/2fa/confirm', [AdminTwoFactorController::class, 'confirm']);
+    Route::post('/2fa/disable', [AdminTwoFactorController::class, 'disable']);
 
     Route::get('/seller-plans',             [AdminSellerPlanController::class, 'index']);
     Route::patch('/seller-plans/{id}',      [AdminSellerPlanController::class, 'update']);

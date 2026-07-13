@@ -21,6 +21,9 @@ class User extends Authenticatable
         'secondary_email_otp_expires_at',
         'password_reset_otp',
         'password_reset_otp_expires_at',
+        'twofa_secret',
+        'twofa_enabled_at',
+        'twofa_last_ts',
         'password',
         'avatar',
         'bio',
@@ -54,6 +57,8 @@ class User extends Authenticatable
         'secondary_email_otp_expires_at',
         'password_reset_otp',
         'password_reset_otp_expires_at',
+        'twofa_secret',
+        'twofa_last_ts',
     ];
 
     protected function casts(): array
@@ -63,6 +68,8 @@ class User extends Authenticatable
             'secondary_email_verified_at' => 'datetime',
             'secondary_email_otp_expires_at' => 'datetime',
             'password_reset_otp_expires_at' => 'datetime',
+            'twofa_secret' => 'encrypted',
+            'twofa_enabled_at' => 'datetime',
             'password' => 'hashed',
             'premium_expires_at' => 'datetime',
             'banned_at' => 'datetime',

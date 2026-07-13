@@ -202,7 +202,17 @@
       "Bash(curl -s -o /dev/null -w \"GET /admin -> HTTP %{http_code}\\\\n\" \"http://localhost/uLam/public/admin\")",
       "Bash(curl -s \"http://localhost/uLam/public/api/admin/users\" -H \"Accept: application/json\" -o /dev/null -w \"GET /api/admin/users \\(no token\\) -> HTTP %{http_code}\\\\n\")",
       "Bash(git commit -q -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(php -l database/seeders/UserSeeder.php)",
+      "Bash(php -l app/Http/Controllers/Api/Admin/TwoFactorController.php)",
+      "Bash(php -l app/Http/Controllers/Api/Admin/AuthController.php)",
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; echo \\(new PragmaRX\\\\Google2FA\\\\Google2FA\\(\\)\\)->getCurrentOtp\\('\\\\''__TRACKED_VAR__'\\\\''\\);')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/2fa/confirm -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"code\":\"__TRACKED_VAR__\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"login\":\"cessto103@gmail.com\",\"password\":\"tolitsako\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"login\":\"cessto103@gmail.com\",\"password\":\"tolitsako\",\"otp\":\"000000\"}')",
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; echo \\(new PragmaRX\\\\Google2FA\\\\Google2FA\\(\\)\\)->getCurrentOtp\\('\\\\''KHNW64UG3P7XOYH2TIGV2ZQZFUYVRAJR'\\\\''\\);')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"login\":\"cessto103@gmail.com\",\"password\":\"tolitsako\",\"otp\":\"__TRACKED_VAR__\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/2fa/disable -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"password\":\"tolitsako\",\"code\":\"__TRACKED_VAR__\"}')"
     ],
     "additionalDirectories": [
       "c:\\wamp64\\www\\uLam",

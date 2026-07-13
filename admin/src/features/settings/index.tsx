@@ -1,5 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
-import { Palette, Wrench, UserCog } from 'lucide-react'
+import { Palette, ShieldCheck, Wrench, UserCog } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
@@ -19,6 +19,11 @@ const sidebarNavItems = [
     title: 'Account',
     href: '/settings/account',
     icon: <Wrench size={18} />,
+  },
+  {
+    title: 'Security',
+    href: '/settings/security',
+    icon: <ShieldCheck size={18} />,
   },
   {
     title: 'Appearance',
