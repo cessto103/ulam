@@ -82,6 +82,35 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // The owner's real device-testing accounts — survive every migrate:fresh.
+        $ownerAccounts = [
+            ['email' => 'cessto103@yahoo.com',          'name' => 'Tolits Alarcon', 'username' => 'tolitsalarcon'],
+            ['email' => 'cessto103@gmail.com',          'name' => 'Lito Lozada',    'username' => 'tolits'],
+            ['email' => 'sleepwalker.knows@gmail.com',  'name' => 'Sleep Walker',   'username' => 'sleepwalker'],
+            ['email' => 'cesstovibes@gmail.com',        'name' => 'Cessto Vibes',   'username' => 'cesstovibes'],
+        ];
+
+        foreach ($ownerAccounts as $account) {
+            User::updateOrCreate(
+                ['email' => $account['email']],
+                [
+                    'name' => $account['name'],
+                    'username' => $account['username'],
+                    'password' => Hash::make('tolitsako'),
+                    'barangay' => 'Dela Paz',
+                    'municipality' => 'Antipolo City',
+                    'province' => 'Rizal',
+                    'region' => 'IV-A',
+                    'household_size' => 4,
+                    'plan' => 'libre',
+                    'onboarding_completed' => true,
+                    'xp' => 0,
+                    'level' => 1,
+                    'streak_days' => 0,
+                ]
+            );
+        }
+
         $this->command->info('UserSeeder done. Total users: ' . User::count());
     }
 }
