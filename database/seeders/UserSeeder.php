@@ -83,11 +83,12 @@ class UserSeeder extends Seeder
         );
 
         // The owner's real device-testing accounts — survive every migrate:fresh.
+        // cessto103@gmail.com is THE admin account (sole dashboard access).
         $ownerAccounts = [
-            ['email' => 'cessto103@yahoo.com',          'name' => 'Tolits Alarcon', 'username' => 'tolitsalarcon'],
-            ['email' => 'cessto103@gmail.com',          'name' => 'Lito Lozada',    'username' => 'tolits'],
-            ['email' => 'sleepwalker.knows@gmail.com',  'name' => 'Sleep Walker',   'username' => 'sleepwalker'],
-            ['email' => 'cesstovibes@gmail.com',        'name' => 'Cessto Vibes',   'username' => 'cesstovibes'],
+            ['email' => 'cessto103@yahoo.com',          'name' => 'Tolits Alarcon', 'username' => 'tolitsalarcon', 'role' => 'user'],
+            ['email' => 'cessto103@gmail.com',          'name' => 'Lito Lozada',    'username' => 'tolits',        'role' => 'admin'],
+            ['email' => 'sleepwalker.knows@gmail.com',  'name' => 'Sleep Walker',   'username' => 'sleepwalker',   'role' => 'user'],
+            ['email' => 'cesstovibes@gmail.com',        'name' => 'Cessto Vibes',   'username' => 'cesstovibes',   'role' => 'user'],
         ];
 
         foreach ($ownerAccounts as $account) {
@@ -96,6 +97,7 @@ class UserSeeder extends Seeder
                 [
                     'name' => $account['name'],
                     'username' => $account['username'],
+                    'role' => $account['role'],
                     'password' => Hash::make('tolitsako'),
                     'barangay' => 'Dela Paz',
                     'municipality' => 'Antipolo City',
