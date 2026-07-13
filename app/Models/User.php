@@ -21,6 +21,8 @@ class User extends Authenticatable implements FilamentUser
         'secondary_email_verified_at',
         'secondary_email_otp',
         'secondary_email_otp_expires_at',
+        'password_reset_otp',
+        'password_reset_otp_expires_at',
         'password',
         'avatar',
         'bio',
@@ -52,6 +54,8 @@ class User extends Authenticatable implements FilamentUser
         'remember_token',
         'secondary_email_otp',
         'secondary_email_otp_expires_at',
+        'password_reset_otp',
+        'password_reset_otp_expires_at',
     ];
 
     protected function casts(): array
@@ -60,6 +64,7 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'secondary_email_verified_at' => 'datetime',
             'secondary_email_otp_expires_at' => 'datetime',
+            'password_reset_otp_expires_at' => 'datetime',
             'password' => 'hashed',
             'premium_expires_at' => 'datetime',
             'banned_at' => 'datetime',

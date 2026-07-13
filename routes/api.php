@@ -48,6 +48,8 @@ use Illuminate\Support\Facades\Route;
 // Public
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:4,1');
 Route::post('/auth/login',    [AuthController::class, 'login'])->middleware('throttle:6,1');
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:4,1');
+Route::post('/auth/reset-password',  [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
 
 Route::post('/billing/webhooks/paymongo', PayMongoWebhookController::class);
@@ -57,6 +59,7 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('
 // Authenticated
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::delete('/auth/account', [AuthController::class, 'deleteAccount'])->middleware('throttle:3,1');
 
     Route::get('/budget/current', [BudgetController::class, 'current']);
     Route::get('/budget/today', [BudgetController::class, 'current']); // alias

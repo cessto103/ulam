@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordResetOtpMail;
 use App\Mail\WelcomeMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -82,6 +86,135 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Naka-logout na.']);
+    }
+
+    /**
+     * POST /auth/forgot-password — emails a 6-digit reset code.
+     * Always answers 200 with the same message so the endpoint can't be
+     * used to probe which emails have accounts.
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if ($user && !$user->isBanned()) {
+            $code = (string) random_int(100000, 999999);
+
+            $user->update([
+                'password_reset_otp' => Hash::make($code),
+                'password_reset_otp_expires_at' => now()->addMinutes(10),
+            ]);
+
+            try {
+                Mail::to($user->email)->send(new PasswordResetOtpMail($user, $code));
+            } catch (\Throwable $e) {
+                Log::error('Password reset mail failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'If that email has an account, a reset code is on its way.',
+        ]);
+    }
+
+    /** POST /auth/reset-password — verifies the code and sets the new password. */
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'code' => ['required', 'string'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user || !$user->password_reset_otp || !$user->password_reset_otp_expires_at) {
+            throw ValidationException::withMessages(['code' => 'Invalid or expired code. Please request a new one.']);
+        }
+
+        if ($user->password_reset_otp_expires_at->isPast()) {
+            throw ValidationException::withMessages(['code' => 'This code has expired. Please request a new one.']);
+        }
+
+        if (!Hash::check($validated['code'], $user->password_reset_otp)) {
+            throw ValidationException::withMessages(['code' => 'Incorrect code.']);
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+            'password_reset_otp' => null,
+            'password_reset_otp_expires_at' => null,
+        ]);
+
+        // Force every existing session to log in again with the new password.
+        $user->tokens()->delete();
+
+        return response()->json(['message' => 'Password updated. You can now log in.']);
+    }
+
+    /**
+     * DELETE /auth/account — permanently deletes the account after password
+     * confirmation. Cleanup is done explicitly in application code (the dev
+     * DB was created without FK constraints, so nothing cascades): every
+     * table with a user_id column is purged except the payment ledger
+     * (financial records stay) and markets (shared infrastructure — only
+     * unlinked from the user).
+     */
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages(['password' => 'Incorrect password.']);
+        }
+
+        if ($user->avatar && str_starts_with($user->avatar, '/storage/')) {
+            try {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $user->avatar));
+            } catch (\Throwable $e) {
+                // best-effort only
+            }
+        }
+
+        Log::info('Account deleted', ['user_id' => $user->id, 'email' => $user->email]);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
+            $keepRows   = ['payments', 'refunds'];      // financial ledger is retained
+            $unlinkOnly = ['markets'];                   // shared infrastructure, not personal data
+
+            $tables = \Illuminate\Support\Facades\DB::select(
+                "SELECT TABLE_NAME AS t FROM information_schema.COLUMNS
+                 WHERE TABLE_SCHEMA = DATABASE() AND COLUMN_NAME = 'user_id' AND TABLE_NAME != 'users'"
+            );
+
+            foreach ($tables as $table) {
+                if (in_array($table->t, $keepRows, true)) {
+                    continue;
+                }
+                if (in_array($table->t, $unlinkOnly, true)) {
+                    \Illuminate\Support\Facades\DB::table($table->t)->where('user_id', $user->id)->update(['user_id' => null]);
+                    continue;
+                }
+                \Illuminate\Support\Facades\DB::table($table->t)->where('user_id', $user->id)->delete();
+            }
+
+            // Relationship tables that reference users under other column names
+            \Illuminate\Support\Facades\DB::table('connections')
+                ->where('requester_id', $user->id)->orWhere('recipient_id', $user->id)->delete();
+
+            $user->tokens()->delete();
+            $user->delete();
+        });
+
+        return response()->json(['message' => 'Your account has been deleted.']);
     }
 
     private function formatUser(User $user): array

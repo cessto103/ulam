@@ -175,7 +175,17 @@
       "Bash(git -C /c/wamp64/www/uLam log --oneline)",
       "Bash(git -C /c/wamp64/www/uLam-app log --oneline -2)",
       "Bash(grep -iE \"\\\\.env$|\\\\.env\\\\.\")",
-      "Bash(git -C /c/wamp64/www/uLam check-ignore .env)"
+      "Bash(git -C /c/wamp64/www/uLam check-ignore .env)",
+      "Bash(php -l app/Http/Controllers/Api/AuthController.php)",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/auth/forgot-password -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"email\":\"nobody@nowhere.test\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/auth/forgot-password -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"email\":\"deleteme@test.local\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/auth/reset-password -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"email\":\"deleteme@test.local\",\"code\":\"111111\",\"password\":\"NewPass456!\",\"password_confirmation\":\"NewPass456!\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/auth/reset-password -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"email\":\"deleteme@test.local\",\"code\":\"424242\",\"password\":\"NewPass456!\",\"password_confirmation\":\"NewPass456!\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/auth/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"login\":\"deleteme@test.local\",\"password\":\"OldPass123!\"}')",
+      "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); echo isset\\($d[\"token\"]\\) ? \"GOT TOKEN: \".$d[\"token\"] : \"NO TOKEN\";')",
+      "Bash(curl -s -X DELETE __TRACKED_VAR__/auth/account -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"password\":\"WrongPass!\"}')",
+      "Bash(curl -s -X DELETE __TRACKED_VAR__/auth/account -H 'Authorization: Bearer __TRACKED_VAR__' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"password\":\"NewPass456!\"}')",
+      "Bash(curl -s -X DELETE http://localhost/uLam/public/api/auth/account -H 'Authorization: Bearer 73|bUepceV2mD2rUHjRngk3RQ1MWoSrSFCczEjWjguld4bbd945' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"password\":\"Pass123!\"}')"
     ],
     "additionalDirectories": [
       "c:\\wamp64\\www\\uLam",
