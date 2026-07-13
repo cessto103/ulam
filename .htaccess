@@ -1,0 +1,15 @@
+# uLam project root — NOT a web root.
+# Only /public is allowed through; everything else (source, .env, storage,
+# vendor, …) redirects to the admin panel instead of being served.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /uLam/
+
+    # The Laravel public directory is the only web-accessible path
+    RewriteRule ^public(/.*)?$ - [L]
+
+    # Everything else -> admin panel
+    RewriteRule ^ public/admin-panel/ [R=302,L]
+</IfModule>

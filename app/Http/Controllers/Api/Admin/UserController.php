@@ -113,6 +113,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->update(['banned_at' => now(), 'ban_reason' => $validated['ban_reason']]);
+        $user->tokens()->delete();
 
         return response()->json(['user' => $user->fresh()]);
     }

@@ -14,17 +14,22 @@ class CommunityPriceReport extends Model
         'category',
         'reported_price',
         'unit',
+        'photo',
         'barangay',
         'municipality',
         'province',
         'upvotes',
         'downvotes',
         'is_verified',
+        'status',
+        'declined_reason',
+        'reviewed_at',
     ];
 
     protected $casts = [
         'reported_price' => 'decimal:2',
         'is_verified' => 'boolean',
+        'reviewed_at' => 'datetime',
     ];
 
     public function user()

@@ -3,13 +3,39 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdBoost;
+use App\Models\CommunityPriceReport;
+use App\Models\ContentView;
 use App\Models\MarketPrice;
 use App\Models\Tindahan;
+use App\Models\TindahanRating;
+use App\Services\XpService;
 use App\Services\MarketDiscoveryService;
 use Illuminate\Http\Request;
 
 class TindahanController extends Controller
 {
+    /**
+     * Seller-tier limit response. The app keys on `upgrade_required` to show
+     * the subscription upsell instead of a generic error.
+     */
+    private function upgradeRequired(string $message, int $limit)
+    {
+        return response()->json([
+            'message' => $message,
+            'upgrade_required' => true,
+            'limit' => $limit,
+        ], 403);
+    }
+
+    /** Would adding one more item to this store bust the owner's per-store cap? */
+    private function itemLimitReached(Request $request, Tindahan $tindahan): ?int
+    {
+        $maxItems = $request->user()->sellerPlan()->max_items_per_store;
+        $count = MarketPrice::where('tindahan_id', $tindahan->id)->count();
+
+        return $count >= $maxItems ? $maxItems : null;
+    }
     private const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
     // Validation rules for the per-day { closed, open, close } structure — open/close
@@ -46,6 +72,140 @@ class TindahanController extends Controller
     }
 
     // A user's own submitted stores/stalls
+    /** Pending community price reports for all stores owned by the auth user. */
+    public function pendingReports(Request $request)
+    {
+        $storeIds = Tindahan::where('user_id', $request->user()->id)->pluck('id');
+
+        $reports = CommunityPriceReport::whereIn('tindahan_id', $storeIds)
+            ->where('status', 'pending')
+            ->with(['user:id,name,username,avatar', 'tindahan:id,name'])
+            ->orderByDesc('created_at')
+            ->get(['id', 'user_id', 'tindahan_id', 'item_name', 'category',
+                   'reported_price', 'unit', 'photo', 'created_at']);
+
+        return response()->json(['reports' => $reports]);
+    }
+
+    /** Accept a report: publish it onto the store's price list. */
+    public function acceptReport(Request $request, int $id)
+    {
+        $report = CommunityPriceReport::with('tindahan')->findOrFail($id);
+
+        if (! $report->tindahan || $report->tindahan->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'You can only review reports for your own store.'], 403);
+        }
+        if ($report->status !== 'pending') {
+            return response()->json(['message' => 'This report has already been reviewed.'], 422);
+        }
+
+        // Accepting a report that introduces a NEW item counts against the
+        // per-store item cap — otherwise reports would be a tier loophole.
+        $isNewItem = ! MarketPrice::where('tindahan_id', $report->tindahan_id)
+            ->where('item_name', $report->item_name)
+            ->where('unit', $report->unit)
+            ->exists();
+
+        if ($isNewItem && ($limit = $this->itemLimitReached($request, $report->tindahan)) !== null) {
+            return $this->upgradeRequired(
+                "Your plan allows up to {$limit} items per store. Upgrade to accept more item suggestions.",
+                $limit,
+            );
+        }
+
+        MarketPrice::updateOrCreate(
+            [
+                'tindahan_id' => $report->tindahan_id,
+                'item_name'   => $report->item_name,
+                'unit'        => $report->unit,
+            ],
+            [
+                'market_id'       => $report->tindahan->market_id,
+                'category'        => $report->category,
+                'photo'           => $report->photo,
+                'price_per_unit'  => $report->reported_price,
+                'is_available'    => true,
+                'last_updated_by' => $report->user_id,
+            ]
+        );
+
+        $report->update(['status' => 'accepted', 'reviewed_at' => now()]);
+
+        // Small thank-you to the reporter for a confirmed price.
+        if ($report->user) {
+            app(XpService::class)->award($report->user, 5, 'report_accepted', $report);
+        }
+
+        return response()->json(['message' => 'Report accepted.', 'report' => $report->fresh()]);
+    }
+
+    /** Decline a report with a reason. */
+    public function declineReport(Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:100'],
+        ]);
+
+        $report = CommunityPriceReport::with('tindahan')->findOrFail($id);
+
+        if (! $report->tindahan || $report->tindahan->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'You can only review reports for your own store.'], 403);
+        }
+        if ($report->status !== 'pending') {
+            return response()->json(['message' => 'This report has already been reviewed.'], 422);
+        }
+
+        $report->update([
+            'status'          => 'declined',
+            'declined_reason' => $validated['reason'],
+            'reviewed_at'     => now(),
+        ]);
+
+        return response()->json(['message' => 'Report declined.', 'report' => $report->fresh()]);
+    }
+
+    /** Upload / replace the store profile photo and header (cover) photo. */
+    public function uploadPhotos(Request $request, int $id)
+    {
+        $tindahan = Tindahan::findOrFail($id);
+
+        if ($tindahan->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'You can only update your own store.'], 403);
+        }
+
+        $request->validate([
+            'photo' => ['nullable', 'image', 'max:4096'],
+            'cover' => ['nullable', 'image', 'max:6144'],
+        ]);
+
+        if ($request->hasFile('photo')) {
+            if ($tindahan->photo && str_starts_with($tindahan->photo, '/storage/')) {
+                @unlink(public_path($tindahan->photo));
+            }
+            $path = $request->file('photo')->store('stores', 'public');
+            $tindahan->photo = '/storage/' . $path;
+        }
+
+        if ($request->hasFile('cover')) {
+            if ($tindahan->cover_photo && str_starts_with($tindahan->cover_photo, '/storage/')) {
+                @unlink(public_path($tindahan->cover_photo));
+            }
+            $path = $request->file('cover')->store('stores', 'public');
+            $tindahan->cover_photo = '/storage/' . $path;
+        }
+
+        $tindahan->save();
+
+        if ($request->hasFile('photo')) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($tindahan->photo, 'tindahan.photo', $tindahan->id);
+        }
+        if ($request->hasFile('cover')) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($tindahan->cover_photo, 'tindahan.cover_photo', $tindahan->id);
+        }
+
+        return response()->json(['tindahan' => $tindahan->fresh()]);
+    }
+
     public function mine(Request $request)
     {
         $tindahan = Tindahan::where('user_id', $request->user()->id)
@@ -56,25 +216,80 @@ class TindahanController extends Controller
         return response()->json(['tindahan' => $tindahan]);
     }
 
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
-        $tindahan = Tindahan::where('is_active', true)
+        // Owners can still open their own plan-hidden stores (to manage them);
+        // everyone else only sees publicly visible ones.
+        $tindahan = Tindahan::where(function ($q) use ($request) {
+            $q->publiclyVisible()->orWhere('user_id', $request->user()?->id ?? 0);
+        })
             ->with(['market:id,name,type,municipality', 'user:id,name'])
             ->findOrFail($id);
+
+        if ($request->user()) {
+            ContentView::log($tindahan, $request->user(), $tindahan->user_id);
+        }
 
         $prices = MarketPrice::where('tindahan_id', $tindahan->id)
             ->where('is_available', true)
             ->orderBy('item_name')
-            ->get(['id', 'item_name', 'category', 'price_per_unit', 'unit', 'updated_at']);
+            ->get(['id', 'item_name', 'category', 'price_per_unit', 'unit', 'photo', 'updated_at']);
+
+        $isBoosted = AdBoost::where('boostable_type', Tindahan::class)
+            ->where('boostable_id', $tindahan->id)
+            ->active()
+            ->exists();
+
+        $myRating = $request->user()
+            ? TindahanRating::where('user_id', $request->user()->id)->where('tindahan_id', $id)->value('rating')
+            : null;
 
         return response()->json([
             'tindahan' => $tindahan,
             'prices' => $prices,
+            'is_boosted' => $isBoosted,
+            'my_rating' => $myRating,
+        ]);
+    }
+
+    /** POST /tindahan/{id}/rate */
+    public function rate(Request $request, int $id)
+    {
+        $request->validate(['rating' => ['required', 'integer', 'min:1', 'max:5']]);
+
+        $user = $request->user();
+        $tindahan = Tindahan::findOrFail($id);
+
+        TindahanRating::updateOrCreate(
+            ['user_id' => $user->id, 'tindahan_id' => $id],
+            ['rating' => $request->rating]
+        );
+
+        $agg = TindahanRating::where('tindahan_id', $id)->selectRaw('AVG(rating) as avg_r, COUNT(*) as cnt')->first();
+        $tindahan->update([
+            'average_rating' => round($agg->avg_r, 2),
+            'ratings_count' => $agg->cnt,
+        ]);
+
+        return response()->json([
+            'average_rating' => $tindahan->fresh()->average_rating,
+            'ratings_count' => $tindahan->fresh()->ratings_count,
+            'my_rating' => $request->rating,
         ]);
     }
 
     public function store(Request $request, MarketDiscoveryService $discovery)
     {
+        $plan = $request->user()->sellerPlan();
+        $publicStores = $request->user()->tindahan()->publiclyVisible()->count();
+
+        if ($publicStores >= $plan->max_stores) {
+            return $this->upgradeRequired(
+                "Your {$plan->name} plan allows {$plan->max_stores} " . ($plan->max_stores === 1 ? 'store' : 'stores') . '. Upgrade to open more.',
+                $plan->max_stores,
+            );
+        }
+
         $validated = $request->validate(array_merge([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
@@ -165,14 +380,28 @@ class TindahanController extends Controller
             return response()->json(['message' => 'You can only add items to your own store.'], 403);
         }
 
+        if (($limit = $this->itemLimitReached($request, $tindahan)) !== null) {
+            return $this->upgradeRequired(
+                "Your plan allows up to {$limit} items per store. Upgrade to add more.",
+                $limit,
+            );
+        }
+
         $validated = $request->validate([
             'item_name' => ['required', 'string', 'max:100'],
             'category' => ['nullable', 'string', 'max:50'],
             'price_per_unit' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:30'],
+            'photo' => ['nullable', 'image', 'max:4096'],
         ]);
 
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = '/storage/' . $request->file('photo')->store('items', 'public');
+        }
+
         $price = MarketPrice::create([
+            'photo' => $photoPath,
             'tindahan_id' => $tindahan->id,
             'market_id' => $tindahan->market_id,
             'item_name' => $validated['item_name'],
@@ -182,6 +411,10 @@ class TindahanController extends Controller
             'is_available' => true,
             'last_updated_by' => $request->user()->id,
         ]);
+
+        if ($photoPath) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($photoPath, 'market_price.photo', $price->id);
+        }
 
         return response()->json(['price' => $price], 201);
     }
@@ -203,12 +436,25 @@ class TindahanController extends Controller
             'price_per_unit' => ['sometimes', 'numeric', 'min:0'],
             'unit' => ['sometimes', 'string', 'max:30'],
             'is_available' => ['sometimes', 'boolean'],
+            'photo' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        unset($validated['photo']);
+        if ($request->hasFile('photo')) {
+            if ($price->photo && str_starts_with($price->photo, '/storage/')) {
+                @unlink(public_path($price->photo));
+            }
+            $validated['photo'] = '/storage/' . $request->file('photo')->store('items', 'public');
+        }
 
         $price->update([
             ...$validated,
             'last_updated_by' => $request->user()->id,
         ]);
+
+        if ($request->hasFile('photo')) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($price->photo, 'market_price.photo', $price->id);
+        }
 
         return response()->json(['price' => $price->fresh()]);
     }

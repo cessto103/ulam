@@ -20,16 +20,22 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTindahanIndexRouteImport } from './routes/_authenticated/tindahan/index'
+import { Route as AuthenticatedTindahanCommentsIndexRouteImport } from './routes/_authenticated/tindahan-comments/index'
+import { Route as AuthenticatedSupportTicketsIndexRouteImport } from './routes/_authenticated/support-tickets/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedSellerSubscriptionsIndexRouteImport } from './routes/_authenticated/seller-subscriptions/index'
 import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
 import { Route as AuthenticatedPostsIndexRouteImport } from './routes/_authenticated/posts/index'
 import { Route as AuthenticatedPaymentsIndexRouteImport } from './routes/_authenticated/payments/index'
+import { Route as AuthenticatedMonetizationIndexRouteImport } from './routes/_authenticated/monetization/index'
 import { Route as AuthenticatedMarketsIndexRouteImport } from './routes/_authenticated/markets/index'
 import { Route as AuthenticatedMarketPricesIndexRouteImport } from './routes/_authenticated/market-prices/index'
 import { Route as AuthenticatedListingReportsIndexRouteImport } from './routes/_authenticated/listing-reports/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
+import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
+import { Route as AuthenticatedBoostsIndexRouteImport } from './routes/_authenticated/boosts/index'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 
@@ -89,11 +95,29 @@ const AuthenticatedTindahanIndexRoute =
     path: '/tindahan/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTindahanCommentsIndexRoute =
+  AuthenticatedTindahanCommentsIndexRouteImport.update({
+    id: '/tindahan-comments/',
+    path: '/tindahan-comments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSupportTicketsIndexRoute =
+  AuthenticatedSupportTicketsIndexRouteImport.update({
+    id: '/support-tickets/',
+    path: '/support-tickets/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
+const AuthenticatedSellerSubscriptionsIndexRoute =
+  AuthenticatedSellerSubscriptionsIndexRouteImport.update({
+    id: '/seller-subscriptions/',
+    path: '/seller-subscriptions/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedRecipesIndexRoute =
   AuthenticatedRecipesIndexRouteImport.update({
@@ -110,6 +134,12 @@ const AuthenticatedPaymentsIndexRoute =
   AuthenticatedPaymentsIndexRouteImport.update({
     id: '/payments/',
     path: '/payments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMonetizationIndexRoute =
+  AuthenticatedMonetizationIndexRouteImport.update({
+    id: '/monetization/',
+    path: '/monetization/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedMarketsIndexRoute =
@@ -136,6 +166,11 @@ const AuthenticatedGovernmentPriceReferencesIndexRoute =
     path: '/government-price-references/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFaqsIndexRoute = AuthenticatedFaqsIndexRouteImport.update({
+  id: '/faqs/',
+  path: '/faqs/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCommunityPriceReportsIndexRoute =
   AuthenticatedCommunityPriceReportsIndexRouteImport.update({
     id: '/community-price-reports/',
@@ -146,6 +181,12 @@ const AuthenticatedCommentsIndexRoute =
   AuthenticatedCommentsIndexRouteImport.update({
     id: '/comments/',
     path: '/comments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBoostsIndexRoute =
+  AuthenticatedBoostsIndexRouteImport.update({
+    id: '/boosts/',
+    path: '/boosts/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSettingsAppearanceRoute =
@@ -172,16 +213,22 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/boosts/': typeof AuthenticatedBoostsIndexRoute
   '/comments/': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
+  '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/listing-reports/': typeof AuthenticatedListingReportsIndexRoute
   '/market-prices/': typeof AuthenticatedMarketPricesIndexRoute
   '/markets/': typeof AuthenticatedMarketsIndexRoute
+  '/monetization/': typeof AuthenticatedMonetizationIndexRoute
   '/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/posts/': typeof AuthenticatedPostsIndexRoute
   '/recipes/': typeof AuthenticatedRecipesIndexRoute
+  '/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
+  '/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
 }
@@ -195,16 +242,22 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/boosts': typeof AuthenticatedBoostsIndexRoute
   '/comments': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
+  '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/listing-reports': typeof AuthenticatedListingReportsIndexRoute
   '/market-prices': typeof AuthenticatedMarketPricesIndexRoute
   '/markets': typeof AuthenticatedMarketsIndexRoute
+  '/monetization': typeof AuthenticatedMonetizationIndexRoute
   '/payments': typeof AuthenticatedPaymentsIndexRoute
   '/posts': typeof AuthenticatedPostsIndexRoute
   '/recipes': typeof AuthenticatedRecipesIndexRoute
+  '/seller-subscriptions': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/support-tickets': typeof AuthenticatedSupportTicketsIndexRoute
+  '/tindahan-comments': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan': typeof AuthenticatedTindahanIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
 }
@@ -221,16 +274,22 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/_authenticated/boosts/': typeof AuthenticatedBoostsIndexRoute
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
+  '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/_authenticated/listing-reports/': typeof AuthenticatedListingReportsIndexRoute
   '/_authenticated/market-prices/': typeof AuthenticatedMarketPricesIndexRoute
   '/_authenticated/markets/': typeof AuthenticatedMarketsIndexRoute
+  '/_authenticated/monetization/': typeof AuthenticatedMonetizationIndexRoute
   '/_authenticated/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
   '/_authenticated/recipes/': typeof AuthenticatedRecipesIndexRoute
+  '/_authenticated/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
+  '/_authenticated/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/_authenticated/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
 }
@@ -247,16 +306,22 @@ export interface FileRouteTypes {
     | '/503'
     | '/settings/account'
     | '/settings/appearance'
+    | '/boosts/'
     | '/comments/'
     | '/community-price-reports/'
+    | '/faqs/'
     | '/government-price-references/'
     | '/listing-reports/'
     | '/market-prices/'
     | '/markets/'
+    | '/monetization/'
     | '/payments/'
     | '/posts/'
     | '/recipes/'
+    | '/seller-subscriptions/'
     | '/settings/'
+    | '/support-tickets/'
+    | '/tindahan-comments/'
     | '/tindahan/'
     | '/users/'
   fileRoutesByTo: FileRoutesByTo
@@ -270,16 +335,22 @@ export interface FileRouteTypes {
     | '/'
     | '/settings/account'
     | '/settings/appearance'
+    | '/boosts'
     | '/comments'
     | '/community-price-reports'
+    | '/faqs'
     | '/government-price-references'
     | '/listing-reports'
     | '/market-prices'
     | '/markets'
+    | '/monetization'
     | '/payments'
     | '/posts'
     | '/recipes'
+    | '/seller-subscriptions'
     | '/settings'
+    | '/support-tickets'
+    | '/tindahan-comments'
     | '/tindahan'
     | '/users'
   id:
@@ -295,16 +366,22 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
+    | '/_authenticated/boosts/'
     | '/_authenticated/comments/'
     | '/_authenticated/community-price-reports/'
+    | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
     | '/_authenticated/listing-reports/'
     | '/_authenticated/market-prices/'
     | '/_authenticated/markets/'
+    | '/_authenticated/monetization/'
     | '/_authenticated/payments/'
     | '/_authenticated/posts/'
     | '/_authenticated/recipes/'
+    | '/_authenticated/seller-subscriptions/'
     | '/_authenticated/settings/'
+    | '/_authenticated/support-tickets/'
+    | '/_authenticated/tindahan-comments/'
     | '/_authenticated/tindahan/'
     | '/_authenticated/users/'
   fileRoutesById: FileRoutesById
@@ -398,12 +475,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTindahanIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tindahan-comments/': {
+      id: '/_authenticated/tindahan-comments/'
+      path: '/tindahan-comments'
+      fullPath: '/tindahan-comments/'
+      preLoaderRoute: typeof AuthenticatedTindahanCommentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/support-tickets/': {
+      id: '/_authenticated/support-tickets/'
+      path: '/support-tickets'
+      fullPath: '/support-tickets/'
+      preLoaderRoute: typeof AuthenticatedSupportTicketsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/seller-subscriptions/': {
+      id: '/_authenticated/seller-subscriptions/'
+      path: '/seller-subscriptions'
+      fullPath: '/seller-subscriptions/'
+      preLoaderRoute: typeof AuthenticatedSellerSubscriptionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/recipes/': {
       id: '/_authenticated/recipes/'
@@ -424,6 +522,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments/'
       preLoaderRoute: typeof AuthenticatedPaymentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/monetization/': {
+      id: '/_authenticated/monetization/'
+      path: '/monetization'
+      fullPath: '/monetization/'
+      preLoaderRoute: typeof AuthenticatedMonetizationIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/markets/': {
@@ -454,6 +559,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/faqs/': {
+      id: '/_authenticated/faqs/'
+      path: '/faqs'
+      fullPath: '/faqs/'
+      preLoaderRoute: typeof AuthenticatedFaqsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/community-price-reports/': {
       id: '/_authenticated/community-price-reports/'
       path: '/community-price-reports'
@@ -466,6 +578,13 @@ declare module '@tanstack/react-router' {
       path: '/comments'
       fullPath: '/comments/'
       preLoaderRoute: typeof AuthenticatedCommentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/boosts/': {
+      id: '/_authenticated/boosts/'
+      path: '/boosts'
+      fullPath: '/boosts/'
+      preLoaderRoute: typeof AuthenticatedBoostsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings/appearance': {
@@ -506,15 +625,21 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedBoostsIndexRoute: typeof AuthenticatedBoostsIndexRoute
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
+  AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   AuthenticatedListingReportsIndexRoute: typeof AuthenticatedListingReportsIndexRoute
   AuthenticatedMarketPricesIndexRoute: typeof AuthenticatedMarketPricesIndexRoute
   AuthenticatedMarketsIndexRoute: typeof AuthenticatedMarketsIndexRoute
+  AuthenticatedMonetizationIndexRoute: typeof AuthenticatedMonetizationIndexRoute
   AuthenticatedPaymentsIndexRoute: typeof AuthenticatedPaymentsIndexRoute
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
   AuthenticatedRecipesIndexRoute: typeof AuthenticatedRecipesIndexRoute
+  AuthenticatedSellerSubscriptionsIndexRoute: typeof AuthenticatedSellerSubscriptionsIndexRoute
+  AuthenticatedSupportTicketsIndexRoute: typeof AuthenticatedSupportTicketsIndexRoute
+  AuthenticatedTindahanCommentsIndexRoute: typeof AuthenticatedTindahanCommentsIndexRoute
   AuthenticatedTindahanIndexRoute: typeof AuthenticatedTindahanIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
@@ -522,17 +647,25 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedBoostsIndexRoute: AuthenticatedBoostsIndexRoute,
   AuthenticatedCommentsIndexRoute: AuthenticatedCommentsIndexRoute,
   AuthenticatedCommunityPriceReportsIndexRoute:
     AuthenticatedCommunityPriceReportsIndexRoute,
+  AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,
   AuthenticatedListingReportsIndexRoute: AuthenticatedListingReportsIndexRoute,
   AuthenticatedMarketPricesIndexRoute: AuthenticatedMarketPricesIndexRoute,
   AuthenticatedMarketsIndexRoute: AuthenticatedMarketsIndexRoute,
+  AuthenticatedMonetizationIndexRoute: AuthenticatedMonetizationIndexRoute,
   AuthenticatedPaymentsIndexRoute: AuthenticatedPaymentsIndexRoute,
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
   AuthenticatedRecipesIndexRoute: AuthenticatedRecipesIndexRoute,
+  AuthenticatedSellerSubscriptionsIndexRoute:
+    AuthenticatedSellerSubscriptionsIndexRoute,
+  AuthenticatedSupportTicketsIndexRoute: AuthenticatedSupportTicketsIndexRoute,
+  AuthenticatedTindahanCommentsIndexRoute:
+    AuthenticatedTindahanCommentsIndexRoute,
   AuthenticatedTindahanIndexRoute: AuthenticatedTindahanIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }

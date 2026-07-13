@@ -13,6 +13,7 @@ class MarketPrice extends Model
         'category',
         'price_per_unit',
         'unit',
+        'photo',
         'is_available',
         'last_updated_by',
     ];

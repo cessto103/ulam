@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class MarketController extends Controller
 {
-    private function haversineNearby(float $lat, float $lng)
+    private function haversineNearby(float $lat, float $lng, float $radiusKm = 15)
     {
         return Market::selectRaw(
             '*, ( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) )
@@ -23,16 +23,16 @@ class MarketController extends Controller
             [$lat, $lng, $lat]
         )
             ->where('is_active', true)
-            ->having('distance_km', '<=', 15)
+            ->having('distance_km', '<=', $radiusKm)
             ->orderBy('distance_km')
-            ->with(['tindahan' => fn($q) => $q->where('is_active', true)])
+            ->with(['tindahan' => fn($q) => $q->publiclyVisible()])
             ->get();
     }
 
     // User-submitted stores that aren't attached to any market (e.g. a home-based
     // tindahan) don't show up on any market page, so they need their own nearby lookup
     // to appear in "Near Me" search results.
-    private function haversineNearbyStandaloneTindahan(float $lat, float $lng)
+    private function haversineNearbyStandaloneTindahan(float $lat, float $lng, float $radiusKm = 15)
     {
         return Tindahan::selectRaw(
             '*, ( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) )
@@ -41,10 +41,10 @@ class MarketController extends Controller
             [$lat, $lng, $lat]
         )
             ->whereNull('market_id')
-            ->where('is_active', true)
+            ->publiclyVisible()
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->having('distance_km', '<=', 15)
+            ->having('distance_km', '<=', $radiusKm)
             ->orderBy('distance_km')
             ->with(['prices' => fn($q) => $q->where('is_available', true)])
             ->get();
@@ -84,9 +84,10 @@ class MarketController extends Controller
         if ($lat !== null && $lng !== null) {
             $lat = (float) $lat;
             $lng = (float) $lng;
+            $radiusKm = min(30, max(1, (float) $request->query('radius_km', 15)));
 
-            $markets = $this->haversineNearby($lat, $lng);
-            $standaloneTindahan = $this->haversineNearbyStandaloneTindahan($lat, $lng);
+            $markets = $this->haversineNearby($lat, $lng, $radiusKm);
+            $standaloneTindahan = $this->haversineNearbyStandaloneTindahan($lat, $lng, $radiusKm);
 
             if ($markets->isEmpty() && $standaloneTindahan->isEmpty()) {
                 $markets = $this->discoverNearbyMarkets($lat, $lng, $discovery);
@@ -103,10 +104,10 @@ class MarketController extends Controller
 
             $markets = Market::where('is_active', true)
                 ->where($municipalityMatch)
-                ->with(['tindahan' => fn($q) => $q->where('is_active', true)])
+                ->with(['tindahan' => fn($q) => $q->publiclyVisible()])
                 ->get();
 
-            $standaloneTindahan = Tindahan::where('is_active', true)
+            $standaloneTindahan = Tindahan::publiclyVisible()
                 ->whereNull('market_id')
                 ->where($municipalityMatch)
                 ->with(['prices' => fn($q) => $q->where('is_available', true)])
@@ -142,6 +143,7 @@ class MarketController extends Controller
                 'stall_count'  => $market->tindahan->count(),
                 'item_count'   => $priceCount,
                 'last_updated' => $latestUpdate,
+                'source'       => $market->source ?? 'ulam',
             ];
 
             if (isset($market->distance_km)) {
@@ -164,6 +166,8 @@ class MarketController extends Controller
                 'stall_count'  => null,
                 'item_count'   => $tindahan->prices->count(),
                 'last_updated' => $tindahan->prices->max('updated_at'),
+                'source'       => 'ulam',
+                'is_verified'  => (bool) $tindahan->is_verified,
             ];
 
             if (isset($tindahan->distance_km)) {
@@ -273,6 +277,7 @@ class MarketController extends Controller
                 'municipality'=> $market->municipality,
                 'latitude'    => $market->latitude,
                 'longitude'   => $market->longitude,
+                'source'      => $market->source ?? 'ulam',
             ],
             'stalls'      => $tindahan->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'type' => $s->type]),
             'by_category' => $byCategory,

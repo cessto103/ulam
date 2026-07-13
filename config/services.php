@@ -40,10 +40,21 @@ return [
         'model' => env('ANTHROPIC_DEFAULT_MODEL', 'claude-sonnet-4-6'),
     ],
 
+    'moderation' => [
+        'enabled'      => env('MODERATION_ENABLED', true),
+        'fail_open'    => env('MODERATION_FAIL_OPEN', false),
+        'model'        => env('MODERATION_MODEL', 'claude-haiku-4-5-20251001'),
+        // Max Claude-moderated images per calendar month; beyond this the
+        // local NSFWJS fallback takes over. 2000 imgs ≈ ₱120/month worst case.
+        'monthly_cap'  => env('MODERATION_MONTHLY_CAP', 2000),
+        'fallback_url' => env('MODERATION_FALLBACK_URL', 'http://127.0.0.1:3310'),
+    ],
+
     'paymongo' => [
         'secret_key'     => env('PAYMONGO_SECRET_KEY'),
         'public_key'     => env('PAYMONGO_PUBLIC_KEY'),
         'webhook_secret' => env('PAYMONGO_WEBHOOK_SECRET'),
+        'api_url'        => env('PAYMONGO_API_URL', 'https://api.paymongo.com/v1'),
     ],
 
 ];

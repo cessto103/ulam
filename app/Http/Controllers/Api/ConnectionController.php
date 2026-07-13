@@ -41,7 +41,19 @@ class ConnectionController extends Controller
             return $post;
         });
 
+        // Active stores owned by this user (for the profile's store strip)
+        $stores = \App\Models\Tindahan::where('user_id', $id)
+            ->publiclyVisible()
+            ->get(['id', 'name', 'type', 'barangay', 'municipality', 'photo', 'is_verified'])
+            ->map(function ($t) {
+                $priceQ = \App\Models\MarketPrice::where('tindahan_id', $t->id)->where('is_available', true);
+                $t->item_count   = (clone $priceQ)->count();
+                $t->last_updated = (clone $priceQ)->max('updated_at');
+                return $t;
+            });
+
         return response()->json([
+            'stores' => $stores,
             'user' => [
                 'id'              => $user->id,
                 'name'            => $user->name,

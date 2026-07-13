@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdBoost;
 use App\Models\CommunityPriceReport;
 use App\Models\GovernmentPriceReference;
 use App\Models\MarketPrice;
@@ -37,19 +38,47 @@ class PriceController extends Controller
         $lng = $request->longitude;
         $radius = $request->radius_km ?? 5;
 
+        // Boosted stores get a wider effective radius (capped at 15km) and rank
+        // first within it — the actual value prop of a store boost.
+        $boostRadius = max($radius, 15);
+        $boostedIds = AdBoost::where('boostable_type', Tindahan::class)
+            ->active()
+            ->pluck('boostable_id')
+            ->all();
+
+        $placeholders = $boostedIds ? implode(',', array_fill(0, count($boostedIds), '?')) : '0';
+
         // Haversine formula — no Google Maps needed
         $tindahan = Tindahan::selectRaw(
-            '*, ( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) ) + sin( radians(?) ) * sin( radians(latitude) ) ) ) AS distance_km',
-            [$lat, $lng, $lat]
+            '*, ( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) ) + sin( radians(?) ) * sin( radians(latitude) ) ) ) AS distance_km,
+             (id IN (' . $placeholders . ')) AS is_boosted',
+            [$lat, $lng, $lat, ...$boostedIds]
         )
-            ->having('distance_km', '<=', $radius)
-            ->where('is_active', true)
+            ->havingRaw('distance_km <= ? OR (is_boosted = 1 AND distance_km <= ?)', [$radius, $boostRadius])
+            ->publiclyVisible()
+            ->orderByDesc('is_boosted')
             ->orderBy('distance_km')
             ->with('prices')
             ->limit(20)
             ->get();
 
+        $tindahan->each(fn ($t) => $t->is_boosted = (bool) $t->is_boosted);
+
         return response()->json(['tindahan' => $tindahan]);
+    }
+
+    /** Reports submitted by the authenticated user, newest first. */
+    public function myReports(Request $request)
+    {
+        $reports = CommunityPriceReport::where('user_id', $request->user()->id)
+            ->with(['tindahan:id,name', 'market:id,name'])
+            ->orderByDesc('created_at')
+            ->limit(100)
+            ->get(['id', 'tindahan_id', 'market_id', 'item_name', 'category',
+                   'reported_price', 'unit', 'photo', 'status', 'declined_reason',
+                   'reviewed_at', 'created_at']);
+
+        return response()->json(['reports' => $reports]);
     }
 
     public function report(Request $request)
@@ -59,6 +88,7 @@ class PriceController extends Controller
             'category' => ['required', 'string', 'max:50'],
             'reported_price' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:30'],
+            'photo' => ['nullable', 'image', 'max:4096'],
             'tindahan_id' => ['nullable', 'integer', 'exists:tindahan,id'],
             'market_id' => ['nullable', 'integer', 'exists:markets,id'],
             'barangay' => ['nullable', 'string', 'max:100'],
@@ -67,17 +97,37 @@ class PriceController extends Controller
 
         $user = $request->user();
 
+        unset($validated['photo']);
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = '/storage/' . $request->file('photo')->store('items', 'public');
+        }
+
         $report = CommunityPriceReport::create([
             ...$validated,
+            'photo'        => $photoPath,
             'user_id'      => $user->id,
             'barangay'     => $validated['barangay'] ?? $user->barangay,
             'municipality' => $validated['municipality'] ?? $user->municipality,
             'province'     => $user->province,
+            // Store-targeted reports need the owner's approval before they
+            // appear on the store page; market-level reports publish directly.
+            'status'       => ! empty($validated['tindahan_id']) ? 'pending' : 'accepted',
         ]);
 
-        app(XpService::class)->award($user, 15, 'report_price', $report);
+        $reward = app(XpService::class)->award($user, 15, 'report_price', $report);
 
-        return response()->json(['report' => $report, 'xp_earned' => 15], 201);
+        if ($photoPath) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($photoPath, 'price_report.photo', $report->id);
+        }
+
+        return response()->json([
+            'report'           => $report,
+            'xp_earned'        => $reward['xp_awarded'],
+            'leveled_up'       => $reward['leveled_up'],
+            'new_level'        => $reward['new_level'],
+            'new_achievements' => $reward['new_achievements'],
+        ], 201);
     }
 
     public function search(Request $request)

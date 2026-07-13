@@ -17,6 +17,8 @@ const paymentSchema = z.object({
   amount: z.number(), // centavos
   currency: z.string(),
   status: z.string(),
+  failure_code: z.string().nullable().optional(),
+  refunded_at: z.string().nullable().optional(),
   paid_at: z.string(),
   created_at: z.string(),
 })

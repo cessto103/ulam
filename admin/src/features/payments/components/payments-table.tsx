@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   type SortingState,
   type VisibilityState,
@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type Payment } from '../data/schema'
-import { paymentsColumns as columns } from './payments-columns'
+import { getPaymentsColumns } from './payments-columns'
 
 type DataTableProps = {
   data: Payment[]
@@ -26,6 +26,7 @@ type DataTableProps = {
   isLoading?: boolean
   search: Record<string, unknown>
   navigate: NavigateFn
+  onRefund: (payment: Payment) => void
 }
 
 export function PaymentsTable({
@@ -34,7 +35,9 @@ export function PaymentsTable({
   isLoading,
   search,
   navigate,
+  onRefund,
 }: DataTableProps) {
+  const columns = useMemo(() => getPaymentsColumns(onRefund), [onRefund])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
 

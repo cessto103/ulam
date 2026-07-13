@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // PH-only app — subscription expiries and "paid at" timestamps must read
+    // in Manila time, not UTC.
+    'timezone' => 'Asia/Manila',
 
     /*
     |--------------------------------------------------------------------------

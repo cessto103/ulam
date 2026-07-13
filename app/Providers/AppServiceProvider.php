@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\PaymentGateway;
+use App\Services\PayMongoGateway;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Vite;
@@ -20,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(PaymentGateway::class, PayMongoGateway::class);
+
         // Override default Resend client binding to provide a Guzzle client
         // with the correct CA bundle — needed on WAMP/Windows where PHP's
         // default CA store doesn't include the issuer for api.resend.com.

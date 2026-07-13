@@ -17,6 +17,7 @@ class Market extends Model
         'latitude',
         'longitude',
         'is_active',
+        'source',
     ];
 
     protected $casts = [

@@ -9,7 +9,9 @@ class Achievement extends Model
     protected $fillable = [
         'slug',
         'title',
+        'title_en',
         'description',
+        'description_en',
         'icon',
         'xp_reward',
         'category',

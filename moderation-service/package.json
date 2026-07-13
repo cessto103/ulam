@@ -1,0 +1,17 @@
+{
+  "name": "ulam-moderation-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted NSFWJS fallback for uLam image moderation (used when the Claude monthly cap is reached).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "express": "^4.21.2",
+    "jpeg-js": "^0.4.4",
+    "nsfwjs": "^4.2.1",
+    "pngjs": "^7.0.0"
+  }
+}

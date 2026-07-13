@@ -13,9 +13,12 @@ class XpService
 {
     const LEVEL_THRESHOLDS = [0, 100, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000];
 
-    public function award(User $user, int $xp, string $reason, ?Model $source = null): void
+    /**
+     * @return array{xp_awarded:int,leveled_up:bool,new_level:int,new_achievements:array<int,array{id:int,name:string,icon:?string,xp_reward:int}>}
+     */
+    public function award(User $user, int $xp, string $reason, ?Model $source = null): array
     {
-        DB::transaction(function () use ($user, $xp, $reason, $source) {
+        return DB::transaction(function () use ($user, $xp, $reason, $source) {
             XpLog::create([
                 'user_id'     => $user->id,
                 'xp_amount'   => $xp,
@@ -24,7 +27,15 @@ class XpService
                 'source_id'   => $source?->id,
             ]);
 
+            $previousLevel = $user->level;
             $user->increment('xp', $xp);
+            $user->refresh();
+
+            // Achievements can award bonus XP of their own — check them before
+            // the final level calculation so a bonus that crosses a threshold
+            // is reflected in leveled_up/new_level, not missed by a level
+            // check that ran too early.
+            $newAchievements = $this->checkAchievements($user, $reason);
             $user->refresh();
 
             $newLevel = self::calculateLevel($user->xp);
@@ -32,7 +43,12 @@ class XpService
                 $user->update(['level' => $newLevel]);
             }
 
-            $this->checkAchievements($user, $reason);
+            return [
+                'xp_awarded' => $xp,
+                'leveled_up' => $newLevel > $previousLevel,
+                'new_level' => $newLevel,
+                'new_achievements' => $newAchievements,
+            ];
         });
     }
 
@@ -55,7 +71,8 @@ class XpService
         return self::LEVEL_THRESHOLDS[$level] ?? self::LEVEL_THRESHOLDS[count(self::LEVEL_THRESHOLDS) - 1];
     }
 
-    private function checkAchievements(User $user, string $reason): void
+    /** @return array<int,array{id:int,name:string,icon:?string,xp_reward:int}> */
+    private function checkAchievements(User $user, string $reason): array
     {
         $conditionType = match ($reason) {
             'create_post'        => 'posts_count',
@@ -64,7 +81,7 @@ class XpService
             default              => null,
         };
 
-        if (! $conditionType) return;
+        if (! $conditionType) return [];
 
         $candidates = Achievement::where(
             DB::raw("JSON_UNQUOTE(JSON_EXTRACT(`condition`, '$.type'))"),
@@ -72,6 +89,7 @@ class XpService
         )->get();
 
         $earnedIds = $user->achievements()->pluck('achievements.id')->flip();
+        $newlyUnlocked = [];
 
         foreach ($candidates as $achievement) {
             if ($earnedIds->has($achievement->id)) continue;
@@ -102,11 +120,20 @@ class XpService
                     $user,
                     'achievement',
                     '🏆 Achievement Unlocked!',
-                    "Na-unlock mo ang \"{$achievement->name}\"! +{$achievement->xp_reward} XP",
+                    "Na-unlock mo ang \"{$achievement->title}\"! +{$achievement->xp_reward} XP",
                     ['achievement_id' => $achievement->id],
                     '/(tabs)/awards',
                 );
+
+                $newlyUnlocked[] = [
+                    'id' => $achievement->id,
+                    'name' => $achievement->title,
+                    'icon' => $achievement->icon,
+                    'xp_reward' => $achievement->xp_reward,
+                ];
             }
         }
+
+        return $newlyUnlocked;
     }
 }

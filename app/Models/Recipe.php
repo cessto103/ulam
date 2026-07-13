@@ -59,4 +59,9 @@ class Recipe extends Model
     {
         return $this->hasMany(RecipeBook::class);
     }
+
+    public function contentViews()
+    {
+        return $this->morphMany(ContentView::class, 'viewable');
+    }
 }

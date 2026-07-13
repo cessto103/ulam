@@ -1,17 +1,22 @@
 import {
+  BadgeCheck,
   Building2,
   ChefHat,
+  CircleHelp,
   ClipboardList,
   CreditCard,
   Flag,
   Landmark,
   LayoutDashboard,
+  LifeBuoy,
   MessageCircle,
   MessagesSquare,
   Palette,
   Receipt,
+  Rocket,
   Settings,
   Store,
+  Tags,
   UserCog,
   Users,
   Wrench,
@@ -49,6 +54,41 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
+      title: 'Monetization',
+      items: [
+        {
+          title: 'Seller Subscriptions',
+          url: '/seller-subscriptions',
+          icon: BadgeCheck,
+        },
+        {
+          title: 'Plans & Pricing',
+          url: '/monetization',
+          icon: Tags,
+        },
+        {
+          title: 'Boost Review',
+          url: '/boosts',
+          icon: Rocket,
+        },
+      ],
+    },
+    {
+      title: 'Support',
+      items: [
+        {
+          title: 'Support Tickets',
+          url: '/support-tickets',
+          icon: LifeBuoy,
+        },
+        {
+          title: 'FAQs',
+          url: '/faqs',
+          icon: CircleHelp,
+        },
+      ],
+    },
+    {
       title: 'Community',
       items: [
         {
@@ -75,6 +115,11 @@ export const sidebarData: SidebarData = {
           title: 'Stores & Stalls',
           url: '/tindahan',
           icon: Store,
+        },
+        {
+          title: 'Store Comments & Ratings',
+          url: '/tindahan-comments',
+          icon: MessageCircle,
         },
         {
           title: 'Market Prices',

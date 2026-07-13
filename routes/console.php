@@ -16,3 +16,6 @@ Schedule::command('prices:refresh-ai')->dailyAt('02:00');
 
 // Nightly DA Bantay Presyo / DTI SRP reference refresh — runs after the market refresh
 Schedule::command('prices:refresh-gov')->dailyAt('03:00');
+
+// Subscription reminders, grace periods, expiry, and suspension.
+Schedule::command('billing:process-lifecycle')->hourly()->withoutOverlapping();

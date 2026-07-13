@@ -91,16 +91,22 @@ class MarketDiscoveryService
     private function queryOverpass(float $lat, float $lng): Collection
     {
         $radius = self::RADIUS_METERS;
+        // Large stores are often mapped as building outlines ("ways"), not points —
+        // querying only nodes silently misses them. `out center` gives ways a centroid.
         $query = <<<QL
         [out:json][timeout:25];
         (
           node["amenity"="marketplace"](around:{$radius},{$lat},{$lng});
           way["amenity"="marketplace"](around:{$radius},{$lat},{$lng});
           node["shop"="supermarket"](around:{$radius},{$lat},{$lng});
+          way["shop"="supermarket"](around:{$radius},{$lat},{$lng});
           node["shop"="grocery"](around:{$radius},{$lat},{$lng});
+          way["shop"="grocery"](around:{$radius},{$lat},{$lng});
           node["shop"="greengrocer"](around:{$radius},{$lat},{$lng});
+          node["shop"="convenience"](around:{$radius},{$lat},{$lng});
+          way["shop"="convenience"](around:{$radius},{$lat},{$lng});
         );
-        out center 30;
+        out center 40;
         QL;
 
         try {
@@ -140,6 +146,7 @@ class MarketDiscoveryService
     {
         if (($tags['amenity'] ?? null) === 'marketplace') return 'palengke';
         if (($tags['shop'] ?? null) === 'supermarket') return 'supermarket';
+        if (($tags['shop'] ?? null) === 'convenience') return 'convenience';
 
         return 'grocery';
     }
@@ -163,6 +170,11 @@ class MarketDiscoveryService
                     'is_active'   => true,
                 ]
             );
+            // Tag origin only on creation — re-discovery must not relabel a market
+            // that a user/admin created and happens to share the same name.
+            if ($market->wasRecentlyCreated) {
+                $market->update(['source' => 'osm']);
+            }
             $markets->push($market);
         }
         Log::info('MarketDiscoveryService: discovered ' . $markets->count() . ' markets via OSM');

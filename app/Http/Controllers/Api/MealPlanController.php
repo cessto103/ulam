@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\MealPlan;
 use App\Models\MealPlanIngredient;
 use App\Models\MealPlanItem;
@@ -17,13 +18,20 @@ class MealPlanController extends Controller
     {
     }
 
+    // Cost kill switch — AI generation calls Claude per request, so this can
+    // be flipped off from AppSettings without a deploy if spend needs to stop.
+    private function aiGenerationDisabled(): bool
+    {
+        return AppSetting::get('ai_meal_plans_enabled', '1') !== '1';
+    }
+
     public function today(Request $request)
     {
         $date = $request->query('date') ?? now()->toDateString();
 
         $mealPlan = MealPlan::where('user_id', $request->user()->id)
             ->whereDate('plan_date', $date)
-            ->with('items.ingredients')
+            ->with(['items.ingredients', 'items.recipe:id,image_url,image_urls'])
             ->latest()
             ->first();
 
@@ -36,6 +44,13 @@ class MealPlanController extends Controller
 
     public function generate(Request $request)
     {
+        if ($this->aiGenerationDisabled()) {
+            return response()->json([
+                'message' => 'AI meal plan generation is temporarily unavailable. Please check back soon!',
+                'ai_disabled' => true,
+            ], 503);
+        }
+
         $request->validate([
             'preferences' => ['nullable', 'string', 'max:500'],
         ]);
@@ -163,6 +178,13 @@ class MealPlanController extends Controller
 
     public function regenerate(Request $request)
     {
+        if ($this->aiGenerationDisabled()) {
+            return response()->json([
+                'message' => 'AI meal plan generation is temporarily unavailable. Please check back soon!',
+                'ai_disabled' => true,
+            ], 503);
+        }
+
         $request->validate([
             'preferences' => ['nullable', 'string', 'max:500'],
         ]);

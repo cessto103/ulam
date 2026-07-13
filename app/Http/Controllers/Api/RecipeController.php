@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdBoost;
+use App\Models\ContentView;
 use App\Models\Post;
 use App\Models\Recipe;
 use App\Models\RecipeBook;
@@ -25,8 +27,10 @@ class RecipeController extends Controller
             ->selectRaw(
                 'recipes.*,
                  EXISTS(SELECT 1 FROM recipe_book WHERE recipe_book.recipe_id = recipes.id AND recipe_book.user_id = ?) as is_saved,
-                 (recipes.user_id = ?) as is_mine',
-                [$user->id, $user->id]
+                 (recipes.user_id = ?) as is_mine,
+                 EXISTS(SELECT 1 FROM ad_boosts WHERE ad_boosts.boostable_type = ? AND ad_boosts.boostable_id = recipes.id AND ad_boosts.status = ? AND ad_boosts.expires_at > ?) as is_boosted,
+                 (SELECT COUNT(*) FROM content_views WHERE content_views.viewable_type = ? AND content_views.viewable_id = recipes.id) as views_count',
+                [$user->id, $user->id, Recipe::class, 'active', now(), Recipe::class]
             );
 
         if (! $user->isPremium()) {
@@ -43,11 +47,13 @@ class RecipeController extends Controller
             $query->where('title', 'like', "%{$request->search}%");
         }
 
-        $recipes = $query->orderByDesc('save_count')->paginate(50);
+        $recipes = $query->orderByDesc('is_boosted')->orderByDesc('save_count')->paginate(50);
 
         $recipes->getCollection()->transform(function ($r) {
-            $r->is_saved = (bool) $r->is_saved;
-            $r->is_mine  = (bool) $r->is_mine;
+            $r->is_saved    = (bool) $r->is_saved;
+            $r->is_mine     = (bool) $r->is_mine;
+            $r->is_boosted  = (bool) $r->is_boosted;
+            $r->views_count = (int) $r->views_count;
             return $r;
         });
 
@@ -64,6 +70,9 @@ class RecipeController extends Controller
             return response()->json(['message' => 'Premium only recipe. Upgrade to access.'], 403);
         }
 
+        ContentView::log($recipe, $user, $recipe->user_id);
+        $recipe->views_count = $recipe->contentViews()->count();
+
         $isSaved = RecipeBook::where('user_id', $user->id)
             ->where('recipe_id', $id)
             ->exists();
@@ -78,10 +87,16 @@ class RecipeController extends Controller
             ->take(5)
             ->get(['id', 'user_id', 'created_at']);
 
+        $isBoosted = AdBoost::where('boostable_type', Recipe::class)
+            ->where('boostable_id', $id)
+            ->active()
+            ->exists();
+
         return response()->json([
             'recipe'      => $recipe,
             'is_saved'    => $isSaved,
             'is_mine'     => $recipe->user_id === $user->id,
+            'is_boosted'  => $isBoosted,
             'my_rating'   => $myRating,
             'my_reaction' => $myReaction,
             'shared_by'   => $sharedBy,
@@ -252,6 +267,10 @@ class RecipeController extends Controller
             ]);
         }
 
+        foreach (($imagePaths ?: []) as $img) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($img, 'recipe.images', $recipe->id);
+        }
+
         return response()->json(['recipe' => $recipe->load('ingredients')], 201);
     }
 
@@ -343,6 +362,10 @@ class RecipeController extends Controller
                 'estimated_price' => $ing['price'],
                 'sort_order'      => $i,
             ]);
+        }
+
+        foreach (($imagePaths ?: []) as $img) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($img, 'recipe.images', $recipe->id);
         }
 
         return response()->json(['recipe' => $recipe->fresh()->load(['ingredients', 'user:id,name,username'])]);

@@ -17,6 +17,10 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'username',
         'email',
+        'secondary_email',
+        'secondary_email_verified_at',
+        'secondary_email_otp',
+        'secondary_email_otp_expires_at',
         'password',
         'avatar',
         'bio',
@@ -46,12 +50,16 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        'secondary_email_otp',
+        'secondary_email_otp_expires_at',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'secondary_email_verified_at' => 'datetime',
+            'secondary_email_otp_expires_at' => 'datetime',
             'password' => 'hashed',
             'premium_expires_at' => 'datetime',
             'banned_at' => 'datetime',
@@ -157,5 +165,59 @@ class User extends Authenticatable implements FilamentUser
     public function xpLogs()
     {
         return $this->hasMany(XpLog::class);
+    }
+
+    public function tindahan()
+    {
+        return $this->hasMany(Tindahan::class);
+    }
+
+    public function sellerSubscriptions()
+    {
+        return $this->hasMany(AdSubscription::class)->where('type', 'tindahan_listing');
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(UserNotification::class);
+    }
+
+    public function contentViews()
+    {
+        return $this->hasMany(ContentView::class);
+    }
+
+    /** The currently-running paid seller subscription, if any. */
+    public function activeSellerSubscription(): ?AdSubscription
+    {
+        return $this->sellerSubscriptions()
+            ->activeSeller()
+            ->orderByDesc('expires_at')
+            ->first();
+    }
+
+    /** The seller plan in force — falls back to the 'free' catalog row. */
+    public function sellerPlan(): SellerPlan
+    {
+        $subscription = $this->subscriptions()->entitled()->latest('current_period_end')->first();
+        if ($subscription?->plan) {
+            return $subscription->plan;
+        }
+
+        $active = $this->activeSellerSubscription();
+
+        if ($active) {
+            $plan = SellerPlan::where('slug', $active->plan)->first();
+            if ($plan) {
+                return $plan;
+            }
+        }
+
+        return SellerPlan::free();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContentView;
 use App\Models\Post;
 use App\Models\PostDislike;
 use App\Models\PostReaction;
@@ -30,6 +31,7 @@ class CommunityController extends Controller
             'user:id,name,username,avatar',
             'recipe:id,title,image_url,image_urls,collage_style,gradient_key,font_key,budget_tag,estimated_cost',
         ])
+            ->withCount('contentViews as views_count')
             ->where(function ($q) use ($user, $connectedIds, $followingOnly) {
                 if ($followingOnly) {
                     if ($connectedIds->isEmpty()) {
@@ -77,6 +79,9 @@ class CommunityController extends Controller
             'user:id,name,username,avatar',
             'recipe:id,title,image_url,image_urls,collage_style,gradient_key,font_key,budget_tag,estimated_cost',
         ])->findOrFail($id);
+
+        ContentView::log($post, $user, $post->user_id);
+        $post->views_count = $post->contentViews()->count();
 
         $post->has_reacted  = PostReaction::where('user_id', $user->id)->where('post_id', $id)->exists();
         $post->has_disliked = PostDislike::where('user_id', $user->id)->where('post_id', $id)->exists();
@@ -128,6 +133,10 @@ class CommunityController extends Controller
         }
 
         app(XpService::class)->award($user, 30, 'create_post', $post);
+
+        foreach ($imagePaths as $img) {
+            \App\Jobs\ModerateImageJob::dispatchAfterResponse($img, 'post.images', $post->id);
+        }
 
         return response()->json([
             'post' => $post->load([

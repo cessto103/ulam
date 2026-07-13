@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CommunityPostSeeder::class);
         $this->call(StoreSeeder::class);
         $this->call(DemoStoreSeeder::class);
+        $this->call(SellerPlanSeeder::class);
     }
 
     private function seedMarkets(): void
@@ -231,18 +232,18 @@ class DatabaseSeeder extends Seeder
     private function seedAchievements(): void
     {
         $achievements = [
-            ['slug' => 'first-meal-plan', 'title' => 'Unang Hakbang', 'description' => 'Na-generate ang unang meal plan mo!', 'icon' => 'ðŸ½ï¸', 'xp_reward' => 50, 'category' => 'budget', 'condition' => ['type' => 'meal_plans_count', 'value' => 1]],
-            ['slug' => 'week-streak', 'title' => '7 Araw na Streak', 'description' => 'Bumalik sa app nang 7 magkakasunod na araw!', 'icon' => 'ðŸ”¥', 'xp_reward' => 100, 'category' => 'streak', 'condition' => ['type' => 'streak_days', 'value' => 7]],
-            ['slug' => 'month-streak', 'title' => '30 Araw na Streak', 'description' => 'Isang buwan na consistent ka!', 'icon' => 'ðŸ’«', 'xp_reward' => 500, 'category' => 'streak', 'condition' => ['type' => 'streak_days', 'value' => 30]],
-            ['slug' => 'budget-saver', 'title' => 'Matipid na Nanay/Tatay', 'description' => 'Naka-tipid ng â‚±500 sa isang buwan!', 'icon' => 'ðŸ’°', 'xp_reward' => 200, 'category' => 'budget', 'condition' => ['type' => 'monthly_savings', 'value' => 500]],
-            ['slug' => 'super-saver', 'title' => 'Super Tipid Champion', 'description' => 'Naka-tipid ng â‚±2,000 sa isang buwan!', 'icon' => 'ðŸ†', 'xp_reward' => 1000, 'category' => 'budget', 'condition' => ['type' => 'monthly_savings', 'value' => 2000]],
-            ['slug' => 'first-post', 'title' => 'Unang Kwento', 'description' => 'Nag-share ng unang post sa komunidad!', 'icon' => 'ðŸ“', 'xp_reward' => 30, 'category' => 'community', 'condition' => ['type' => 'posts_count', 'value' => 1]],
-            ['slug' => 'recipe-collector', 'title' => 'Recipe Collector', 'description' => 'Nag-save ng 10 recipes!', 'icon' => 'ðŸ“š', 'xp_reward' => 150, 'category' => 'recipe', 'condition' => ['type' => 'recipe_book_count', 'value' => 10]],
-            ['slug' => 'price-reporter', 'title' => 'Presyo Patrol', 'description' => 'Nag-report ng 5 presyo sa komunidad!', 'icon' => 'ðŸ”', 'xp_reward' => 75, 'category' => 'market', 'condition' => ['type' => 'price_reports_count', 'value' => 5]],
+            ['slug' => 'first-meal-plan', 'title' => 'Unang Hakbang', 'title_en' => 'First Step', 'description' => 'Na-generate ang unang meal plan mo!', 'description_en' => 'You generated your first meal plan!', 'icon' => '🍽️', 'xp_reward' => 50, 'category' => 'budget', 'condition' => ['type' => 'meal_plans_count', 'value' => 1]],
+            ['slug' => 'week-streak', 'title' => '7 Araw na Streak', 'title_en' => '7-Day Streak', 'description' => 'Bumalik sa app nang 7 magkakasunod na araw!', 'description_en' => 'You came back to the app 7 days in a row!', 'icon' => '🔥', 'xp_reward' => 100, 'category' => 'streak', 'condition' => ['type' => 'streak_days', 'value' => 7]],
+            ['slug' => 'month-streak', 'title' => '30 Araw na Streak', 'title_en' => '30-Day Streak', 'description' => 'Isang buwan na consistent ka!', 'description_en' => 'A whole month of consistency!', 'icon' => '💫', 'xp_reward' => 500, 'category' => 'streak', 'condition' => ['type' => 'streak_days', 'value' => 30]],
+            ['slug' => 'budget-saver', 'title' => 'Matipid na Nanay/Tatay', 'title_en' => 'Thrifty Parent', 'description' => 'Naka-tipid ng ₱500 sa isang buwan!', 'icon' => '💰', 'description_en' => 'Saved ₱500 in a month!', 'xp_reward' => 200, 'category' => 'budget', 'condition' => ['type' => 'monthly_savings', 'value' => 500]],
+            ['slug' => 'super-saver', 'title' => 'Super Tipid Champion', 'title_en' => 'Super Saver Champion', 'description' => 'Naka-tipid ng ₱2,000 sa isang buwan!', 'icon' => '🏆', 'description_en' => 'Saved ₱2,000 in a month!', 'xp_reward' => 1000, 'category' => 'budget', 'condition' => ['type' => 'monthly_savings', 'value' => 2000]],
+            ['slug' => 'first-post', 'title' => 'Unang Kwento', 'title_en' => 'First Story', 'description' => 'Nag-share ng unang post sa komunidad!', 'description_en' => 'Shared your first post in the community!', 'icon' => '📝', 'xp_reward' => 30, 'category' => 'community', 'condition' => ['type' => 'posts_count', 'value' => 1]],
+            ['slug' => 'recipe-collector', 'title' => 'Recipe Collector', 'title_en' => 'Recipe Collector', 'description' => 'Nag-save ng 10 recipes!', 'description_en' => 'Saved 10 recipes!', 'icon' => '📚', 'xp_reward' => 150, 'category' => 'recipe', 'condition' => ['type' => 'recipe_book_count', 'value' => 10]],
+            ['slug' => 'price-reporter', 'title' => 'Presyo Patrol', 'title_en' => 'Price Patrol', 'description' => 'Nag-report ng 5 presyo sa komunidad!', 'description_en' => 'Reported 5 prices to the community!', 'icon' => '🔍', 'xp_reward' => 75, 'category' => 'market', 'condition' => ['type' => 'price_reports_count', 'value' => 5]],
         ];
 
         foreach ($achievements as $a) {
-            Achievement::firstOrCreate(['slug' => $a['slug']], $a);
+            Achievement::updateOrCreate(['slug' => $a['slug']], $a);
         }
     }
 

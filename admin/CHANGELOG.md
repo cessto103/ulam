@@ -1,3 +1,67 @@
+# uLam Admin — Changelog
+
+## v1.11.0 (2026-07-13)
+
+Admin coverage for the app's new booster and store-moderation features — both previously backend-only.
+
+### Added
+- **Boost Review** (`/boosts`) — approval queue for manual-GCash recipe/store boost payments, mirroring the existing seller-subscriptions review pattern: pending/active counts, status filter, search by reference/user, Approve and Reject (with a required reason) actions.
+- **Store Comments & Ratings** (`/tindahan-comments`) — moderation screen for the app's new store rating/comment feature, tabbed between Comments (search + delete) and Ratings (view + remove, which recalculates the store's average automatically).
+
+### Notes
+- `AdminBoostController::index` now eager-loads and resolves the boosted recipe/store's name into the response — it previously only returned the raw polymorphic type/id.
+- Both screens follow the lighter single-file pattern (like Seller Subscriptions) rather than the full CRUD-scaffold pattern (like Tindahan/Comments) — neither needs create/edit, only review actions.
+
+## v1.10.0 (2026-07-12)
+
+Post-audit reconciliation of the manual-GCash / PayMongo fork, plus a real refund workflow.
+
+### Added
+- **Refund button on the Payments page** — shows per row when a payment is a paid PayMongo transaction; opens a dialog (amount pre-filled to the full amount, editable for partial refunds; reason dropdown matching PayMongo's accepted reasons) and calls the existing refund endpoint. Previously that endpoint had no admin UI at all.
+- **`BillingSimulationSeeder`** (`php artisan db:seed --class=BillingSimulationSeeder`) — seeds a full set of demo subscriptions, checkout sessions, payments, webhook events, and boosts covering every state the dashboards can show: active, grace period, expired, superseded (plan upgrade), cancel-at-period-end, a failed checkout, and a refunded subscription. Idempotent — safe to re-run.
+
+### Fixed
+- **`BillingService::refund()` had two correctness gaps**, found during a full audit of the PayMongo billing platform: (1) issuing a refund never marked the underlying `Payment` as refunded, so it kept counting toward revenue and could be refunded a second time; (2) refunding a subscription payment never actually ended the subscription — the seller kept full access until the period naturally expired, contradicting the confirmed policy that a refund ends access immediately. Both are now fixed: a full refund marks the payment `refunded`/`partially_refunded`, and — for full refunds — ends the subscription on the spot and re-syncs store visibility.
+- Payments table: colored status badges for `refunded`/`partially_refunded`/`failed`; schema updated to carry `refunded_at`/`failure_code`.
+
+### Notes
+- **Manual-GCash backend left dormant, on purpose.** The Seller Subscriptions approve/reject/refund queue, `/seller/*` routes, and the `ad_subscriptions`-based flow still exist in full but are unlinked from any UI — kept as a zero-cost fallback, not deleted.
+- The PayMongo path still cannot process a real payment: `.env`'s `PAYMONGO_SECRET_KEY` is a placeholder and there is no public hosting for the webhook yet. Both are prerequisites, independent of anything in this release.
+
+## v1.9.0 (2026-07-12)
+
+- Replaced manual GCash approval as the primary path with server-created PayMongo Checkout.
+- Added subscription health metrics, lifecycle states, and a webhook failure log.
+- Billing activation is webhook-authoritative and idempotent; redirects cannot unlock features.
+- Manual-payment records remain available for migration and historical reconciliation.
+
+## v1.1.0 (2026-07-12)
+
+Phase 1 of seller monetization: manual GCash subscriptions, editable pricing, and the support desk.
+
+### Added
+- **Seller Subscriptions page** (`/seller-subscriptions`) — pending-payment approval queue with counts badge. Approve (verify GCash reference + exact amount first), reject with a reason, and refund active subscriptions (send-back happens in GCash first; access ends immediately). Search by user or reference number; Pending / Active / All tabs.
+- **Plans & Pricing page** (`/monetization`) — edit every tier's store/item limits (including the Free tier's caps) and all duration prices (7d/15d/monthly/yearly); boost price list (sellable in Phase 3); **GCash payment settings** (number, account name, instructions) with a **payments kill switch** that hides checkout in the app instantly.
+- **Support Tickets page** (`/support-tickets`) — inbox with Open/Answered/Closed tabs, chat-style thread view, replies notify the user in-app (push + notification), close ticket.
+- **FAQs page** (`/faqs`) — manage the app's Help & Support Q&A in English + Tagalog with categories, sort order, and draft/published state.
+- Sidebar: new **Monetization** and **Support** groups.
+
+### Changed
+- Payments ledger now includes manual GCash seller-subscription payments and negative refund rows; "PayMongo Ref" column renamed to "Reference".
+
+## v1.0.0 (2026-07-12)
+
+First uLam-branded release (changelog restarted; template history below).
+
+### Added
+- **Filipino Food Palette theme** — light mode on warm cream `#FFF8E8` with charcoal text, terracotta `#C45E3A` primary (buttons), leaf-green secondary, gold accents, warm borders; new warm-charcoal dark mode. Chart palette re-anchored to leaf/gold/terracotta while keeping cross-hue picks for distinguishability.
+- **Official uLam logo** — hand-lettered mark (generated from `uLam-app/assets/ulam-logo.svg`) on the sign-in page, in the sidebar chip, and as SVG favicons (light variant for dark browser UIs).
+- Sidebar branding: "uLam Admin · Owner Dashboard" (was "Shadcn-Admin · Vite + ShadcnUI").
+
+---
+
+# Template history (shadcn-admin)
+
 ## v2.2.1 (2025-11-06)
 
 ### Fix

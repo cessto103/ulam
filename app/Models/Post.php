@@ -57,4 +57,9 @@ class Post extends Model
     {
         return $this->belongsTo(Tindahan::class);
     }
+
+    public function contentViews()
+    {
+        return $this->morphMany(ContentView::class, 'viewable');
+    }
 }

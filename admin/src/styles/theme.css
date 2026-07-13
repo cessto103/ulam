@@ -1,66 +1,79 @@
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: #1a2e22;
-  --card: oklch(1 0 0);
-  --card-foreground: #1a2e22;
-  --popover: oklch(1 0 0);
-  --popover-foreground: #1a2e22;
-  --primary: #1e6e47;
-  --primary-foreground: #fafcf8;
-  --secondary: #eff7f2;
-  --secondary-foreground: #1e6e47;
-  --muted: #eff7f2;
-  --muted-foreground: #6b8f7a;
-  --accent: #eff7f2;
-  --accent-foreground: #1e6e47;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e5eae7;
-  --input: #e5eae7;
-  --ring: #3a9b6f;
-  /* Sariwa-anchored categorical set — validated via dataviz skill's
-     validate_palette.js (all 6 checks pass, worst adjacent CVD dE 71.5). */
-  --chart-1: #0f6e47;
+  /* Filipino Food Palette — terracotta #E7653B / leaf #386641 / cream #FFF8E8 /
+     gold #F4B942 / charcoal #292522. Buttons use the deeper #C45E3A per the
+     app-wide interactive-color standard. */
+  --background: #fff8e8;
+  --foreground: #292522;
+  --card: #fffcf5;
+  --card-foreground: #292522;
+  --popover: #fffcf5;
+  --popover-foreground: #292522;
+  --primary: #c45e3a;
+  --primary-foreground: #fff8e8;
+  --secondary: #eff4ec;
+  --secondary-foreground: #386641;
+  --muted: #f9edd3;
+  --muted-foreground: #6f655a;
+  --accent: #fdefc9;
+  --accent-foreground: #9a6a12;
+  --destructive: #e24b4a;
+  --border: #f0debb;
+  --input: #f0debb;
+  --ring: #c45e3a;
+  /* Palette-anchored categorical set: leaf, blue, gold, violet, terracotta.
+     Cross-hue picks retained for chart distinguishability / CVD contrast. */
+  --chart-1: #386641;
   --chart-2: #2a78d6;
-  --chart-3: #c98500;
+  --chart-3: #c4881c;
   --chart-4: #4a3aa7;
-  --chart-5: #e05c2a;
+  --chart-5: #e7653b;
 
-  --sidebar: var(--background);
+  --sidebar: #fffcf5;
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: var(--accent);
-  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-accent: #f9edd3;
+  --sidebar-accent-foreground: #292522;
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 }
 
 .dark {
-  --background: #101913;
-  --foreground: #f5f9f6;
-  --card: #17211b;
-  --card-foreground: #f5f9f6;
-  --popover: #1b2620;
-  --popover-foreground: #f5f9f6;
-  --primary: #3a9b6f;
-  --primary-foreground: #0b1410;
-  --secondary: #1e2a23;
-  --secondary-foreground: #f5f9f6;
-  --muted: #1e2a23;
-  --muted-foreground: #8fae9c;
-  --accent: #24332b;
-  --accent-foreground: #f5f9f6;
-  --destructive: oklch(0.704 0.191 22.216);
+  /* Warm charcoal night mode built on ink #292522 */
+  --background: #1d1a17;
+  --foreground: #f5efe3;
+  --card: #262220;
+  --card-foreground: #f5efe3;
+  --popover: #2a2623;
+  --popover-foreground: #f5efe3;
+  --primary: #e7653b;
+  --primary-foreground: #1d1a17;
+  --secondary: #322d28;
+  --secondary-foreground: #f5efe3;
+  --muted: #322d28;
+  --muted-foreground: #b0a18c;
+  --accent: #3a332c;
+  --accent-foreground: #f4b942;
+  --destructive: #e24b4a;
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #3a9b6f;
-  /* Same hues as light mode, stepped for the dark band (validated separately). */
-  --chart-1: #3a9b6f;
+  --ring: #e7653b;
+  /* Same hues, stepped brighter for the dark band. */
+  --chart-1: #5fa36b;
   --chart-2: #3987e5;
-  --chart-3: #c98500;
+  --chart-3: #f4b942;
   --chart-4: #9085e9;
-  --chart-5: #d9673a;
+  --chart-5: #ec8156;
+
+  --sidebar: #221f1c;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: #322d28;
+  --sidebar-accent-foreground: #f5efe3;
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 @theme inline {

@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Api\Admin\BoostController as AdminBoostController;
+use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCommentController;
+use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\GovernmentPriceReferenceController as AdminGovernmentPriceReferenceController;
@@ -11,9 +14,18 @@ use App\Http\Controllers\Api\Admin\PostCommentController as AdminPostCommentCont
 use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
+use App\Http\Controllers\Api\Admin\AppSettingController as AdminAppSettingController;
+use App\Http\Controllers\Api\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Api\Admin\SellerPlanController as AdminSellerPlanController;
+use App\Http\Controllers\Api\Admin\SellerSubscriptionController as AdminSellerSubscriptionController;
+use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Api\Admin\TindahanController as AdminTindahanController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\Admin\BillingController as AdminBillingController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BillingController;
+use App\Http\Controllers\Api\BoostController;
+use App\Http\Controllers\Api\PayMongoWebhookController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ConnectionController;
@@ -23,16 +35,22 @@ use App\Http\Controllers\Api\MealPlanController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\CommunityController;
+use App\Http\Controllers\Api\InsightsController;
 use App\Http\Controllers\Api\RecipeController;
+use App\Http\Controllers\Api\SellerSubscriptionController;
+use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TindahanController;
+use App\Http\Controllers\Api\TindahanCommentController;
 use App\Http\Controllers\Api\UpgradeController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Public
-Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:4,1');
 Route::post('/auth/login',    [AuthController::class, 'login'])->middleware('throttle:6,1');
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
+
+Route::post('/billing/webhooks/paymongo', PayMongoWebhookController::class);
 
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('throttle:6,1');
 
@@ -57,8 +75,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/meal-plans/dates',        [MealPlanController::class, 'datesWithPlans']);
 
     Route::get('/prices/nearby',          [PriceController::class, 'nearby']);
+    Route::get('/prices/my-reports',      [PriceController::class, 'myReports']);
     Route::get('/prices/search',          [PriceController::class, 'search']);
     Route::post('/prices/report',         [PriceController::class, 'report']);
+    Route::post('/content-reports',       [\App\Http\Controllers\Api\ContentReportController::class, 'store']);
     Route::get('/prices/item/{name}',     [PriceController::class, 'item']);
     Route::post('/prices/report/{id}/vote', [PriceController::class, 'vote']);
     Route::get('/prices/history/{item}',  [PriceController::class, 'history']);
@@ -95,6 +115,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/achievements', [UserController::class, 'achievements']);
     Route::get('/user/stats', [UserController::class, 'stats']);
 
+    Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail']);
+    Route::post('/user/secondary-email/verify',  [UserController::class, 'verifySecondaryEmail']);
+    Route::delete('/user/secondary-email',       [UserController::class, 'removeSecondaryEmail']);
+
+    Route::get('/insights/summary', [InsightsController::class, 'summary']);
+    Route::get('/insights/graph',   [InsightsController::class, 'graph']);
+
     Route::get('/leaderboard/barangay', [UserController::class, 'leaderboard']);
 
     Route::post('/user/push-token', [NotificationController::class, 'registerToken']);
@@ -112,20 +139,53 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/upgrade/checkout',      [UpgradeController::class, 'checkout']);
 
+    Route::get('/billing/plans', [BillingController::class, 'catalog']);
+    Route::get('/billing/status', [BillingController::class, 'status']);
+    Route::get('/billing/history', [BillingController::class, 'history']);
+    Route::post('/billing/checkout', [BillingController::class, 'checkout'])->middleware('throttle:10,1');
+    Route::get('/billing/checkouts/{publicId}', [BillingController::class, 'checkoutStatus']);
+    Route::post('/billing/subscriptions/{id}/cancel', [BillingController::class, 'cancel'])->middleware('throttle:6,1');
+
     Route::get('/markets',              [MarketController::class, 'index']);
     Route::post('/markets',             [MarketController::class, 'store']);
     Route::get('/markets/{id}',         [MarketController::class, 'show']);
     Route::post('/markets/{id}/refresh',[MarketController::class, 'refreshPrices']);
 
     Route::get('/tindahan/mine',   [TindahanController::class, 'mine']);
+    Route::get('/tindahan-reports',                [TindahanController::class, 'pendingReports']);
+    Route::post('/tindahan-reports/{id}/accept',   [TindahanController::class, 'acceptReport']);
+    Route::post('/tindahan-reports/{id}/decline',  [TindahanController::class, 'declineReport']);
     Route::get('/tindahan/{id}',   [TindahanController::class, 'show']);
     Route::post('/tindahan',       [TindahanController::class, 'store']);
     Route::patch('/tindahan/{id}', [TindahanController::class, 'update']);
     Route::delete('/tindahan/{id}',[TindahanController::class, 'destroy']);
+    Route::post('/tindahan/{id}/rate', [TindahanController::class, 'rate']);
+
+    Route::get('/tindahan/{id}/comments',  [TindahanCommentController::class, 'index']);
+    Route::post('/tindahan/{id}/comments', [TindahanCommentController::class, 'store']);
+    Route::delete('/tindahan/comments/{id}', [TindahanCommentController::class, 'destroy']);
+    Route::post('/tindahan/{id}/photos',  [TindahanController::class, 'uploadPhotos']);
     Route::post('/tindahan/{id}/prices',  [TindahanController::class, 'addPrice']);
     Route::patch('/tindahan/{id}/prices/{priceId}', [TindahanController::class, 'updatePrice']);
 
     Route::post('/listing-reports', [ListingReportController::class, 'store']);
+
+    // Seller subscriptions (manual GCash flow)
+    Route::get('/seller/plans',                 [SellerSubscriptionController::class, 'catalog']);
+    Route::get('/seller/subscriptions',         [SellerSubscriptionController::class, 'index']);
+    Route::post('/seller/subscriptions',        [SellerSubscriptionController::class, 'store']);
+    Route::delete('/seller/subscriptions/{id}', [SellerSubscriptionController::class, 'destroy']);
+
+    Route::get('/boosts',        [BoostController::class, 'index']);
+    Route::post('/boosts',       [BoostController::class, 'store']);
+    Route::delete('/boosts/{id}', [BoostController::class, 'destroy']);
+
+    // Help & Support
+    Route::get('/faqs',                        [SupportController::class, 'faqs']);
+    Route::get('/support-tickets',             [SupportController::class, 'index']);
+    Route::post('/support-tickets',            [SupportController::class, 'store']);
+    Route::get('/support-tickets/{id}',        [SupportController::class, 'show']);
+    Route::post('/support-tickets/{id}/reply', [SupportController::class, 'reply']);
 });
 
 // Admin — uLam-admin SPA. Bearer-token auth (same Sanctum mechanism as the mobile
@@ -142,6 +202,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/payments',      [AdminPaymentController::class, 'index']);
     Route::get('/payments/{id}', [AdminPaymentController::class, 'show']);
+    Route::get('/billing/summary', [AdminBillingController::class, 'summary']);
+    Route::get('/billing/subscriptions', [AdminBillingController::class, 'subscriptions']);
+    Route::get('/billing/webhooks', [AdminBillingController::class, 'webhooks']);
+    Route::get('/billing/logs', [AdminBillingController::class, 'logs']);
+    Route::post('/billing/payments/{paymentId}/refund', [AdminBillingController::class, 'refund'])->middleware('throttle:6,1');
 
     Route::get('/users',           [AdminUserController::class, 'index']);
     Route::post('/users',          [AdminUserController::class, 'store']);
@@ -159,6 +224,13 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/comments',        [AdminPostCommentController::class, 'index']);
     Route::get('/comments/{id}',   [AdminPostCommentController::class, 'show']);
     Route::delete('/comments/{id}',[AdminPostCommentController::class, 'destroy']);
+
+    Route::get('/tindahan-comments',        [AdminTindahanCommentController::class, 'index']);
+    Route::get('/tindahan-comments/{id}',   [AdminTindahanCommentController::class, 'show']);
+    Route::delete('/tindahan-comments/{id}',[AdminTindahanCommentController::class, 'destroy']);
+
+    Route::get('/tindahan-ratings',        [AdminTindahanRatingController::class, 'index']);
+    Route::delete('/tindahan-ratings/{id}',[AdminTindahanRatingController::class, 'destroy']);
 
     Route::get('/markets',                [AdminMarketController::class, 'index']);
     Route::post('/markets',               [AdminMarketController::class, 'store']);
@@ -201,6 +273,35 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/recipes/{id}/ingredients',   [AdminRecipeController::class, 'addIngredient']);
     Route::patch('/recipes/{id}/ingredients/{ingredientId}', [AdminRecipeController::class, 'updateIngredient']);
     Route::delete('/recipes/{id}/ingredients/{ingredientId}', [AdminRecipeController::class, 'destroyIngredient']);
+
+    Route::get('/seller-subscriptions',               [AdminSellerSubscriptionController::class, 'index']);
+    Route::get('/seller-subscriptions/{id}',          [AdminSellerSubscriptionController::class, 'show']);
+    Route::post('/seller-subscriptions/{id}/approve', [AdminSellerSubscriptionController::class, 'approve']);
+    Route::post('/seller-subscriptions/{id}/reject',  [AdminSellerSubscriptionController::class, 'reject']);
+    Route::post('/seller-subscriptions/{id}/refund',  [AdminSellerSubscriptionController::class, 'refund']);
+
+    Route::get('/boosts',               [AdminBoostController::class, 'index']);
+    Route::post('/boosts/{id}/approve', [AdminBoostController::class, 'approve']);
+    Route::post('/boosts/{id}/reject',  [AdminBoostController::class, 'reject']);
+
+    Route::get('/seller-plans',             [AdminSellerPlanController::class, 'index']);
+    Route::patch('/seller-plans/{id}',      [AdminSellerPlanController::class, 'update']);
+    Route::put('/seller-plans/{id}/prices', [AdminSellerPlanController::class, 'updatePrices']);
+    Route::put('/seller-plans/{id}/features', [AdminSellerPlanController::class, 'updateFeatures']);
+    Route::patch('/boost-options/{id}',     [AdminSellerPlanController::class, 'updateBoostOption']);
+
+    Route::get('/app-settings', [AdminAppSettingController::class, 'index']);
+    Route::put('/app-settings', [AdminAppSettingController::class, 'update']);
+
+    Route::get('/support-tickets',             [AdminSupportTicketController::class, 'index']);
+    Route::get('/support-tickets/{id}',        [AdminSupportTicketController::class, 'show']);
+    Route::post('/support-tickets/{id}/reply', [AdminSupportTicketController::class, 'reply']);
+    Route::post('/support-tickets/{id}/close', [AdminSupportTicketController::class, 'close']);
+
+    Route::get('/faqs',         [AdminFaqController::class, 'index']);
+    Route::post('/faqs',        [AdminFaqController::class, 'store']);
+    Route::patch('/faqs/{id}',  [AdminFaqController::class, 'update']);
+    Route::delete('/faqs/{id}', [AdminFaqController::class, 'destroy']);
 
     Route::get('/listing-reports',      [AdminListingReportController::class, 'index']);
     Route::get('/listing-reports/{id}', [AdminListingReportController::class, 'show']);

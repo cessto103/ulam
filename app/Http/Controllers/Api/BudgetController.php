@@ -223,19 +223,22 @@ class BudgetController extends Controller
             ]
         );
 
-        if ($log->wasRecentlyCreated) {
-            app(XpService::class)->award($user, 10, 'log_budget', $log);
-        }
+        $reward = $log->wasRecentlyCreated
+            ? app(XpService::class)->award($user, 10, 'log_budget', $log)
+            : null;
 
         $budget    = (float) $period->daily_food_budget;
         $spent     = (float) $data['actual_spent'];
         $remaining = max(0, $budget - $spent);
 
         return response()->json([
-            'message'   => 'Nai-log na ang gastos!',
-            'xp_earned' => $log->wasRecentlyCreated ? 10 : 0,
-            'remaining' => round($remaining, 2),
-            'saved'     => round(max(0, $budget - $spent), 2),
+            'message'          => 'Nai-log na ang gastos!',
+            'xp_earned'        => $reward['xp_awarded'] ?? 0,
+            'leveled_up'       => $reward['leveled_up'] ?? false,
+            'new_level'        => $reward['new_level'] ?? null,
+            'new_achievements' => $reward['new_achievements'] ?? [],
+            'remaining'        => round($remaining, 2),
+            'saved'            => round(max(0, $budget - $spent), 2),
         ]);
     }
 }

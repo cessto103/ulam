@@ -65,6 +65,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Mali ang email/username o password.'], 401);
         }
 
+        if ($user->isBanned()) {
+            return response()->json(['message' => 'Your account has been suspended.'], 403);
+        }
+
         $user->update(['last_active_date' => now()->toDateString()]);
         $token = $user->createToken('mobile')->plainTextToken;
 

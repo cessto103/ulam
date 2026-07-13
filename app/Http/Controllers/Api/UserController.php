@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SecondaryEmailOtpMail;
 use App\Models\Achievement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -18,11 +22,19 @@ class UserController extends Controller
             'name'                         => $user->name,
             'username'                     => $user->username,
             'email'                        => $user->email,
+            'secondary_email'              => $user->secondary_email,
+            'secondary_email_verified_at'  => $user->secondary_email_verified_at,
             'avatar'                       => $user->avatar,
+            'bio'                          => $user->bio,
             'plan'                         => $user->plan,
             'household_size'               => $user->household_size,
+            'barangay'                     => $user->barangay,
             'municipality'                 => $user->municipality,
             'province'                     => $user->province,
+            'region'                       => $user->region,
+            'latitude'                     => $user->latitude,
+            'longitude'                    => $user->longitude,
+            'dietary_preferences'          => $user->dietary_preferences,
             'xp'                           => $user->xp,
             'level'                        => $user->level,
             'streak_days'                  => $user->streak_days,
@@ -44,6 +56,8 @@ class UserController extends Controller
         $path = $request->file('avatar')->store("avatars/{$user->id}", 'public');
         $url  = '/storage/' . $path;
         $user->update(['avatar' => $url]);
+
+        \App\Jobs\ModerateImageJob::dispatchAfterResponse($url, 'user.avatar', $user->id);
 
         return response()->json(['avatar' => $url]);
     }
@@ -99,6 +113,78 @@ class UserController extends Controller
         $request->user()->update($validated);
 
         return response()->json(['user' => $request->user()->fresh()]);
+    }
+
+    public function requestSecondaryEmail(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'email' => [
+                'required', 'email', 'max:255',
+                Rule::notIn([$user->email]),
+                Rule::unique('users', 'email'),
+                Rule::unique('users', 'secondary_email')->ignore($user->id)->where(
+                    fn ($q) => $q->whereNotNull('secondary_email_verified_at')
+                ),
+            ],
+        ], [
+            'email.not_in' => 'This is already your primary email.',
+        ]);
+
+        $code = (string) random_int(100000, 999999);
+
+        $user->update([
+            'secondary_email' => $validated['email'],
+            'secondary_email_verified_at' => null,
+            'secondary_email_otp' => $code,
+            'secondary_email_otp_expires_at' => now()->addMinutes(10),
+        ]);
+
+        Mail::to($validated['email'])->send(new SecondaryEmailOtpMail($user, $code));
+
+        return response()->json(['message' => 'Verification code sent.']);
+    }
+
+    public function verifySecondaryEmail(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'code' => ['required', 'string'],
+        ]);
+
+        if (! $user->secondary_email || ! $user->secondary_email_otp) {
+            throw ValidationException::withMessages(['code' => 'No pending verification. Please request a new code.']);
+        }
+
+        if ($user->secondary_email_otp_expires_at?->isPast()) {
+            throw ValidationException::withMessages(['code' => 'This code has expired. Please request a new one.']);
+        }
+
+        if (! hash_equals($user->secondary_email_otp, $validated['code'])) {
+            throw ValidationException::withMessages(['code' => 'Incorrect code.']);
+        }
+
+        $user->update([
+            'secondary_email_verified_at' => now(),
+            'secondary_email_otp' => null,
+            'secondary_email_otp_expires_at' => null,
+        ]);
+
+        return response()->json(['user' => $user->fresh()]);
+    }
+
+    public function removeSecondaryEmail(Request $request)
+    {
+        $request->user()->update([
+            'secondary_email' => null,
+            'secondary_email_verified_at' => null,
+            'secondary_email_otp' => null,
+            'secondary_email_otp_expires_at' => null,
+        ]);
+
+        return response()->json(['message' => 'Secondary email removed.']);
     }
 
     public function achievements(Request $request)
