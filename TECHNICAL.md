@@ -114,8 +114,11 @@ cd admin && npm ci && npm run build        # if the admin SPA changed
 ## 4. Security Runbook
 
 - **Admin account:** `cessto103@gmail.com` is the sole `role=admin`. 2FA (Google Authenticator) is enrolled. **Pre-launch: change the password to a strong unique one** (Admin → Settings → Account, or the app's forgot-password flow).
-- **2FA lockout recovery** (lost phone): from the server, `php artisan tinker` →
-  `App\Models\User::where('email','cessto103@gmail.com')->update(['twofa_secret'=>null,'twofa_enabled_at'=>null,'twofa_last_ts'=>null]);` then re-enroll.
+- **2FA lockout recovery** (lost/erased authenticator): from the server terminal,
+  ```
+  php artisan admin:reset-2fa cessto103@gmail.com
+  ```
+  This disables 2FA on that admin account **and revokes its dashboard sessions** (in case the phone was stolen, not lost). Log in with password only, then re-enroll immediately in Settings → Security. Having server access is the ownership proof — this is safe by design. Prevention: enable Google Authenticator's cloud sync (the cloud icon) so codes survive phone loss.
 - **At hosting time:** serve the admin SPA + `/api/admin/*` on a separate subdomain (e.g. `admin.ulam.app`) and IP-allowlist it at the server/Cloudflare level. The mobile API stays public.
 - **Production HTTPS:** re-tighten `uLam-app/src/api/client.ts` (currently allows plain HTTP for LAN test builds) and remove `usesCleartextTraffic` from `app.json` before a store release.
 - Legal docs: public pages at `/legal/terms` and `/legal/privacy` — these URLs go on the Play Store listing. Manage content + versions in Admin → Content → Legal Documents; publishing a new version forces in-app re-acceptance.
