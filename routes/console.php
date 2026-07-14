@@ -19,3 +19,7 @@ Schedule::command('prices:refresh-gov')->dailyAt('03:00');
 
 // Subscription reminders, grace periods, expiry, and suspension.
 Schedule::command('billing:process-lifecycle')->hourly()->withoutOverlapping();
+
+// Manual-GCash seller subscriptions + boosts: renewal reminders, expiry
+// flips (+ store visibility re-sync), and stale OTP pruning.
+Schedule::command('ulam:maintenance')->hourly()->withoutOverlapping();

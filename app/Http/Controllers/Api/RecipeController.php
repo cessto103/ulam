@@ -29,8 +29,9 @@ class RecipeController extends Controller
                  EXISTS(SELECT 1 FROM recipe_book WHERE recipe_book.recipe_id = recipes.id AND recipe_book.user_id = ?) as is_saved,
                  (recipes.user_id = ?) as is_mine,
                  EXISTS(SELECT 1 FROM ad_boosts WHERE ad_boosts.boostable_type = ? AND ad_boosts.boostable_id = recipes.id AND ad_boosts.status = ? AND ad_boosts.expires_at > ?) as is_boosted,
-                 (SELECT COUNT(*) FROM content_views WHERE content_views.viewable_type = ? AND content_views.viewable_id = recipes.id) as views_count',
-                [$user->id, $user->id, Recipe::class, 'active', now(), Recipe::class]
+                 (SELECT COUNT(*) FROM content_views WHERE content_views.viewable_type = ? AND content_views.viewable_id = recipes.id) as views_count,
+                 (SELECT COUNT(*) FROM content_views WHERE content_views.viewable_type = ? AND content_views.viewable_id = recipes.id AND content_views.viewed_at >= ?) as views_7d',
+                [$user->id, $user->id, Recipe::class, 'active', now(), Recipe::class, Recipe::class, now()->subDays(7)]
             );
 
         if (! $user->isPremium()) {
@@ -44,16 +45,29 @@ class RecipeController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', "%{$request->search}%");
+            $s = $request->search;
+            // Title, ingredients, and tags — "manok" should find Tinola even
+            // when the title doesn't contain the word.
+            $query->where(function ($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('tags', 'like', "%{$s}%")
+                  ->orWhereHas('ingredients', fn ($iq) => $iq->where('name', 'like', "%{$s}%"));
+            });
         }
 
-        $recipes = $query->orderByDesc('is_boosted')->orderByDesc('save_count')->paginate(50);
+        // Popularity = boosted first, then real views in the last 7 days,
+        // then all-time saves as the tiebreaker for content without views yet.
+        $recipes = $query->orderByDesc('is_boosted')
+            ->orderByDesc('views_7d')
+            ->orderByDesc('save_count')
+            ->paginate(50);
 
         $recipes->getCollection()->transform(function ($r) {
             $r->is_saved    = (bool) $r->is_saved;
             $r->is_mine     = (bool) $r->is_mine;
             $r->is_boosted  = (bool) $r->is_boosted;
             $r->views_count = (int) $r->views_count;
+            $r->views_7d    = (int) $r->views_7d;
             return $r;
         });
 

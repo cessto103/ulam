@@ -224,7 +224,11 @@
       "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/legal-versions/3/publish -H 'Authorization: Bearer 8|1SBW1IhHsdZH62ESBtPo6SIj8oC5lLBGnt7hhNPA56d55194' -H 'Accept: application/json')",
       "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); foreach\\($d[\"documents\"] as $x\\) echo $x[\"slug\"].\" v\".$x[\"version\"].\" accepted=\".\\($x[\"accepted\"]?\"yes\":\"no\"\\).PHP_EOL;')",
       "Bash(sed -i 's/Last updated: 2026-07-14 · \\\\*\\\\*v1.18.0\\\\*\\\\*/Last updated: 2026-07-14 · **v1.19.0**/' VERSION_LOG.md)",
-      "Bash(sed -i 's/\"version\": \"1.12.0\"/\"version\": \"1.13.0\"/' package.json)"
+      "Bash(sed -i 's/\"version\": \"1.12.0\"/\"version\": \"1.13.0\"/' package.json)",
+      "Bash(curl -s http://localhost/uLam/public/api/recipes?search=manok -H 'Authorization: Bearer 9|HKcUdxIjo8Si3FKWNnj0ZrucesIJ6B1XT8cWBKKf518088ef' -H 'Accept: application/json')",
+      "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); foreach\\(array_slice\\($d[\"data\"],0,3\\) as $r\\) echo $r[\"title\"].\" views7d=\".$r[\"views_7d\"].\" saves=\".$r[\"save_count\"].PHP_EOL;')",
+      "Bash(node -e ' *)",
+      "Bash(awk '{print $5, $9}')"
     ],
     "additionalDirectories": [
       "c:\\wamp64\\www\\uLam",
