@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCom
 use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
 use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
+use App\Http\Controllers\Api\Admin\ThemeController as AdminThemeController;
 use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
 use App\Http\Controllers\Api\LegalController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Api\Admin\ListingReportController as AdminListingReport
 use App\Http\Controllers\Api\Admin\MarketController as AdminMarketController;
 use App\Http\Controllers\Api\Admin\MarketPriceController as AdminMarketPriceController;
 use App\Http\Controllers\Api\Admin\PostCommentController as AdminPostCommentController;
+use App\Http\Controllers\Api\Admin\RecipeCommentController as AdminRecipeCommentController;
 use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
@@ -32,6 +34,7 @@ use App\Http\Controllers\Api\BoostController;
 use App\Http\Controllers\Api\PayMongoWebhookController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\RecipeCommentController;
 use App\Http\Controllers\Api\ConnectionController;
 use App\Http\Controllers\Api\ListingReportController;
 use App\Http\Controllers\Api\MarketController;
@@ -61,6 +64,13 @@ Route::get('/branding', function () {
         'logo' => \App\Models\AppSetting::get('branding_logo'),
         'logo_light' => \App\Models\AppSetting::get('branding_logo_light'),
     ]);
+});
+
+// Public theme sections (header/dashboard/awards backgrounds) — needed before login too
+// since the header photo renders on pre-auth screens.
+Route::get('/theme', function () {
+    $raw = \App\Models\AppSetting::get('theme_sections');
+    return response()->json(['sections' => $raw ? (json_decode($raw, true) ?: []) : []]);
 });
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
 
@@ -110,6 +120,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/community/post/{id}/comments',  [CommentController::class, 'store']);
     Route::patch('/community/comment/{id}',       [CommentController::class, 'update']);
     Route::delete('/community/comment/{id}',      [CommentController::class, 'destroy']);
+
+    Route::get('/recipes/{id}/comments',   [RecipeCommentController::class, 'index']);
+    Route::post('/recipes/{id}/comments',  [RecipeCommentController::class, 'store']);
+    Route::patch('/recipe-comments/{id}',  [RecipeCommentController::class, 'update']);
+    Route::delete('/recipe-comments/{id}', [RecipeCommentController::class, 'destroy']);
 
     Route::get('/recipes',               [RecipeController::class, 'index']);
     Route::post('/recipes',              [RecipeController::class, 'store']);
@@ -244,6 +259,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/comments/{id}',   [AdminPostCommentController::class, 'show']);
     Route::delete('/comments/{id}',[AdminPostCommentController::class, 'destroy']);
 
+    Route::get('/recipe-comments',        [AdminRecipeCommentController::class, 'index']);
+    Route::get('/recipe-comments/{id}',   [AdminRecipeCommentController::class, 'show']);
+    Route::delete('/recipe-comments/{id}',[AdminRecipeCommentController::class, 'destroy']);
+
     Route::get('/tindahan-comments',        [AdminTindahanCommentController::class, 'index']);
     Route::get('/tindahan-comments/{id}',   [AdminTindahanCommentController::class, 'show']);
     Route::delete('/tindahan-comments/{id}',[AdminTindahanCommentController::class, 'destroy']);
@@ -321,6 +340,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/branding',        [AdminBrandingController::class, 'show']);
     Route::post('/branding/logo',  [AdminBrandingController::class, 'upload']);
     Route::delete('/branding/logo', [AdminBrandingController::class, 'reset']);
+
+    Route::get('/theme',                     [AdminThemeController::class, 'show']);
+    Route::post('/theme/{section}/image',    [AdminThemeController::class, 'uploadImage']);
+    Route::patch('/theme/{section}',         [AdminThemeController::class, 'updateSettings']);
+    Route::delete('/theme/{section}',        [AdminThemeController::class, 'resetSection']);
 
     Route::get('/legal-documents',                  [AdminLegalDocumentController::class, 'index']);
     Route::get('/legal-documents/{slug}/versions',  [AdminLegalDocumentController::class, 'versions']);

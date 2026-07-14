@@ -86,8 +86,9 @@ class UpgradeController extends Controller
                 : now()->addMonth();
 
             $user->update([
-                'plan'             => 'premium',
-                'premium_expires_at' => $expiry,
+                'plan'                => 'premium',
+                'premium_expires_at'  => $expiry,
+                'premium_source'      => 'paid',
             ]);
         }
 

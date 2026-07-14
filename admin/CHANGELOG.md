@@ -1,5 +1,11 @@
 # uLam Admin — Changelog
 
+## v1.15.0 (2026-07-15)
+
+### Added
+- **Theme** (Content → Theme) — control the background photo (with a 9-point focal-point picker and cover/contain fit) and color overlay for the page header, the 5 Home dashboard boxes, and the 4 Awards stat boxes, with upload/reset per section. Falls back to the built-in look until a section is configured.
+- **Recipe Comments** (Recipes → Recipe Comments) — moderate comments left on recipes: search, view, delete.
+
 ## v1.14.0 (2026-07-14)
 
 ### Added

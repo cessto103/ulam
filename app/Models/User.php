@@ -32,6 +32,7 @@ class User extends Authenticatable
         'banned_at',
         'ban_reason',
         'premium_expires_at',
+        'premium_source',
         'household_size',
         'barangay',
         'municipality',

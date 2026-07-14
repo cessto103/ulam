@@ -21,11 +21,13 @@ import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authen
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTindahanIndexRouteImport } from './routes/_authenticated/tindahan/index'
 import { Route as AuthenticatedTindahanCommentsIndexRouteImport } from './routes/_authenticated/tindahan-comments/index'
+import { Route as AuthenticatedThemeIndexRouteImport } from './routes/_authenticated/theme/index'
 import { Route as AuthenticatedTechnicalIndexRouteImport } from './routes/_authenticated/technical/index'
 import { Route as AuthenticatedSupportTicketsIndexRouteImport } from './routes/_authenticated/support-tickets/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSellerSubscriptionsIndexRouteImport } from './routes/_authenticated/seller-subscriptions/index'
 import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
+import { Route as AuthenticatedRecipeCommentsIndexRouteImport } from './routes/_authenticated/recipe-comments/index'
 import { Route as AuthenticatedPostsIndexRouteImport } from './routes/_authenticated/posts/index'
 import { Route as AuthenticatedPaymentsIndexRouteImport } from './routes/_authenticated/payments/index'
 import { Route as AuthenticatedMonetizationIndexRouteImport } from './routes/_authenticated/monetization/index'
@@ -105,6 +107,11 @@ const AuthenticatedTindahanCommentsIndexRoute =
     path: '/tindahan-comments/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedThemeIndexRoute = AuthenticatedThemeIndexRouteImport.update({
+  id: '/theme/',
+  path: '/theme/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTechnicalIndexRoute =
   AuthenticatedTechnicalIndexRouteImport.update({
     id: '/technical/',
@@ -133,6 +140,12 @@ const AuthenticatedRecipesIndexRoute =
   AuthenticatedRecipesIndexRouteImport.update({
     id: '/recipes/',
     path: '/recipes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRecipeCommentsIndexRoute =
+  AuthenticatedRecipeCommentsIndexRouteImport.update({
+    id: '/recipe-comments/',
+    path: '/recipe-comments/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPostsIndexRoute = AuthenticatedPostsIndexRouteImport.update({
@@ -254,11 +267,13 @@ export interface FileRoutesByFullPath {
   '/monetization/': typeof AuthenticatedMonetizationIndexRoute
   '/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/posts/': typeof AuthenticatedPostsIndexRoute
+  '/recipe-comments/': typeof AuthenticatedRecipeCommentsIndexRoute
   '/recipes/': typeof AuthenticatedRecipesIndexRoute
   '/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
   '/technical/': typeof AuthenticatedTechnicalIndexRoute
+  '/theme/': typeof AuthenticatedThemeIndexRoute
   '/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
@@ -287,11 +302,13 @@ export interface FileRoutesByTo {
   '/monetization': typeof AuthenticatedMonetizationIndexRoute
   '/payments': typeof AuthenticatedPaymentsIndexRoute
   '/posts': typeof AuthenticatedPostsIndexRoute
+  '/recipe-comments': typeof AuthenticatedRecipeCommentsIndexRoute
   '/recipes': typeof AuthenticatedRecipesIndexRoute
   '/seller-subscriptions': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/support-tickets': typeof AuthenticatedSupportTicketsIndexRoute
   '/technical': typeof AuthenticatedTechnicalIndexRoute
+  '/theme': typeof AuthenticatedThemeIndexRoute
   '/tindahan-comments': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan': typeof AuthenticatedTindahanIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -323,11 +340,13 @@ export interface FileRoutesById {
   '/_authenticated/monetization/': typeof AuthenticatedMonetizationIndexRoute
   '/_authenticated/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
+  '/_authenticated/recipe-comments/': typeof AuthenticatedRecipeCommentsIndexRoute
   '/_authenticated/recipes/': typeof AuthenticatedRecipesIndexRoute
   '/_authenticated/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
   '/_authenticated/technical/': typeof AuthenticatedTechnicalIndexRoute
+  '/_authenticated/theme/': typeof AuthenticatedThemeIndexRoute
   '/_authenticated/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/_authenticated/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
@@ -359,11 +378,13 @@ export interface FileRouteTypes {
     | '/monetization/'
     | '/payments/'
     | '/posts/'
+    | '/recipe-comments/'
     | '/recipes/'
     | '/seller-subscriptions/'
     | '/settings/'
     | '/support-tickets/'
     | '/technical/'
+    | '/theme/'
     | '/tindahan-comments/'
     | '/tindahan/'
     | '/users/'
@@ -392,11 +413,13 @@ export interface FileRouteTypes {
     | '/monetization'
     | '/payments'
     | '/posts'
+    | '/recipe-comments'
     | '/recipes'
     | '/seller-subscriptions'
     | '/settings'
     | '/support-tickets'
     | '/technical'
+    | '/theme'
     | '/tindahan-comments'
     | '/tindahan'
     | '/users'
@@ -427,11 +450,13 @@ export interface FileRouteTypes {
     | '/_authenticated/monetization/'
     | '/_authenticated/payments/'
     | '/_authenticated/posts/'
+    | '/_authenticated/recipe-comments/'
     | '/_authenticated/recipes/'
     | '/_authenticated/seller-subscriptions/'
     | '/_authenticated/settings/'
     | '/_authenticated/support-tickets/'
     | '/_authenticated/technical/'
+    | '/_authenticated/theme/'
     | '/_authenticated/tindahan-comments/'
     | '/_authenticated/tindahan/'
     | '/_authenticated/users/'
@@ -533,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTindahanCommentsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/theme/': {
+      id: '/_authenticated/theme/'
+      path: '/theme'
+      fullPath: '/theme/'
+      preLoaderRoute: typeof AuthenticatedThemeIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/technical/': {
       id: '/_authenticated/technical/'
       path: '/technical'
@@ -566,6 +598,13 @@ declare module '@tanstack/react-router' {
       path: '/recipes'
       fullPath: '/recipes/'
       preLoaderRoute: typeof AuthenticatedRecipesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recipe-comments/': {
+      id: '/_authenticated/recipe-comments/'
+      path: '/recipe-comments'
+      fullPath: '/recipe-comments/'
+      preLoaderRoute: typeof AuthenticatedRecipeCommentsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/posts/': {
@@ -719,10 +758,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMonetizationIndexRoute: typeof AuthenticatedMonetizationIndexRoute
   AuthenticatedPaymentsIndexRoute: typeof AuthenticatedPaymentsIndexRoute
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
+  AuthenticatedRecipeCommentsIndexRoute: typeof AuthenticatedRecipeCommentsIndexRoute
   AuthenticatedRecipesIndexRoute: typeof AuthenticatedRecipesIndexRoute
   AuthenticatedSellerSubscriptionsIndexRoute: typeof AuthenticatedSellerSubscriptionsIndexRoute
   AuthenticatedSupportTicketsIndexRoute: typeof AuthenticatedSupportTicketsIndexRoute
   AuthenticatedTechnicalIndexRoute: typeof AuthenticatedTechnicalIndexRoute
+  AuthenticatedThemeIndexRoute: typeof AuthenticatedThemeIndexRoute
   AuthenticatedTindahanCommentsIndexRoute: typeof AuthenticatedTindahanCommentsIndexRoute
   AuthenticatedTindahanIndexRoute: typeof AuthenticatedTindahanIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
@@ -746,11 +787,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMonetizationIndexRoute: AuthenticatedMonetizationIndexRoute,
   AuthenticatedPaymentsIndexRoute: AuthenticatedPaymentsIndexRoute,
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
+  AuthenticatedRecipeCommentsIndexRoute: AuthenticatedRecipeCommentsIndexRoute,
   AuthenticatedRecipesIndexRoute: AuthenticatedRecipesIndexRoute,
   AuthenticatedSellerSubscriptionsIndexRoute:
     AuthenticatedSellerSubscriptionsIndexRoute,
   AuthenticatedSupportTicketsIndexRoute: AuthenticatedSupportTicketsIndexRoute,
   AuthenticatedTechnicalIndexRoute: AuthenticatedTechnicalIndexRoute,
+  AuthenticatedThemeIndexRoute: AuthenticatedThemeIndexRoute,
   AuthenticatedTindahanCommentsIndexRoute:
     AuthenticatedTindahanCommentsIndexRoute,
   AuthenticatedTindahanIndexRoute: AuthenticatedTindahanIndexRoute,

@@ -73,7 +73,10 @@ class MealPlanController extends Controller
 
             return response()->json(['meal_plan' => $mealPlan], 201);
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json([
+                'message'        => $e->getMessage(),
+                'quota_exceeded' => ! $user->canGenerateAiMealPlan(),
+            ], 422);
         }
     }
 
@@ -215,7 +218,10 @@ class MealPlanController extends Controller
 
             return response()->json(['meal_plan' => $mealPlan], 201);
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json([
+                'message'        => $e->getMessage(),
+                'quota_exceeded' => ! $user->canGenerateAiMealPlan(),
+            ], 422);
         }
     }
 }

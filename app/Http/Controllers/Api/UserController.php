@@ -27,6 +27,9 @@ class UserController extends Controller
             'avatar'                       => $user->avatar,
             'bio'                          => $user->bio,
             'plan'                         => $user->plan,
+            'is_premium'                   => $user->isPremium(),
+            'premium_expires_at'           => $user->premium_expires_at,
+            'premium_source'               => $user->premium_source,
             'household_size'               => $user->household_size,
             'barangay'                     => $user->barangay,
             'municipality'                 => $user->municipality,
@@ -39,6 +42,7 @@ class UserController extends Controller
             'level'                        => $user->level,
             'streak_days'                  => $user->streak_days,
             'ai_meal_plans_used_this_month' => $user->ai_meal_plans_used_this_month,
+            'ai_plans_remaining'           => $user->isPremium() ? null : max(0, 3 - $user->ai_meal_plans_used_this_month),
             'onboarding_completed'          => (bool) $user->onboarding_completed,
         ]);
     }
@@ -77,6 +81,7 @@ class UserController extends Controller
                 'plan'               => $user->plan,
                 'is_premium'         => $user->isPremium(),
                 'premium_expires_at' => $user->premium_expires_at,
+                'premium_source'     => $user->premium_source,
                 'household_size'     => $user->household_size,
                 'barangay'           => $user->barangay,
                 'municipality'       => $user->municipality,

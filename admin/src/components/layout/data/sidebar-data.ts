@@ -6,6 +6,7 @@ import {
   ClipboardList,
   CreditCard,
   Flag,
+  Image as ImageIcon,
   Landmark,
   LayoutDashboard,
   LifeBuoy,
@@ -86,6 +87,11 @@ export const sidebarData: SidebarData = {
           title: 'Branding',
           url: '/branding',
           icon: Palette,
+        },
+        {
+          title: 'Theme',
+          url: '/theme',
+          icon: ImageIcon,
         },
         {
           title: 'Technical Guide',
@@ -171,6 +177,11 @@ export const sidebarData: SidebarData = {
           title: 'Recipes',
           url: '/recipes',
           icon: ChefHat,
+        },
+        {
+          title: 'Recipe Comments',
+          url: '/recipe-comments',
+          icon: MessageCircle,
         },
       ],
     },
