@@ -1,5 +1,21 @@
 # uLam Admin — Changelog
 
+## v1.13.0 (2026-07-14)
+
+Content Management: legal documents as a versioned mini-CMS.
+
+### Added
+- **Legal Documents** (`/legal`, sidebar under Content) — manage Terms & Conditions and the Privacy Policy without code changes:
+  - Markdown **draft editor with debounced autosave**, edit/preview toggle, version field, and a required "What's changed" changelog;
+  - **Version history table** with status filter and search; per-version actions: view, restore-as-draft, duplicate, publish, delete draft;
+  - **Publish workflow** — publishing archives the previous live version in the same transaction (exactly one live version per document, enforced server-side) and triggers the mobile app's mandatory re-acceptance prompt;
+  - Live-version summary cards: current version, user acceptance count, and the public page URL (`/legal/terms`, `/legal/privacy`) for the Play Store listing.
+- Seeded professionally written v1.0.0 content for both documents, tailored to uLam (information platform, not a delivery service; PH Data Privacy Act; 48-hour subscription refund policy).
+
+### Notes
+- Statuses implemented: draft / published / archived. "Pending review / approved" from the original spec were deliberately skipped for a single-admin team — the status column is a string, so they can be added later without schema changes.
+- Content is Markdown (not a WYSIWYG rich-text editor) — versionable, diffable, and renders consistently across the admin preview, the public web page, and the mobile app.
+
 ## v1.12.0 (2026-07-14)
 
 Dashboard lockdown: one door, with a second lock.

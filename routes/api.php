@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\Admin\BoostController as AdminBoostController;
 use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCommentController;
 use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
+use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
+use App\Http\Controllers\Api\LegalController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\GovernmentPriceReferenceController as AdminGovernmentPriceReferenceController;
@@ -125,6 +127,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/insights/summary', [InsightsController::class, 'summary']);
     Route::get('/insights/graph',   [InsightsController::class, 'graph']);
+
+    Route::get('/legal/status',        [LegalController::class, 'status']);
+    Route::get('/legal/{slug}',        [LegalController::class, 'show']);
+    Route::post('/legal/{slug}/accept', [LegalController::class, 'accept']);
 
     Route::get('/leaderboard/barangay', [UserController::class, 'leaderboard']);
 
@@ -292,6 +298,15 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/2fa/setup',   [AdminTwoFactorController::class, 'setup']);
     Route::post('/2fa/confirm', [AdminTwoFactorController::class, 'confirm']);
     Route::post('/2fa/disable', [AdminTwoFactorController::class, 'disable']);
+
+    Route::get('/legal-documents',                  [AdminLegalDocumentController::class, 'index']);
+    Route::get('/legal-documents/{slug}/versions',  [AdminLegalDocumentController::class, 'versions']);
+    Route::post('/legal-documents/{slug}/versions', [AdminLegalDocumentController::class, 'storeVersion']);
+    Route::get('/legal-versions/{id}',              [AdminLegalDocumentController::class, 'showVersion']);
+    Route::patch('/legal-versions/{id}',            [AdminLegalDocumentController::class, 'updateVersion']);
+    Route::post('/legal-versions/{id}/publish',     [AdminLegalDocumentController::class, 'publish']);
+    Route::post('/legal-versions/{id}/archive',     [AdminLegalDocumentController::class, 'archive']);
+    Route::delete('/legal-versions/{id}',           [AdminLegalDocumentController::class, 'destroyVersion']);
 
     Route::get('/seller-plans',             [AdminSellerPlanController::class, 'index']);
     Route::patch('/seller-plans/{id}',      [AdminSellerPlanController::class, 'update']);

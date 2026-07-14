@@ -212,7 +212,19 @@
       "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"login\":\"cessto103@gmail.com\",\"password\":\"tolitsako\",\"otp\":\"000000\"}')",
       "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; echo \\(new PragmaRX\\\\Google2FA\\\\Google2FA\\(\\)\\)->getCurrentOtp\\('\\\\''KHNW64UG3P7XOYH2TIGV2ZQZFUYVRAJR'\\\\''\\);')",
       "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/login -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"login\":\"cessto103@gmail.com\",\"password\":\"tolitsako\",\"otp\":\"__TRACKED_VAR__\"}')",
-      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/2fa/disable -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"password\":\"tolitsako\",\"code\":\"__TRACKED_VAR__\"}')"
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/2fa/disable -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"password\":\"tolitsako\",\"code\":\"__TRACKED_VAR__\"}')",
+      "Bash(php -l database/seeders/LegalDocumentSeeder.php)",
+      "Bash(curl -s http://localhost/uLam/public/api/legal/status -H 'Authorization: Bearer 7|rvojs84tAFbF418E1IjYcf1k3HAzbAfoyelkqyCj7313694d' -H 'Accept: application/json')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/legal/terms/accept -H 'Authorization: Bearer 7|rvojs84tAFbF418E1IjYcf1k3HAzbAfoyelkqyCj7313694d' -H 'Accept: application/json')",
+      "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); echo $d[\"title\"].\" v\".$d[\"version\"].\" md=\".strlen\\($d[\"content_md\"]\\).\" chars\";')",
+      "Bash(curl -s -X POST \"http://localhost/uLam/public/api/admin/login\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -d '{\"login\":\"cessto103@gmail.com\",\"password\":\"tolitsako\"}')",
+      "Bash(curl -s http://localhost/uLam/public/api/admin/legal-documents -H 'Authorization: Bearer 8|1SBW1IhHsdZH62ESBtPo6SIj8oC5lLBGnt7hhNPA56d55194' -H 'Accept: application/json')",
+      "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); foreach\\($d[\"versions\"] as $v\\) echo \"v\".$v[\"version\"].\" \".$v[\"status\"].PHP_EOL;')",
+      "Bash(curl -s -X PATCH http://localhost/uLam/public/api/admin/legal-versions/3 -H 'Authorization: Bearer 8|1SBW1IhHsdZH62ESBtPo6SIj8oC5lLBGnt7hhNPA56d55194' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"changelog\":\"Workflow test entry\"}')",
+      "Bash(curl -s -X POST http://localhost/uLam/public/api/admin/legal-versions/3/publish -H 'Authorization: Bearer 8|1SBW1IhHsdZH62ESBtPo6SIj8oC5lLBGnt7hhNPA56d55194' -H 'Accept: application/json')",
+      "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); foreach\\($d[\"documents\"] as $x\\) echo $x[\"slug\"].\" v\".$x[\"version\"].\" accepted=\".\\($x[\"accepted\"]?\"yes\":\"no\"\\).PHP_EOL;')",
+      "Bash(sed -i 's/Last updated: 2026-07-14 · \\\\*\\\\*v1.18.0\\\\*\\\\*/Last updated: 2026-07-14 · **v1.19.0**/' VERSION_LOG.md)",
+      "Bash(sed -i 's/\"version\": \"1.12.0\"/\"version\": \"1.13.0\"/' package.json)"
     ],
     "additionalDirectories": [
       "c:\\wamp64\\www\\uLam",

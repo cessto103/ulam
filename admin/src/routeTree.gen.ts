@@ -31,6 +31,7 @@ import { Route as AuthenticatedMonetizationIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedMarketsIndexRouteImport } from './routes/_authenticated/markets/index'
 import { Route as AuthenticatedMarketPricesIndexRouteImport } from './routes/_authenticated/market-prices/index'
 import { Route as AuthenticatedListingReportsIndexRouteImport } from './routes/_authenticated/listing-reports/index'
+import { Route as AuthenticatedLegalIndexRouteImport } from './routes/_authenticated/legal/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
@@ -161,6 +162,11 @@ const AuthenticatedListingReportsIndexRoute =
     path: '/listing-reports/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedLegalIndexRoute = AuthenticatedLegalIndexRouteImport.update({
+  id: '/legal/',
+  path: '/legal/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGovernmentPriceReferencesIndexRoute =
   AuthenticatedGovernmentPriceReferencesIndexRouteImport.update({
     id: '/government-price-references/',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  '/legal/': typeof AuthenticatedLegalIndexRoute
   '/listing-reports/': typeof AuthenticatedListingReportsIndexRoute
   '/market-prices/': typeof AuthenticatedMarketPricesIndexRoute
   '/markets/': typeof AuthenticatedMarketsIndexRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByTo {
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  '/legal': typeof AuthenticatedLegalIndexRoute
   '/listing-reports': typeof AuthenticatedListingReportsIndexRoute
   '/market-prices': typeof AuthenticatedMarketPricesIndexRoute
   '/markets': typeof AuthenticatedMarketsIndexRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  '/_authenticated/legal/': typeof AuthenticatedLegalIndexRoute
   '/_authenticated/listing-reports/': typeof AuthenticatedListingReportsIndexRoute
   '/_authenticated/market-prices/': typeof AuthenticatedMarketPricesIndexRoute
   '/_authenticated/markets/': typeof AuthenticatedMarketsIndexRoute
@@ -322,6 +331,7 @@ export interface FileRouteTypes {
     | '/community-price-reports/'
     | '/faqs/'
     | '/government-price-references/'
+    | '/legal/'
     | '/listing-reports/'
     | '/market-prices/'
     | '/markets/'
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/community-price-reports'
     | '/faqs'
     | '/government-price-references'
+    | '/legal'
     | '/listing-reports'
     | '/market-prices'
     | '/markets'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/_authenticated/community-price-reports/'
     | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
+    | '/_authenticated/legal/'
     | '/_authenticated/listing-reports/'
     | '/_authenticated/market-prices/'
     | '/_authenticated/markets/'
@@ -565,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedListingReportsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/legal/': {
+      id: '/_authenticated/legal/'
+      path: '/legal'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof AuthenticatedLegalIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/government-price-references/': {
       id: '/_authenticated/government-price-references/'
       path: '/government-price-references'
@@ -652,6 +671,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  AuthenticatedLegalIndexRoute: typeof AuthenticatedLegalIndexRoute
   AuthenticatedListingReportsIndexRoute: typeof AuthenticatedListingReportsIndexRoute
   AuthenticatedMarketPricesIndexRoute: typeof AuthenticatedMarketPricesIndexRoute
   AuthenticatedMarketsIndexRoute: typeof AuthenticatedMarketsIndexRoute
@@ -676,6 +696,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,
+  AuthenticatedLegalIndexRoute: AuthenticatedLegalIndexRoute,
   AuthenticatedListingReportsIndexRoute: AuthenticatedListingReportsIndexRoute,
   AuthenticatedMarketPricesIndexRoute: AuthenticatedMarketPricesIndexRoute,
   AuthenticatedMarketsIndexRoute: AuthenticatedMarketsIndexRoute,

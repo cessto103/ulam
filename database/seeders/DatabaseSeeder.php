@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(StoreSeeder::class);
         $this->call(DemoStoreSeeder::class);
         $this->call(SellerPlanSeeder::class);
+        $this->call(LegalDocumentSeeder::class);
     }
 
     private function seedMarkets(): void

@@ -14,6 +14,7 @@ import {
   Palette,
   Receipt,
   Rocket,
+  ScrollText,
   Settings,
   Store,
   Tags,
@@ -70,6 +71,16 @@ export const sidebarData: SidebarData = {
           title: 'Boost Review',
           url: '/boosts',
           icon: Rocket,
+        },
+      ],
+    },
+    {
+      title: 'Content',
+      items: [
+        {
+          title: 'Legal Documents',
+          url: '/legal',
+          icon: ScrollText,
         },
       ],
     },
