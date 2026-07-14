@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.14.0 (2026-07-14)
+
+### Added
+- **Branding** (Content → Branding) — upload a replacement app logo (two slots: light backgrounds + white-on-terracotta) that the mobile app picks up everywhere without an app update; reset to the built-in uLam logo anytime. PNG/JPG/WebP up to 2 MB.
+
 ## v1.13.1 (2026-07-14)
 
 ### Added

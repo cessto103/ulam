@@ -83,6 +83,11 @@ export const sidebarData: SidebarData = {
           icon: ScrollText,
         },
         {
+          title: 'Branding',
+          url: '/branding',
+          icon: Palette,
+        },
+        {
           title: 'Technical Guide',
           url: '/technical',
           icon: Wrench,

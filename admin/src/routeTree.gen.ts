@@ -37,6 +37,7 @@ import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from 
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
+import { Route as AuthenticatedBrandingIndexRouteImport } from './routes/_authenticated/branding/index'
 import { Route as AuthenticatedBoostsIndexRouteImport } from './routes/_authenticated/boosts/index'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings/security'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
@@ -197,6 +198,12 @@ const AuthenticatedCommentsIndexRoute =
     path: '/comments/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBrandingIndexRoute =
+  AuthenticatedBrandingIndexRouteImport.update({
+    id: '/branding/',
+    path: '/branding/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBoostsIndexRoute =
   AuthenticatedBoostsIndexRouteImport.update({
     id: '/boosts/',
@@ -235,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/boosts/': typeof AuthenticatedBoostsIndexRoute
+  '/branding/': typeof AuthenticatedBrandingIndexRoute
   '/comments/': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
@@ -267,6 +275,7 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/boosts': typeof AuthenticatedBoostsIndexRoute
+  '/branding': typeof AuthenticatedBrandingIndexRoute
   '/comments': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
@@ -302,6 +311,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/_authenticated/boosts/': typeof AuthenticatedBoostsIndexRoute
+  '/_authenticated/branding/': typeof AuthenticatedBrandingIndexRoute
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/security'
     | '/boosts/'
+    | '/branding/'
     | '/comments/'
     | '/community-price-reports/'
     | '/faqs/'
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/security'
     | '/boosts'
+    | '/branding'
     | '/comments'
     | '/community-price-reports'
     | '/faqs'
@@ -403,6 +415,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/security'
     | '/_authenticated/boosts/'
+    | '/_authenticated/branding/'
     | '/_authenticated/comments/'
     | '/_authenticated/community-price-reports/'
     | '/_authenticated/faqs/'
@@ -632,6 +645,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommentsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/branding/': {
+      id: '/_authenticated/branding/'
+      path: '/branding'
+      fullPath: '/branding/'
+      preLoaderRoute: typeof AuthenticatedBrandingIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/boosts/': {
       id: '/_authenticated/boosts/'
       path: '/boosts'
@@ -687,6 +707,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedBoostsIndexRoute: typeof AuthenticatedBoostsIndexRoute
+  AuthenticatedBrandingIndexRoute: typeof AuthenticatedBrandingIndexRoute
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
@@ -711,6 +732,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedBoostsIndexRoute: AuthenticatedBoostsIndexRoute,
+  AuthenticatedBrandingIndexRoute: AuthenticatedBrandingIndexRoute,
   AuthenticatedCommentsIndexRoute: AuthenticatedCommentsIndexRoute,
   AuthenticatedCommunityPriceReportsIndexRoute:
     AuthenticatedCommunityPriceReportsIndexRoute,

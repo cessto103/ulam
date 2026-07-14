@@ -229,7 +229,16 @@
       "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); foreach\\(array_slice\\($d[\"data\"],0,3\\) as $r\\) echo $r[\"title\"].\" views7d=\".$r[\"views_7d\"].\" saves=\".$r[\"save_count\"].PHP_EOL;')",
       "Bash(node -e ' *)",
       "Bash(awk '{print $5, $9}')",
-      "Bash(curl -s \"http://localhost/uLam/public/api/admin/technical-guide\" -H \"Accept: application/json\" -o /dev/null -w \"endpoint \\(no auth\\) -> %{http_code}\\\\n\")"
+      "Bash(curl -s \"http://localhost/uLam/public/api/admin/technical-guide\" -H \"Accept: application/json\" -o /dev/null -w \"endpoint \\(no auth\\) -> %{http_code}\\\\n\")",
+      "Bash(grep -n -A 16 \"^import {$\" \"app/\\(tabs\\)/index.tsx\")",
+      "Bash(sed -i \"s|import { FoodDoodles, ULamScriptLogo } from '@/src/components/ULamLogo';|import BrandLogo from '@/src/components/BrandLogo';\\\\nimport { FoodDoodles } from '@/src/components/ULamLogo';|\" \"app/\\(auth\\)/welcome.tsx\" \"app/\\(auth\\)/login.tsx\" \"app/\\(auth\\)/forgot-password.tsx\")",
+      "Bash(sed -i \"s|import { ULamScriptLogo } from '@/src/components/ULamLogo';|import BrandLogo from '@/src/components/BrandLogo';|\" \"app/\\(tabs\\)/index.tsx\" \"app/\\(tabs\\)/profile.tsx\" \"app/\\(tabs\\)/_layout.tsx\")",
+      "Bash(sed -i \"s|import { HeaderWave, ULamScriptLogo } from '@/src/components/ULamLogo'|import BrandLogo from '@/src/components/BrandLogo'\\\\nimport { HeaderWave } from '@/src/components/ULamLogo'|\" src/components/GradientPageHeader.tsx)",
+      "Bash(php -l app/Http/Controllers/Api/Admin/BrandingController.php)",
+      "Bash(sed -i 's/\"version\": \"1.20.1\"/\"version\": \"1.21.0\"/' package.json app.json)",
+      "Bash(sed -i 's/\"buildNumber\": \"26\"/\"buildNumber\": \"27\"/; s/\"versionCode\": 26/\"versionCode\": 27/' app.json)",
+      "Bash(sed -i 's/Last updated: 2026-07-14 · \\\\*\\\\*v1.20.1\\\\*\\\\*/Last updated: 2026-07-14 · **v1.21.0**/' VERSION_LOG.md)",
+      "Bash(sed -i 's/\"version\": \"1.13.1\"/\"version\": \"1.14.0\"/' package.json)"
     ],
     "additionalDirectories": [
       "c:\\wamp64\\www\\uLam",

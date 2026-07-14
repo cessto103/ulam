@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\BoostController as AdminBoostController;
 use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCommentController;
 use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
+use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
 use App\Http\Controllers\Api\LegalController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
@@ -53,6 +54,14 @@ Route::post('/auth/register', [AuthController::class, 'register'])->middleware('
 Route::post('/auth/login',    [AuthController::class, 'login'])->middleware('throttle:6,1');
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:4,1');
 Route::post('/auth/reset-password',  [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
+
+// Public branding — the app needs the logo before login (welcome screen).
+Route::get('/branding', function () {
+    return response()->json([
+        'logo' => \App\Models\AppSetting::get('branding_logo'),
+        'logo_light' => \App\Models\AppSetting::get('branding_logo_light'),
+    ]);
+});
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
 
 Route::post('/billing/webhooks/paymongo', PayMongoWebhookController::class);
@@ -308,6 +317,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
             'updated_at' => date('c', filemtime($path)),
         ]);
     });
+
+    Route::get('/branding',        [AdminBrandingController::class, 'show']);
+    Route::post('/branding/logo',  [AdminBrandingController::class, 'upload']);
+    Route::delete('/branding/logo', [AdminBrandingController::class, 'reset']);
 
     Route::get('/legal-documents',                  [AdminLegalDocumentController::class, 'index']);
     Route::get('/legal-documents/{slug}/versions',  [AdminLegalDocumentController::class, 'versions']);
