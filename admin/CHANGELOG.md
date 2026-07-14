@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.13.1 (2026-07-14)
+
+### Added
+- **Technical Guide** (Content → Technical Guide) — the operations reference (cron setup, deploy checklist, env vars, security runbook, EAS/FCM instructions, backups) rendered live inside the dashboard from the repo's `TECHNICAL.md`, so the docs are always in the same place you do the work. Single source of truth: edit the file, the page updates.
+
 ## v1.13.0 (2026-07-14)
 
 Content Management: legal documents as a versioned mini-CMS.

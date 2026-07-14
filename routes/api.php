@@ -299,6 +299,16 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/2fa/confirm', [AdminTwoFactorController::class, 'confirm']);
     Route::post('/2fa/disable', [AdminTwoFactorController::class, 'disable']);
 
+    // Read-only render of the repo's TECHNICAL.md — single source of truth.
+    Route::get('/technical-guide', function () {
+        $path = base_path('TECHNICAL.md');
+        abort_unless(file_exists($path), 404);
+        return response()->json([
+            'content_md' => file_get_contents($path),
+            'updated_at' => date('c', filemtime($path)),
+        ]);
+    });
+
     Route::get('/legal-documents',                  [AdminLegalDocumentController::class, 'index']);
     Route::get('/legal-documents/{slug}/versions',  [AdminLegalDocumentController::class, 'versions']);
     Route::post('/legal-documents/{slug}/versions', [AdminLegalDocumentController::class, 'storeVersion']);

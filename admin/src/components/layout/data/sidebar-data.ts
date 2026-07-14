@@ -82,6 +82,11 @@ export const sidebarData: SidebarData = {
           url: '/legal',
           icon: ScrollText,
         },
+        {
+          title: 'Technical Guide',
+          url: '/technical',
+          icon: Wrench,
+        },
       ],
     },
     {

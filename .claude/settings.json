@@ -228,7 +228,8 @@
       "Bash(curl -s http://localhost/uLam/public/api/recipes?search=manok -H 'Authorization: Bearer 9|HKcUdxIjo8Si3FKWNnj0ZrucesIJ6B1XT8cWBKKf518088ef' -H 'Accept: application/json')",
       "Bash(php -r '$d=json_decode\\(stream_get_contents\\(STDIN\\),true\\); foreach\\(array_slice\\($d[\"data\"],0,3\\) as $r\\) echo $r[\"title\"].\" views7d=\".$r[\"views_7d\"].\" saves=\".$r[\"save_count\"].PHP_EOL;')",
       "Bash(node -e ' *)",
-      "Bash(awk '{print $5, $9}')"
+      "Bash(awk '{print $5, $9}')",
+      "Bash(curl -s \"http://localhost/uLam/public/api/admin/technical-guide\" -H \"Accept: application/json\" -o /dev/null -w \"endpoint \\(no auth\\) -> %{http_code}\\\\n\")"
     ],
     "additionalDirectories": [
       "c:\\wamp64\\www\\uLam",

@@ -21,6 +21,7 @@ import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authen
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTindahanIndexRouteImport } from './routes/_authenticated/tindahan/index'
 import { Route as AuthenticatedTindahanCommentsIndexRouteImport } from './routes/_authenticated/tindahan-comments/index'
+import { Route as AuthenticatedTechnicalIndexRouteImport } from './routes/_authenticated/technical/index'
 import { Route as AuthenticatedSupportTicketsIndexRouteImport } from './routes/_authenticated/support-tickets/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSellerSubscriptionsIndexRouteImport } from './routes/_authenticated/seller-subscriptions/index'
@@ -101,6 +102,12 @@ const AuthenticatedTindahanCommentsIndexRoute =
   AuthenticatedTindahanCommentsIndexRouteImport.update({
     id: '/tindahan-comments/',
     path: '/tindahan-comments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTechnicalIndexRoute =
+  AuthenticatedTechnicalIndexRouteImport.update({
+    id: '/technical/',
+    path: '/technical/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSupportTicketsIndexRoute =
@@ -243,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
+  '/technical/': typeof AuthenticatedTechnicalIndexRoute
   '/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
@@ -274,6 +282,7 @@ export interface FileRoutesByTo {
   '/seller-subscriptions': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/support-tickets': typeof AuthenticatedSupportTicketsIndexRoute
+  '/technical': typeof AuthenticatedTechnicalIndexRoute
   '/tindahan-comments': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan': typeof AuthenticatedTindahanIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -308,6 +317,7 @@ export interface FileRoutesById {
   '/_authenticated/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
+  '/_authenticated/technical/': typeof AuthenticatedTechnicalIndexRoute
   '/_authenticated/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/_authenticated/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/seller-subscriptions/'
     | '/settings/'
     | '/support-tickets/'
+    | '/technical/'
     | '/tindahan-comments/'
     | '/tindahan/'
     | '/users/'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/seller-subscriptions'
     | '/settings'
     | '/support-tickets'
+    | '/technical'
     | '/tindahan-comments'
     | '/tindahan'
     | '/users'
@@ -406,6 +418,7 @@ export interface FileRouteTypes {
     | '/_authenticated/seller-subscriptions/'
     | '/_authenticated/settings/'
     | '/_authenticated/support-tickets/'
+    | '/_authenticated/technical/'
     | '/_authenticated/tindahan-comments/'
     | '/_authenticated/tindahan/'
     | '/_authenticated/users/'
@@ -505,6 +518,13 @@ declare module '@tanstack/react-router' {
       path: '/tindahan-comments'
       fullPath: '/tindahan-comments/'
       preLoaderRoute: typeof AuthenticatedTindahanCommentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/technical/': {
+      id: '/_authenticated/technical/'
+      path: '/technical'
+      fullPath: '/technical/'
+      preLoaderRoute: typeof AuthenticatedTechnicalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/support-tickets/': {
@@ -681,6 +701,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRecipesIndexRoute: typeof AuthenticatedRecipesIndexRoute
   AuthenticatedSellerSubscriptionsIndexRoute: typeof AuthenticatedSellerSubscriptionsIndexRoute
   AuthenticatedSupportTicketsIndexRoute: typeof AuthenticatedSupportTicketsIndexRoute
+  AuthenticatedTechnicalIndexRoute: typeof AuthenticatedTechnicalIndexRoute
   AuthenticatedTindahanCommentsIndexRoute: typeof AuthenticatedTindahanCommentsIndexRoute
   AuthenticatedTindahanIndexRoute: typeof AuthenticatedTindahanIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
@@ -707,6 +728,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSellerSubscriptionsIndexRoute:
     AuthenticatedSellerSubscriptionsIndexRoute,
   AuthenticatedSupportTicketsIndexRoute: AuthenticatedSupportTicketsIndexRoute,
+  AuthenticatedTechnicalIndexRoute: AuthenticatedTechnicalIndexRoute,
   AuthenticatedTindahanCommentsIndexRoute:
     AuthenticatedTindahanCommentsIndexRoute,
   AuthenticatedTindahanIndexRoute: AuthenticatedTindahanIndexRoute,
