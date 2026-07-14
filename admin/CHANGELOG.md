@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.16.0 (2026-07-15)
+
+### Added
+- **Premium features editor** (Monetization → "uLam Premium — included features") — edit the "Included in Premium" list shown on the app's Upgrade screen (titles, descriptions, emoji, free/premium flag) without an app release. Add/remove rows, reset to the built-in list anytime.
+
 ## v1.15.1 (2026-07-15)
 
 ### Added

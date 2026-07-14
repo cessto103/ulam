@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRati
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
 use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\Admin\ThemeController as AdminThemeController;
+use App\Http\Controllers\Api\Admin\PremiumFeatureController as AdminPremiumFeatureController;
 use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
 use App\Http\Controllers\Api\LegalController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
@@ -71,6 +72,12 @@ Route::get('/branding', function () {
 Route::get('/theme', function () {
     $raw = \App\Models\AppSetting::get('theme_sections');
     return response()->json(['sections' => $raw ? (json_decode($raw, true) ?: []) : []]);
+});
+
+// Public premium features list — the Upgrade screen shows it before any auth-gated fetch.
+Route::get('/premium-features', function () {
+    $raw = \App\Models\AppSetting::get('premium_features');
+    return response()->json(['features' => $raw ? (json_decode($raw, true) ?: []) : []]);
 });
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
 
@@ -345,6 +352,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/theme/{section}/image',    [AdminThemeController::class, 'uploadImage']);
     Route::patch('/theme/{section}',         [AdminThemeController::class, 'updateSettings']);
     Route::delete('/theme/{section}',        [AdminThemeController::class, 'resetSection']);
+
+    Route::get('/premium-features',    [AdminPremiumFeatureController::class, 'show']);
+    Route::put('/premium-features',    [AdminPremiumFeatureController::class, 'update']);
+    Route::delete('/premium-features', [AdminPremiumFeatureController::class, 'reset']);
 
     Route::get('/legal-documents',                  [AdminLegalDocumentController::class, 'index']);
     Route::get('/legal-documents/{slug}/versions',  [AdminLegalDocumentController::class, 'versions']);

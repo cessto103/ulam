@@ -9,10 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { Trash2, Plus, RotateCcw } from 'lucide-react'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -21,14 +23,31 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import {
   type BoostOption,
+  type PremiumFeature,
   type SellerPlan,
   usePaymentSettingsQuery,
+  usePremiumFeaturesQuery,
+  useResetPremiumFeatures,
   useSellerPlansQuery,
   useUpdateBoostOption,
   useUpdatePaymentSettings,
   useUpdatePlan,
   useUpdatePlanPrices,
+  useUpdatePremiumFeatures,
 } from './hooks/use-monetization'
+
+// Mirrors the mobile app's compiled-in default (app/upgrade.tsx) — seeds the
+// editor the first time, before the admin has saved anything of their own.
+const DEFAULT_PREMIUM_FEATURES: PremiumFeature[] = [
+  { emoji: '🍳', title_en: 'AI Meal Planning', title_tl: 'AI Meal Planning', desc_en: 'Get a meal plan every day', desc_tl: 'Humingi ng meal plan araw-araw', free: false },
+  { emoji: '📊', title_en: 'Budget Tracking', title_tl: 'Budget Tracking', desc_en: 'Log expenses, track your savings', desc_tl: 'Mag-log ng gastos, tingnan ang savings', free: true },
+  { emoji: '📢', title_en: 'Price Reporting', title_tl: 'Price Reporting', desc_en: 'Report and check prices', desc_tl: 'Mag-report at makita ang presyo', free: true },
+  { emoji: '👥', title_en: 'Community', title_tl: 'Komunidad', desc_en: 'Posts, likes, and tips from neighbors', desc_tl: 'Mga post, puso, at diskarte ng kapitbahay', free: true },
+  { emoji: '🔓', title_en: 'Unlimited AI Plans', title_tl: 'Unlimited AI Plans', desc_en: 'No limits — as many times as you want', desc_tl: 'Walang limitasyon — kahit ilang beses', free: false },
+  { emoji: '⭐', title_en: 'Premium Recipes', title_tl: 'Premium Recipes', desc_en: 'Special recipes for the budget-savvy', desc_tl: 'Espesyal na mga recipe para sa matipid', free: false },
+  { emoji: '🔔', title_en: 'Smart Reminders', title_tl: 'Smart Reminders', desc_en: 'Personalized reminders', desc_tl: 'Personalized na mga paalala', free: false },
+  { emoji: '🚫', title_en: 'No Ads', title_tl: 'Walang Ads', desc_en: 'A clean experience, no interruptions', desc_tl: 'Malinis na karanasan, walang abala', free: false },
+]
 
 const DURATIONS = ['7d', '15d', '1m', '1y'] as const
 const DURATION_LABEL: Record<string, string> = {
@@ -330,6 +349,114 @@ function PaymentSettingsCard() {
   )
 }
 
+function PremiumFeaturesCard() {
+  const { data: saved, isLoading } = usePremiumFeaturesQuery()
+  const update = useUpdatePremiumFeatures()
+  const reset = useResetPremiumFeatures()
+
+  const [features, setFeatures] = useState<PremiumFeature[]>(DEFAULT_PREMIUM_FEATURES)
+  const [dirty, setDirty] = useState(false)
+
+  useEffect(() => {
+    if (isLoading) return
+    setFeatures(saved?.length ? saved : DEFAULT_PREMIUM_FEATURES)
+    setDirty(false)
+  }, [saved, isLoading])
+
+  const setField = (i: number, patch: Partial<PremiumFeature>) => {
+    setFeatures((prev) => prev.map((f, idx) => (idx === i ? { ...f, ...patch } : f)))
+    setDirty(true)
+  }
+
+  const removeRow = (i: number) => {
+    setFeatures((prev) => prev.filter((_, idx) => idx !== i))
+    setDirty(true)
+  }
+
+  const addRow = () => {
+    setFeatures((prev) => [...prev, { emoji: '✨', title_en: '', title_tl: '', desc_en: '', desc_tl: '', free: false }])
+    setDirty(true)
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>uLam Premium — included features</CardTitle>
+        <CardDescription>
+          The "Included in Premium" list shown on the app's Upgrade screen (₱59/mo, ₱499/yr). Mark a row "Free" if it's
+          available to everyone (shown greyed-out, for comparison) — leave unchecked for Premium-only features.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='space-y-3'>
+        {features.map((f, i) => (
+          <div key={i} className='space-y-2 rounded-md border p-3'>
+            <div className='flex items-center gap-2'>
+              <Input
+                value={f.emoji}
+                onChange={(e) => setField(i, { emoji: e.target.value })}
+                className='h-8 w-14 text-center'
+                maxLength={4}
+              />
+              <div className='flex flex-1 items-center gap-2'>
+                <Checkbox
+                  id={`free-${i}`}
+                  checked={f.free}
+                  onCheckedChange={(checked) => setField(i, { free: checked === true })}
+                />
+                <Label htmlFor={`free-${i}`} className='text-xs font-normal text-muted-foreground'>
+                  Free for everyone
+                </Label>
+              </div>
+              <Button variant='ghost' size='icon' onClick={() => removeRow(i)}>
+                <Trash2 className='size-4 text-red-500' />
+              </Button>
+            </div>
+            <div className='grid gap-2 sm:grid-cols-2'>
+              <Input placeholder='Title (English)' value={f.title_en} onChange={(e) => setField(i, { title_en: e.target.value })} />
+              <Input placeholder='Title (Tagalog)' value={f.title_tl} onChange={(e) => setField(i, { title_tl: e.target.value })} />
+              <Input placeholder='Description (English)' value={f.desc_en} onChange={(e) => setField(i, { desc_en: e.target.value })} />
+              <Input placeholder='Description (Tagalog)' value={f.desc_tl} onChange={(e) => setField(i, { desc_tl: e.target.value })} />
+            </div>
+          </div>
+        ))}
+
+        <div className='flex flex-wrap items-center justify-between gap-2 pt-1'>
+          <Button variant='outline' size='sm' onClick={addRow}>
+            <Plus /> Add feature
+          </Button>
+          <div className='flex gap-2'>
+            <Button
+              variant='outline'
+              size='sm'
+              disabled={reset.isPending}
+              onClick={() =>
+                reset.mutate(undefined, {
+                  onSuccess: () => toast.success('Back to the built-in feature list.'),
+                  onError: (error: any) => toast.error(error?.response?.data?.message ?? 'Could not reset.'),
+                })
+              }
+            >
+              <RotateCcw /> Reset to built-in
+            </Button>
+            <Button
+              size='sm'
+              disabled={!dirty || update.isPending}
+              onClick={() =>
+                update.mutate(features, {
+                  onSuccess: () => { toast.success('Premium features saved.'); setDirty(false) },
+                  onError: (error: any) => toast.error(error?.response?.data?.message ?? 'Could not save.'),
+                })
+              }
+            >
+              Save changes
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function Monetization() {
   const { data, isLoading } = useSellerPlansQuery()
 
@@ -355,10 +482,13 @@ export function Monetization() {
 
         <PaymentSettingsCard />
 
+        <PremiumFeaturesCard />
+
         {isLoading ? (
           <p className='text-muted-foreground'>Loading plans...</p>
         ) : (
           <>
+            <h3 className='text-lg font-semibold'>Seller plans</h3>
             <div className='grid gap-4 lg:grid-cols-2'>
               {(data?.plans ?? []).map((plan) => (
                 <PlanCard key={plan.id} plan={plan} />

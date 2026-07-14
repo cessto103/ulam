@@ -37,8 +37,18 @@ export type PaymentSettings = {
   payment_support_note: string | null
 }
 
+export type PremiumFeature = {
+  emoji: string
+  title_en: string
+  title_tl: string
+  desc_en: string
+  desc_tl: string
+  free: boolean
+}
+
 const PLANS_KEY = 'admin-seller-plans'
 const SETTINGS_KEY = 'admin-app-settings'
+const PREMIUM_FEATURES_KEY = 'admin-premium-features'
 
 export function useSellerPlansQuery() {
   return useQuery({
@@ -137,5 +147,29 @@ export function useUpdatePaymentSettings() {
       return data
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: [SETTINGS_KEY] }),
+  })
+}
+
+export function usePremiumFeaturesQuery() {
+  return useQuery({
+    queryKey: [PREMIUM_FEATURES_KEY],
+    queryFn: async () => (await apiClient.get<{ features: PremiumFeature[] }>('/admin/premium-features')).data.features,
+  })
+}
+
+export function useUpdatePremiumFeatures() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (features: PremiumFeature[]) =>
+      (await apiClient.put<{ features: PremiumFeature[] }>('/admin/premium-features', { features })).data,
+    onSuccess: () => qc.invalidateQueries({ queryKey: [PREMIUM_FEATURES_KEY] }),
+  })
+}
+
+export function useResetPremiumFeatures() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => apiClient.delete('/admin/premium-features'),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [PREMIUM_FEATURES_KEY] }),
   })
 }
