@@ -297,6 +297,13 @@ export function ThemePage() {
             cfg={sections.header}
           />
           <ImageSectionCard
+            sectionKey='header_hero'
+            title='Profile hero header'
+            description='Profile page and Awards & Achievements page headers.'
+            defaultColors={['#E76739', '#E76539']}
+            cfg={sections.header_hero}
+          />
+          <ImageSectionCard
             sectionKey='dashboard_meal_plan'
             title='Home — Meal Plan card'
             description='The big hero card on Home.'

@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.15.1 (2026-07-15)
+
+### Added
+- **Theme page: Profile hero header card** — Profile and Awards & Achievements pages share a photo+gradient hero header, forgotten from the initial Theme rollout; now controllable from Content → Theme like the other sections.
+
 ## v1.15.0 (2026-07-15)
 
 ### Added

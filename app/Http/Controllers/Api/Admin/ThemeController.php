@@ -15,6 +15,7 @@ class ThemeController extends Controller
 {
     private const SECTIONS = [
         'header',
+        'header_hero',
         'dashboard_meal_plan',
         'dashboard_my_recipes',
         'dashboard_spending_history',
