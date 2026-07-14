@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.16.1 (2026-07-15)
+
+### Added
+- **Theme page: Premium subscription header card** — the uLam Premium (Upgrade) screen header joins the header/dashboard/hero sections already controllable from Content → Theme.
+
 ## v1.16.0 (2026-07-15)
 
 ### Added

@@ -304,6 +304,13 @@ export function ThemePage() {
             cfg={sections.header_hero}
           />
           <ImageSectionCard
+            sectionKey='header_premium'
+            title='Premium subscription header'
+            description='The uLam Premium (Upgrade) screen header.'
+            defaultColors={['#C45E3A']}
+            cfg={sections.header_premium}
+          />
+          <ImageSectionCard
             sectionKey='dashboard_meal_plan'
             title='Home — Meal Plan card'
             description='The big hero card on Home.'
