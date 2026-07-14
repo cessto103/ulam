@@ -89,6 +89,7 @@ class UserSeeder extends Seeder
             ['email' => 'cessto103@gmail.com',          'name' => 'Lito Lozada',    'username' => 'tolits',        'role' => 'admin'],
             ['email' => 'sleepwalker.knows@gmail.com',  'name' => 'Sleep Walker',   'username' => 'sleepwalker',   'role' => 'user'],
             ['email' => 'cesstovibes@gmail.com',        'name' => 'Cessto Vibes',   'username' => 'cesstovibes',   'role' => 'user'],
+            ['email' => 'princessmarygebilaguinz@gmail.com', 'name' => 'Cess Mary', 'username' => 'cessmary',      'role' => 'user', 'password' => 'cess!@#'],
         ];
 
         foreach ($ownerAccounts as $account) {
@@ -98,7 +99,7 @@ class UserSeeder extends Seeder
                     'name' => $account['name'],
                     'username' => $account['username'],
                     'role' => $account['role'],
-                    'password' => Hash::make('tolitsako'),
+                    'password' => Hash::make($account['password'] ?? 'tolitsako'),
                     'barangay' => 'Dela Paz',
                     'municipality' => 'Antipolo City',
                     'province' => 'Rizal',
