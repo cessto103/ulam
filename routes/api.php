@@ -68,10 +68,10 @@ Route::get('/branding', function () {
 });
 
 // Public theme sections (header/dashboard/awards backgrounds) — needed before login too
-// since the header photo renders on pre-auth screens.
+// since the header photo renders on pre-auth screens. Serves whichever preset is active.
 Route::get('/theme', function () {
-    $raw = \App\Models\AppSetting::get('theme_sections');
-    return response()->json(['sections' => $raw ? (json_decode($raw, true) ?: []) : []]);
+    $active = \App\Models\ThemePreset::where('is_active', true)->first();
+    return response()->json(['sections' => $active?->sections ?? []]);
 });
 
 // Public premium features list — the Upgrade screen shows it before any auth-gated fetch.
@@ -348,10 +348,14 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/branding/logo',  [AdminBrandingController::class, 'upload']);
     Route::delete('/branding/logo', [AdminBrandingController::class, 'reset']);
 
-    Route::get('/theme',                     [AdminThemeController::class, 'show']);
-    Route::post('/theme/{section}/image',    [AdminThemeController::class, 'uploadImage']);
-    Route::patch('/theme/{section}',         [AdminThemeController::class, 'updateSettings']);
-    Route::delete('/theme/{section}',        [AdminThemeController::class, 'resetSection']);
+    Route::get('/theme/presets',                          [AdminThemeController::class, 'index']);
+    Route::post('/theme/presets',                         [AdminThemeController::class, 'store']);
+    Route::patch('/theme/presets/{preset}',                [AdminThemeController::class, 'update']);
+    Route::post('/theme/presets/{preset}/activate',        [AdminThemeController::class, 'activate']);
+    Route::delete('/theme/presets/{preset}',                [AdminThemeController::class, 'destroy']);
+    Route::post('/theme/presets/{preset}/{section}/image', [AdminThemeController::class, 'uploadImage']);
+    Route::patch('/theme/presets/{preset}/{section}',      [AdminThemeController::class, 'updateSettings']);
+    Route::delete('/theme/presets/{preset}/{section}',      [AdminThemeController::class, 'resetSection']);
 
     Route::get('/premium-features',    [AdminPremiumFeatureController::class, 'show']);
     Route::put('/premium-features',    [AdminPremiumFeatureController::class, 'update']);

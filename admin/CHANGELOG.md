@@ -1,6 +1,14 @@
 # uLam Admin — Changelog
 
-## v1.16.1 (2026-07-15)
+## v1.17.0 (2026-07-15)
+
+Theme presets: switchable, named color/photo sets instead of one global config.
+
+### Added
+- **Preset gallery on the Theme page** — the header/dashboard/Awards sections you could already customize now live inside named, switchable presets. Create a new preset, duplicate an existing one, rename, activate ("go live" — only one preset is active in the app at a time), or delete. Seeded with 5 to start: **Default**, **Christmas**, **New Year**, **Araw ng Kalayaan**, and **Valentine's Day** — each a ready-made color set built from the same Primary/Secondary/Accent/Text roles as the original brand palette, so they slot into every themed section without touching a photo (upload one per preset anytime for the full seasonal look).
+
+### Changed
+- Theme section editors (image upload, focal point, fit, overlay colors) now edit whichever preset is selected in the gallery, not a single global config.
 
 ### Added
 - **Theme page: Premium subscription header card** — the uLam Premium (Upgrade) screen header joins the header/dashboard/hero sections already controllable from Content → Theme.
