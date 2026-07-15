@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\MealPlan;
 use App\Models\Payment;
 use App\Models\Post;
@@ -16,9 +17,6 @@ class DashboardController extends Controller
     // Sonnet 4.6 pricing per 1M tokens — update if config('services.anthropic.model') changes.
     private const INPUT_PRICE_PER_MILLION = 3.00;
     private const OUTPUT_PRICE_PER_MILLION = 15.00;
-
-    // Premium is ₱59/month per project pricing plan — update if pricing changes.
-    private const PREMIUM_MONTHLY_PRICE = 59;
 
     public function stats()
     {
@@ -39,7 +37,7 @@ class DashboardController extends Controller
                 'total' => $totalUsers,
                 'active_today' => User::whereDate('last_active_date', today())->count(),
                 'premium' => $premiumUsers,
-                'estimated_mrr' => $premiumUsers * self::PREMIUM_MONTHLY_PRICE,
+                'estimated_mrr' => $premiumUsers * (float) AppSetting::get('premium_price_monthly', '59'),
                 'banned' => User::whereNotNull('banned_at')->count(),
             ],
             'content' => [

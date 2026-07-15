@@ -46,9 +46,19 @@ export type PremiumFeature = {
   free: boolean
 }
 
+export type PremiumPricing = {
+  premium_price_monthly: string
+  premium_price_yearly: string
+  premium_promo_enabled: string
+  premium_promo_label: string
+  premium_promo_price_monthly: string
+  premium_promo_price_yearly: string
+}
+
 const PLANS_KEY = 'admin-seller-plans'
 const SETTINGS_KEY = 'admin-app-settings'
 const PREMIUM_FEATURES_KEY = 'admin-premium-features'
+const PREMIUM_PRICING_KEY = 'admin-premium-pricing'
 
 export function useSellerPlansQuery() {
   return useQuery({
@@ -171,5 +181,21 @@ export function useResetPremiumFeatures() {
   return useMutation({
     mutationFn: async () => apiClient.delete('/admin/premium-features'),
     onSuccess: () => qc.invalidateQueries({ queryKey: [PREMIUM_FEATURES_KEY] }),
+  })
+}
+
+export function usePremiumPricingQuery() {
+  return useQuery({
+    queryKey: [PREMIUM_PRICING_KEY],
+    queryFn: async () => (await apiClient.get<PremiumPricing>('/admin/premium-pricing')).data,
+  })
+}
+
+export function useUpdatePremiumPricing() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (body: PremiumPricing) =>
+      (await apiClient.put<PremiumPricing>('/admin/premium-pricing', body)).data,
+    onSuccess: () => qc.invalidateQueries({ queryKey: [PREMIUM_PRICING_KEY] }),
   })
 }

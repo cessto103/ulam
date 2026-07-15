@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2, Plus, RotateCcw } from 'lucide-react'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -24,9 +25,11 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import {
   type BoostOption,
   type PremiumFeature,
+  type PremiumPricing,
   type SellerPlan,
   usePaymentSettingsQuery,
   usePremiumFeaturesQuery,
+  usePremiumPricingQuery,
   useResetPremiumFeatures,
   useSellerPlansQuery,
   useUpdateBoostOption,
@@ -34,6 +37,7 @@ import {
   useUpdatePlan,
   useUpdatePlanPrices,
   useUpdatePremiumFeatures,
+  useUpdatePremiumPricing,
 } from './hooks/use-monetization'
 
 // Mirrors the mobile app's compiled-in default (app/upgrade.tsx) — seeds the
@@ -383,7 +387,7 @@ function PremiumFeaturesCard() {
       <CardHeader>
         <CardTitle>uLam Premium: included features</CardTitle>
         <CardDescription>
-          The "Included in Premium" list shown on the app's Upgrade screen (₱59/mo, ₱499/yr). Mark a row "Free" if it's
+          The "Included in Premium" list shown on the app's Upgrade screen. Mark a row "Free" if it's
           available to everyone (shown greyed-out, for comparison), leave unchecked for Premium-only features.
         </CardDescription>
       </CardHeader>
@@ -457,6 +461,150 @@ function PremiumFeaturesCard() {
   )
 }
 
+const EMPTY_PRICING: PremiumPricing = {
+  premium_price_monthly: '59',
+  premium_price_yearly: '499',
+  premium_promo_enabled: '0',
+  premium_promo_label: '',
+  premium_promo_price_monthly: '',
+  premium_promo_price_yearly: '',
+}
+
+function PremiumPricingCard() {
+  const { data: saved, isLoading } = usePremiumPricingQuery()
+  const update = useUpdatePremiumPricing()
+
+  const [form, setForm] = useState<PremiumPricing>(EMPTY_PRICING)
+  const [dirty, setDirty] = useState(false)
+
+  useEffect(() => {
+    if (isLoading || !saved) return
+    setForm(saved)
+    setDirty(false)
+  }, [saved, isLoading])
+
+  const setField = (patch: Partial<PremiumPricing>) => {
+    setForm((prev) => ({ ...prev, ...patch }))
+    setDirty(true)
+  }
+
+  const promoOn = form.premium_promo_enabled === '1'
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Pricing</CardTitle>
+        <CardDescription>
+          Monthly and yearly prices for uLam Premium, and an optional promo discount for either plan.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='space-y-5'>
+        <div className='grid gap-3 sm:grid-cols-2'>
+          <div className='space-y-1.5'>
+            <Label>Monthly price</Label>
+            <div className='relative'>
+              <span className='absolute start-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground'>₱</span>
+              <Input
+                type='number'
+                min={0}
+                className='ps-6'
+                value={form.premium_price_monthly}
+                onChange={(e) => setField({ premium_price_monthly: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className='space-y-1.5'>
+            <Label>Yearly price</Label>
+            <div className='relative'>
+              <span className='absolute start-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground'>₱</span>
+              <Input
+                type='number'
+                min={0}
+                className='ps-6'
+                value={form.premium_price_yearly}
+                onChange={(e) => setField({ premium_price_yearly: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className='space-y-4 rounded-md border p-3'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <p className='text-sm font-medium'>Promo discount</p>
+              <p className='text-xs text-muted-foreground'>
+                Shows a strikethrough price and a savings badge on the Upgrade screen. Leave a plan's
+                discounted price blank to keep that plan at its regular price.
+              </p>
+            </div>
+            <Switch
+              checked={promoOn}
+              onCheckedChange={(checked) => setField({ premium_promo_enabled: checked ? '1' : '0' })}
+            />
+          </div>
+
+          {promoOn && (
+            <>
+              <div className='space-y-1.5'>
+                <Label>Promo name</Label>
+                <Input
+                  placeholder="e.g. Mother's Day special discount!"
+                  value={form.premium_promo_label}
+                  onChange={(e) => setField({ premium_promo_label: e.target.value })}
+                />
+              </div>
+              <div className='grid gap-3 sm:grid-cols-2'>
+                <div className='space-y-1.5'>
+                  <Label>Discounted monthly price</Label>
+                  <div className='relative'>
+                    <span className='absolute start-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground'>₱</span>
+                    <Input
+                      type='number'
+                      min={0}
+                      className='ps-6'
+                      placeholder='No discount'
+                      value={form.premium_promo_price_monthly}
+                      onChange={(e) => setField({ premium_promo_price_monthly: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className='space-y-1.5'>
+                  <Label>Discounted yearly price</Label>
+                  <div className='relative'>
+                    <span className='absolute start-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground'>₱</span>
+                    <Input
+                      type='number'
+                      min={0}
+                      className='ps-6'
+                      placeholder='No discount'
+                      value={form.premium_promo_price_yearly}
+                      onChange={(e) => setField({ premium_promo_price_yearly: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className='flex justify-end'>
+          <Button
+            disabled={!dirty || update.isPending}
+            onClick={() =>
+              update.mutate(form, {
+                onSuccess: () => { toast.success('Pricing saved.'); setDirty(false) },
+                onError: (error: any) => toast.error(error?.response?.data?.message ?? 'Could not save.'),
+              })
+            }
+          >
+            Save pricing
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function Monetization() {
   const { data, isLoading } = useSellerPlansQuery()
 
@@ -482,29 +630,42 @@ export function Monetization() {
 
         <PaymentSettingsCard />
 
-        <PremiumFeaturesCard />
+        <Tabs defaultValue='premium'>
+          <TabsList>
+            <TabsTrigger value='premium'>uLam Premium: included features</TabsTrigger>
+            <TabsTrigger value='seller-plans'>Seller plans</TabsTrigger>
+            <TabsTrigger value='boost-prices'>Boost prices</TabsTrigger>
+          </TabsList>
 
-        {isLoading ? (
-          <p className='text-muted-foreground'>Loading plans...</p>
-        ) : (
-          <>
-            <h3 className='text-lg font-semibold'>Seller plans</h3>
-            <div className='grid gap-4 lg:grid-cols-2'>
-              {(data?.plans ?? []).map((plan) => (
-                <PlanCard key={plan.id} plan={plan} />
-              ))}
-            </div>
+          <TabsContent value='premium' className='flex flex-col gap-4 sm:gap-6'>
+            <PremiumFeaturesCard />
+            <PremiumPricingCard />
+          </TabsContent>
 
-            <div>
-              <h3 className='mb-2 text-lg font-semibold'>Boost prices</h3>
+          <TabsContent value='seller-plans'>
+            {isLoading ? (
+              <p className='text-muted-foreground'>Loading plans...</p>
+            ) : (
+              <div className='grid gap-4 lg:grid-cols-2'>
+                {(data?.plans ?? []).map((plan) => (
+                  <PlanCard key={plan.id} plan={plan} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value='boost-prices'>
+            {isLoading ? (
+              <p className='text-muted-foreground'>Loading boost prices...</p>
+            ) : (
               <div className='grid gap-2 lg:grid-cols-2'>
                 {(data?.boost_options ?? []).map((option) => (
                   <BoostRow key={option.id} option={option} />
                 ))}
               </div>
-            </div>
-          </>
-        )}
+            )}
+          </TabsContent>
+        </Tabs>
       </Main>
     </>
   )

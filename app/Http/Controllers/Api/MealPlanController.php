@@ -59,7 +59,10 @@ class MealPlanController extends Controller
         $budget = $user->currentBudget;
 
         if (!$budget) {
-            return response()->json(['message' => 'I-setup muna ang iyong budget bago mag-generate ng meal plan.'], 422);
+            return response()->json([
+                'message' => 'Please set up your budget before generating a meal plan.',
+                'no_budget' => true,
+            ], 422);
         }
 
         try {
@@ -196,7 +199,10 @@ class MealPlanController extends Controller
         $budget = $user->currentBudget;
 
         if (!$budget) {
-            return response()->json(['message' => 'I-setup muna ang iyong budget.'], 422);
+            return response()->json([
+                'message' => 'Please set up your budget first.',
+                'no_budget' => true,
+            ], 422);
         }
 
         // Delete today's existing plan

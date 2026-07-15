@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppSetting;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -12,10 +13,27 @@ use Illuminate\Support\Facades\Log;
 
 class UpgradeController extends Controller
 {
-    private const PLANS = [
-        'monthly' => ['amount' => 5900,  'label' => 'uLam Premium – Buwanin'],
-        'yearly'  => ['amount' => 49900, 'label' => 'uLam Premium – Taon-taon'],
+    private const LABELS = [
+        'monthly' => 'uLam Premium – Buwanin',
+        'yearly'  => 'uLam Premium – Taon-taon',
     ];
+
+    // Resolves the amount actually charged for a plan, in centavos — the base
+    // admin-set price, or the promo price when a promo is active and set for
+    // this plan (Content > Monetization > Premium Features > Pricing).
+    private function resolveAmountCentavos(string $plan): int
+    {
+        $base = (float) AppSetting::get("premium_price_{$plan}", $plan === 'yearly' ? '499' : '59');
+
+        if (AppSetting::get('premium_promo_enabled', '0') === '1') {
+            $promo = AppSetting::get("premium_promo_price_{$plan}");
+            if ($promo !== null && $promo !== '' && (float) $promo > 0) {
+                $base = (float) $promo;
+            }
+        }
+
+        return (int) round($base * 100);
+    }
 
     // POST /upgrade/checkout  (auth required)
     public function checkout(Request $request): JsonResponse
@@ -24,15 +42,16 @@ class UpgradeController extends Controller
             'plan' => ['required', 'in:monthly,yearly'],
         ]);
 
-        $plan = self::PLANS[$request->plan];
+        $amount = $this->resolveAmountCentavos($request->plan);
+        $label = self::LABELS[$request->plan];
         $user = $request->user();
 
         $response = Http::withBasicAuth(config('services.paymongo.secret_key'), '')
             ->post('https://api.paymongo.com/v1/links', [
                 'data' => [
                     'attributes' => [
-                        'amount'      => $plan['amount'],
-                        'description' => $plan['label'],
+                        'amount'      => $amount,
+                        'description' => $label,
                         'remarks'     => "uLam Premium for user #{$user->id}",
                         'metadata'    => [
                             'user_id'   => $user->id,
@@ -96,7 +115,7 @@ class UpgradeController extends Controller
         // webhook retries don't double-record.
         $payment = $event['data'] ?? [];
         $paymentId = $payment['id'] ?? null;
-        $amount = $payment['attributes']['amount'] ?? self::PLANS[$plan]['amount'] ?? 0;
+        $amount = $payment['attributes']['amount'] ?? $this->resolveAmountCentavos($plan);
 
         $record = [
             'user_id' => $userId,

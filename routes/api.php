@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorControll
 use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\Admin\ThemeController as AdminThemeController;
 use App\Http\Controllers\Api\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Api\Admin\PremiumPricingController as AdminPremiumPricingController;
 use App\Http\Controllers\Api\Admin\PremiumFeatureController as AdminPremiumFeatureController;
 use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
 use App\Http\Controllers\Api\LegalController;
@@ -80,6 +81,10 @@ Route::get('/premium-features', function () {
     $raw = \App\Models\AppSetting::get('premium_features');
     return response()->json(['features' => $raw ? (json_decode($raw, true) ?: []) : []]);
 });
+
+// Public premium pricing (base + promo) — reuses the admin controller's show()
+// so the default prices live in one place, same as /about.
+Route::get('/premium-pricing', [AdminPremiumPricingController::class, 'show']);
 
 // Public "About the App" content — Settings > About the App reads this without auth.
 // Reuses the admin controller's show() so the default text lives in one place.
@@ -368,6 +373,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/premium-features',    [AdminPremiumFeatureController::class, 'show']);
     Route::put('/premium-features',    [AdminPremiumFeatureController::class, 'update']);
     Route::delete('/premium-features', [AdminPremiumFeatureController::class, 'reset']);
+
+    Route::get('/premium-pricing', [AdminPremiumPricingController::class, 'show']);
+    Route::put('/premium-pricing', [AdminPremiumPricingController::class, 'update']);
 
     Route::get('/legal-documents',                  [AdminLegalDocumentController::class, 'index']);
     Route::get('/legal-documents/{slug}/versions',  [AdminLegalDocumentController::class, 'versions']);

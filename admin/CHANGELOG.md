@@ -1,5 +1,13 @@
 # uLam Admin — Changelog
 
+## v1.19.0 (2026-07-15)
+
+### Added
+- **Premium pricing editor** (Content → Monetization → uLam Premium: included features → Pricing) — edit the Monthly and Yearly prices, and configure an optional promo discount (promo name, discounted monthly/yearly price) that shows on the app's Upgrade screen and is actually charged at checkout while active.
+
+### Changed
+- **Plans & Pricing page reorganized into tabs** ("uLam Premium: included features", "Seller plans", "Boost prices") instead of one long scrolling page. The checkout kill-switch stays above the tabs since it applies to all of them.
+
 ## v1.18.0 (2026-07-15)
 
 ### Added
