@@ -395,15 +395,26 @@ class RecipeController extends Controller
 
     public function book(Request $request)
     {
-        $saved = RecipeBook::where('user_id', $request->user()->id)
+        $userId = $request->user()->id;
+
+        $saved = RecipeBook::where('user_id', $userId)
             ->with(['recipe' => fn($q) => $q->select([
                 'id', 'title', 'description', 'budget_tag', 'estimated_cost',
                 'servings', 'prep_time_minutes', 'cook_time_minutes', 'difficulty',
                 'tags', 'collage_style', 'gradient_key', 'font_key', 'image_urls',
-                'save_count', 'is_published',
-            ])])
+                'save_count', 'is_published', 'user_id', 'source',
+            ])->with('user:id,name,username')])
             ->latest()
             ->paginate(50);
+
+        // Flatten is_mine onto each recipe, same shape as index()/show(), so the
+        // mobile client can gate the "by {author}" row consistently everywhere.
+        $saved->getCollection()->transform(function ($row) use ($userId) {
+            if ($row->recipe) {
+                $row->recipe->is_mine = $row->recipe->user_id === $userId;
+            }
+            return $row;
+        });
 
         return response()->json($saved);
     }
