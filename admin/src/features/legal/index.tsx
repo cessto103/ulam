@@ -76,7 +76,7 @@ export function LegalContent() {
 
   const startDraft = (duplicateFrom?: number) => {
     if (draft) {
-      toast.info('A draft already exists — edit or delete it first.')
+      toast.info('A draft already exists. Edit or delete it first.')
       return
     }
     createDraft.mutate(
@@ -96,7 +96,7 @@ export function LegalContent() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Legal Documents</h2>
             <p className='text-muted-foreground'>
-              Terms & Conditions and Privacy Policy — versioned, published from here, accepted in-app by users.
+              Terms & Conditions and Privacy Policy: versioned, published from here, accepted in-app by users.
             </p>
           </div>
           <Tabs value={slug} onValueChange={(v) => setSlug(v as 'terms' | 'privacy')}>
@@ -112,7 +112,7 @@ export function LegalContent() {
           <Card>
             <CardHeader className='pb-2'><CardTitle className='text-sm font-medium'>Live version</CardTitle></CardHeader>
             <CardContent>
-              <div className='text-2xl font-bold'>{doc?.published_version ? `v${doc.published_version}` : '—'}</div>
+              <div className='text-2xl font-bold'>{doc?.published_version ? `v${doc.published_version}` : '-'}</div>
               {doc?.published_at && (
                 <p className='text-xs text-muted-foreground'>
                   since {new Date(doc.published_at).toLocaleDateString()} by {doc.published_by}
@@ -188,13 +188,13 @@ export function LegalContent() {
                   <TableRow key={v.id}>
                     <TableCell className='font-mono'>v{v.version}</TableCell>
                     <TableCell><Badge className={`capitalize ${statusClass[v.status] ?? ''}`}>{v.status}</Badge></TableCell>
-                    <TableCell className='max-w-72 truncate' title={v.changelog}>{v.changelog || '—'}</TableCell>
-                    <TableCell>{v.author ?? '—'}</TableCell>
+                    <TableCell className='max-w-72 truncate' title={v.changelog}>{v.changelog || '-'}</TableCell>
+                    <TableCell>{v.author ?? '-'}</TableCell>
                     <TableCell>
-                      {v.published_at ? new Date(v.published_at).toLocaleDateString() : '—'}
+                      {v.published_at ? new Date(v.published_at).toLocaleDateString() : '-'}
                       {v.published_by && <div className='text-xs text-muted-foreground'>by {v.published_by}</div>}
                     </TableCell>
-                    <TableCell>{v.acceptance_count ?? '—'}</TableCell>
+                    <TableCell>{v.acceptance_count ?? '-'}</TableCell>
                     <TableCell className='text-right'>
                       <div className='flex justify-end gap-1'>
                         <Button variant='ghost' size='icon' title='View' onClick={() => setViewingId(v.id)}><Eye className='size-4' /></Button>

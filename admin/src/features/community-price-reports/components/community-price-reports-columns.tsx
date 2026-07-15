@@ -53,11 +53,11 @@ export const communityPriceReportsColumns: ColumnDef<CommunityPriceReport>[] = [
   },
   {
     id: 'reporter',
-    accessorFn: (row) => row.user?.name ?? '—',
+    accessorFn: (row) => row.user?.name ?? '-',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Reporter' />
     ),
-    cell: ({ row }) => <div>{row.original.user?.name ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.original.user?.name ?? '-'}</div>,
     enableSorting: false,
   },
   {
@@ -66,7 +66,7 @@ export const communityPriceReportsColumns: ColumnDef<CommunityPriceReport>[] = [
       <DataTableColumnHeader column={column} title='Category' />
     ),
     cell: ({ row }) => (
-      <div className='capitalize'>{row.getValue('category') ?? '—'}</div>
+      <div className='capitalize'>{row.getValue('category') ?? '-'}</div>
     ),
     meta: { className: 'hidden md:table-cell' },
     enableSorting: false,
@@ -91,7 +91,7 @@ export const communityPriceReportsColumns: ColumnDef<CommunityPriceReport>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Municipality' />
     ),
-    cell: ({ row }) => <div>{row.getValue('municipality') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('municipality') ?? '-'}</div>,
     meta: { className: 'hidden md:table-cell' },
     enableSorting: false,
   },

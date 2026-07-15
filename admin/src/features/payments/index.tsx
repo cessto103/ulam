@@ -33,7 +33,7 @@ export function Payments() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Payments</h2>
             <p className='text-muted-foreground'>
-              All payments — consumer premium and seller subscriptions,
+              All payments (consumer premium and seller subscriptions),
               processed via PayMongo. Refund a PayMongo payment directly from
               its row.
             </p>

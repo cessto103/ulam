@@ -64,7 +64,7 @@ export const marketPricesColumns: ColumnDef<MarketPrice>[] = [
           {category}
         </Badge>
       ) : (
-        <span>—</span>
+        <span>-</span>
       )
     },
     enableSorting: false,
@@ -89,7 +89,7 @@ export const marketPricesColumns: ColumnDef<MarketPrice>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Market' />
     ),
-    cell: ({ row }) => <div>{row.original.market?.name ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.original.market?.name ?? '-'}</div>,
     enableSorting: false,
     meta: { className: 'hidden md:table-cell' },
   },
@@ -98,7 +98,7 @@ export const marketPricesColumns: ColumnDef<MarketPrice>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Tindahan' />
     ),
-    cell: ({ row }) => <div>{row.original.tindahan?.name ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.original.tindahan?.name ?? '-'}</div>,
     enableSorting: false,
     meta: { className: 'hidden md:table-cell' },
   },

@@ -100,7 +100,7 @@ export function TindahanComments() {
                         <div className='font-medium'>{row.user?.name ?? 'Deleted user'}</div>
                         <div className='text-xs text-muted-foreground'>@{row.user?.username}</div>
                       </TableCell>
-                      <TableCell>{row.tindahan?.name ?? '—'}</TableCell>
+                      <TableCell>{row.tindahan?.name ?? '-'}</TableCell>
                       <TableCell className='max-w-96'>{row.body}</TableCell>
                       <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
                       <TableCell className='text-right'>
@@ -136,7 +136,7 @@ export function TindahanComments() {
                         <div className='font-medium'>{row.user?.name ?? 'Deleted user'}</div>
                         <div className='text-xs text-muted-foreground'>@{row.user?.username}</div>
                       </TableCell>
-                      <TableCell>{row.tindahan?.name ?? '—'}</TableCell>
+                      <TableCell>{row.tindahan?.name ?? '-'}</TableCell>
                       <TableCell>
                         <div className='flex items-center gap-1'>
                           {Array.from({ length: 5 }).map((_, i) => (
@@ -172,7 +172,7 @@ export function TindahanComments() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this comment?</AlertDialogTitle>
             <AlertDialogDescription>
-              "{deletingComment?.body}" — this cannot be undone.
+              "{deletingComment?.body}". This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

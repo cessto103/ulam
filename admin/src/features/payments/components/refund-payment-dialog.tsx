@@ -65,7 +65,7 @@ export function RefundPaymentDialog({ payment, onOpenChange }: Props) {
             {payment?.user?.name} · {payment?.plan_type} · Ref{' '}
             <span className='font-mono'>{payment?.provider_payment_id}</span>
             <br />
-            This calls PayMongo directly — you do not get the transaction fee
+            This calls PayMongo directly: you do not get the transaction fee
             back, and e-wallet refunds can take a few business days to land.
           </DialogDescription>
         </DialogHeader>

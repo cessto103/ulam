@@ -54,13 +54,13 @@ export const tindahanColumns: ColumnDef<Tindahan>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Market' />
     ),
-    cell: ({ row }) => <div>{row.original.market?.name ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.original.market?.name ?? '-'}</div>,
     enableSorting: false,
   },
   {
     accessorKey: 'type',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Type' />,
-    cell: ({ row }) => <div>{row.getValue('type') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('type') ?? '-'}</div>,
     meta: { className: 'hidden md:table-cell' },
   },
   {
@@ -68,7 +68,7 @@ export const tindahanColumns: ColumnDef<Tindahan>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Municipality' />
     ),
-    cell: ({ row }) => <div>{row.getValue('municipality') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('municipality') ?? '-'}</div>,
   },
   {
     id: 'is_active',

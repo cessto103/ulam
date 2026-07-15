@@ -105,12 +105,12 @@ export function RecipeIngredientsEditor({
               ingredients.map((ingredient) => (
                 <TableRow key={ingredient.id}>
                   <TableCell>{ingredient.name}</TableCell>
-                  <TableCell>{ingredient.quantity ?? '—'}</TableCell>
-                  <TableCell>{ingredient.unit ?? '—'}</TableCell>
+                  <TableCell>{ingredient.quantity ?? '-'}</TableCell>
+                  <TableCell>{ingredient.unit ?? '-'}</TableCell>
                   <TableCell>
                     {ingredient.estimated_price
                       ? `₱${Number(ingredient.estimated_price).toFixed(2)}`
-                      : '—'}
+                      : '-'}
                   </TableCell>
                   <TableCell>{ingredient.sort_order}</TableCell>
                   <TableCell>

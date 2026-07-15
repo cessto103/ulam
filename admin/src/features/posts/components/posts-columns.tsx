@@ -87,7 +87,7 @@ export const postsColumns: ColumnDef<Post>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Municipality' />
     ),
-    cell: ({ row }) => <div>{row.getValue('municipality') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('municipality') ?? '-'}</div>,
     meta: { className: 'hidden md:table-cell' },
     enableSorting: false,
   },
@@ -120,7 +120,7 @@ export const postsColumns: ColumnDef<Post>[] = [
           <BadgeCheck size={12} /> Sponsored
         </Badge>
       ) : (
-        <span className='text-muted-foreground'>—</span>
+        <span className='text-muted-foreground'>-</span>
       ),
     enableSorting: false,
   },

@@ -246,7 +246,7 @@ export function SupportTickets() {
                       {
                         onSuccess: () => {
                           setReply('')
-                          toast.success('Reply sent — user notified.')
+                          toast.success('Reply sent, user notified.')
                         },
                         onError: (error: any) =>
                           toast.error(

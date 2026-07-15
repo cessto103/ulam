@@ -73,7 +73,7 @@ export function RecipeComments() {
                       <div className='font-medium'>{row.user?.name ?? 'Deleted user'}</div>
                       <div className='text-xs text-muted-foreground'>@{row.user?.username}</div>
                     </TableCell>
-                    <TableCell>{row.recipe?.title ?? '—'}</TableCell>
+                    <TableCell>{row.recipe?.title ?? '-'}</TableCell>
                     <TableCell className='max-w-96'>{row.body}</TableCell>
                     <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
                     <TableCell className='text-right'>
@@ -102,7 +102,7 @@ export function RecipeComments() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this comment?</AlertDialogTitle>
             <AlertDialogDescription>
-              "{deleting?.body}" — this cannot be undone.
+              "{deleting?.body}". This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -134,7 +134,7 @@ export function Faqs() {
             <h2 className='text-2xl font-bold tracking-tight'>FAQs</h2>
             <p className='text-muted-foreground'>
               Questions shown in the app's Help & Support screen. Tagalog
-              fields are optional — the app falls back to English.
+              fields are optional: the app falls back to English.
             </p>
           </div>
           <Button onClick={() => openEditor('new')}>

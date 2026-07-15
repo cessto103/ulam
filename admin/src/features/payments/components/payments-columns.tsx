@@ -81,7 +81,7 @@ const baseColumns: ColumnDef<Payment>[] = [
     ),
     cell: ({ row }) => (
       <span className='font-mono text-xs'>
-        {row.getValue('provider_payment_id') ?? '—'}
+        {row.getValue('provider_payment_id') ?? '-'}
       </span>
     ),
     meta: { className: 'hidden lg:table-cell' },

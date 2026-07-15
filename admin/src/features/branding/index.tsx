@@ -40,7 +40,7 @@ function LogoCard({
       form.append('logo', file)
       form.append('variant', variant)
       await apiClient.post('/admin/branding/logo', form, { headers: { 'Content-Type': 'multipart/form-data' } })
-      toast.success('Logo updated — the app picks it up on its next refresh.')
+      toast.success('Logo updated: the app picks it up on its next refresh.')
       qc.invalidateQueries({ queryKey: ['admin-branding'] })
     } catch (e: any) {
       toast.error(e?.response?.data?.message ?? 'Upload failed.')
@@ -121,21 +121,21 @@ export function BrandingPage() {
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>Branding</h2>
           <p className='text-muted-foreground'>
-            Replace the app logo anywhere it appears — welcome, login, home, and page headers — without an app update.
+            Replace the app logo anywhere it appears (welcome, login, home, and page headers) without an app update.
             Leave a slot empty to keep the built-in uLam script logo.
           </p>
         </div>
         <div className='grid gap-4 lg:grid-cols-2'>
           <LogoCard
             variant='default'
-            title='Logo — light backgrounds'
+            title='Logo (light backgrounds)'
             description='Shown on cream/white screens: welcome, login, the Home header.'
             previewBg='#FFF8E8'
             currentUrl={data?.logo ?? null}
           />
           <LogoCard
             variant='light'
-            title='Logo — colored headers'
+            title='Logo (colored headers)'
             description='The white/light version shown on terracotta headers: Profile, page headers, tab screens.'
             previewBg='linear-gradient(135deg,#CC5027,#E7653B)'
             currentUrl={data?.logo_light ?? null}

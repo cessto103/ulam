@@ -70,7 +70,7 @@ export const usersColumns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Municipality' />
     ),
-    cell: ({ row }) => <div>{row.getValue('municipality') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('municipality') ?? '-'}</div>,
     meta: { className: 'hidden md:table-cell' },
   },
   {

@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.17.1 (2026-07-15)
+
+### Changed
+- **Em dashes removed from all user-facing copy** in the admin panel (page descriptions, toasts, dialogs, card titles), replaced with a colon, comma, parenthesis, or a new sentence depending on context.
+
 ## v1.17.0 (2026-07-15)
 
 Theme presets: switchable, named color/photo sets instead of one global config.

@@ -66,7 +66,7 @@ export const marketsColumns: ColumnDef<Market>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Barangay' />
     ),
-    cell: ({ row }) => <div>{row.getValue('barangay') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('barangay') ?? '-'}</div>,
     meta: { className: 'hidden md:table-cell' },
   },
   {
@@ -74,7 +74,7 @@ export const marketsColumns: ColumnDef<Market>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Municipality' />
     ),
-    cell: ({ row }) => <div>{row.getValue('municipality') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('municipality') ?? '-'}</div>,
   },
   {
     id: 'is_active',

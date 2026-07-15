@@ -97,7 +97,7 @@ export function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>
-                  {isLoading ? '—' : (tile.value?.toLocaleString() ?? 0)}
+                  {isLoading ? '-' : (tile.value?.toLocaleString() ?? 0)}
                 </div>
                 {tile.description && (
                   <p className='text-xs text-muted-foreground'>
@@ -111,7 +111,7 @@ export function Dashboard() {
 
         <Card className='mt-4'>
           <CardHeader>
-            <CardTitle>Growth — last 30 days</CardTitle>
+            <CardTitle>Growth (last 30 days)</CardTitle>
             <CardDescription>
               New user signups and community posts per day.
             </CardDescription>
@@ -172,7 +172,7 @@ export function Dashboard() {
           <Card className='col-span-1 lg:col-span-3'>
             <CardHeader>
               <CardTitle>Top by XP</CardTitle>
-              <CardDescription>Leaderboard — top 10 users.</CardDescription>
+              <CardDescription>Leaderboard (top 10 users).</CardDescription>
             </CardHeader>
             <CardContent>
               <XpLeaderboard />

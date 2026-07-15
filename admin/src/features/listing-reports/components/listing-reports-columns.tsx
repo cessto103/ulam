@@ -38,13 +38,13 @@ export const listingReportsColumns: ColumnDef<ListingReport>[] = [
   },
   {
     id: 'reporter',
-    accessorFn: (row) => row.reporter?.name ?? '—',
+    accessorFn: (row) => row.reporter?.name ?? '-',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Reported by' />
     ),
     cell: ({ row }) => (
       <LongText className='max-w-36 ps-3'>
-        {row.original.reporter?.name ?? '—'}
+        {row.original.reporter?.name ?? '-'}
       </LongText>
     ),
     meta: {

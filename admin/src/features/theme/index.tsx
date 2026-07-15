@@ -265,7 +265,7 @@ function ImageSectionCard({
     uploadImage.mutate(
       { presetId, section: sectionKey, file },
       {
-        onSuccess: () => toast.success('Background updated — the app picks it up on its next refresh.'),
+        onSuccess: () => toast.success('Background updated: the app picks it up on its next refresh.'),
         onError: (e: any) => toast.error(e?.response?.data?.message ?? 'Upload failed.'),
         onSettled: () => { if (fileRef.current) fileRef.current.value = '' },
       }
@@ -489,7 +489,7 @@ export function ThemePage() {
           <h2 className='text-2xl font-bold tracking-tight'>Theme</h2>
           <p className='text-muted-foreground'>
             Control the background photo, crop focus, and color overlay for the page header and Home dashboard
-            boxes, plus the Awards stat colors — grouped into named presets (Default, Christmas, ...). Only one
+            boxes, plus the Awards stat colors, grouped into named presets (Default, Christmas, ...). Only one
             preset is live in the app at a time.
           </p>
         </div>
@@ -504,7 +504,7 @@ export function ThemePage() {
           <>
             {!selected.is_active && (
               <div className='rounded-md border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-900'>
-                You're editing <strong>{selected.name}</strong>, which isn't live yet — hit the checkmark next to its
+                You're editing <strong>{selected.name}</strong>, which isn't live yet. Hit the checkmark next to its
                 name above to activate it.
               </div>
             )}
@@ -537,7 +537,7 @@ export function ThemePage() {
               <ImageSectionCard
                 presetId={selected.id}
                 sectionKey='dashboard_meal_plan'
-                title='Home — Meal Plan card'
+                title='Home: Meal Plan card'
                 description='The big hero card on Home.'
                 defaultColors={['#2C341E', '#E7653B']}
                 cfg={sections.dashboard_meal_plan}
@@ -545,7 +545,7 @@ export function ThemePage() {
               <ImageSectionCard
                 presetId={selected.id}
                 sectionKey='dashboard_my_recipes'
-                title='Home — My Recipes tile'
+                title='Home: My Recipes tile'
                 description=''
                 defaultColors={['#C45E3A']}
                 cfg={sections.dashboard_my_recipes}
@@ -553,7 +553,7 @@ export function ThemePage() {
               <ImageSectionCard
                 presetId={selected.id}
                 sectionKey='dashboard_spending_history'
-                title='Home — Spending History tile'
+                title='Home: Spending History tile'
                 description=''
                 defaultColors={['#E3A32A']}
                 cfg={sections.dashboard_spending_history}
@@ -561,7 +561,7 @@ export function ThemePage() {
               <ImageSectionCard
                 presetId={selected.id}
                 sectionKey='dashboard_awards'
-                title='Home — Awards tile'
+                title='Home: Awards tile'
                 description=''
                 defaultColors={['#386641']}
                 cfg={sections.dashboard_awards}
@@ -569,7 +569,7 @@ export function ThemePage() {
               <ImageSectionCard
                 presetId={selected.id}
                 sectionKey='dashboard_recipe_book'
-                title='Home — Recipe Book tile'
+                title='Home: Recipe Book tile'
                 description=''
                 defaultColors={['#3C3A2F']}
                 cfg={sections.dashboard_recipe_book}
@@ -577,7 +577,7 @@ export function ThemePage() {
             </div>
 
             <div>
-              <h3 className='mb-3 text-lg font-semibold'>Awards — "Your stats" colors</h3>
+              <h3 className='mb-3 text-lg font-semibold'>Awards: "Your stats" colors</h3>
               <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
                 <ColorOnlyCard presetId={selected.id} sectionKey='awards_stat_saved' title='Saved' defaultBg='#F4B942' defaultText='#58200F' cfg={sections.awards_stat_saved} />
                 <ColorOnlyCard presetId={selected.id} sectionKey='awards_stat_meal_plans' title='Meal Plans' defaultBg='#386641' defaultText='#FFFFFF' cfg={sections.awards_stat_meal_plans} />

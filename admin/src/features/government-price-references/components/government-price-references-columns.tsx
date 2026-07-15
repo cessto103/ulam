@@ -78,7 +78,7 @@ export const governmentPriceReferencesColumns: ColumnDef<GovernmentPriceReferenc
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Category' />
       ),
-      cell: ({ row }) => <div>{row.getValue('category') ?? '—'}</div>,
+      cell: ({ row }) => <div>{row.getValue('category') ?? '-'}</div>,
       meta: { className: 'hidden md:table-cell' },
       enableSorting: false,
     },
@@ -113,7 +113,7 @@ export const governmentPriceReferencesColumns: ColumnDef<GovernmentPriceReferenc
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Region' />
       ),
-      cell: ({ row }) => <div>{row.getValue('region') ?? '—'}</div>,
+      cell: ({ row }) => <div>{row.getValue('region') ?? '-'}</div>,
       meta: { className: 'hidden lg:table-cell' },
       enableSorting: false,
     },
@@ -124,7 +124,7 @@ export const governmentPriceReferencesColumns: ColumnDef<GovernmentPriceReferenc
       ),
       cell: ({ row }) => {
         const value = row.getValue('bulletin_date') as string | null
-        return <div>{value ? new Date(value).toLocaleDateString() : '—'}</div>
+        return <div>{value ? new Date(value).toLocaleDateString() : '-'}</div>
       },
       meta: { className: 'hidden lg:table-cell' },
     },

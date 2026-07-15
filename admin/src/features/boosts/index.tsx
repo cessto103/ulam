@@ -115,11 +115,11 @@ export function Boosts() {
                     </TableCell>
                     <TableCell>
                       <span className='capitalize text-xs text-muted-foreground'>{row.target === 'recipe' ? '🍽️ Recipe' : '🏪 Store'}</span>
-                      <div className='font-medium'>{row.target_name ?? '—'}</div>
+                      <div className='font-medium'>{row.target_name ?? '-'}</div>
                     </TableCell>
-                    <TableCell>{row.duration_days ? `${row.duration_days} days` : '—'}</TableCell>
+                    <TableCell>{row.duration_days ? `${row.duration_days} days` : '-'}</TableCell>
                     <TableCell>₱{Number(row.amount_paid).toFixed(2)}</TableCell>
-                    <TableCell className='font-mono text-xs'>{row.payment_reference ?? '—'}</TableCell>
+                    <TableCell className='font-mono text-xs'>{row.payment_reference ?? '-'}</TableCell>
                     <TableCell>
                       <Badge className={`capitalize ${statusClass[row.status] ?? ''}`}>{row.status}</Badge>
                       {row.status === 'rejected' && row.rejected_reason && (

@@ -58,7 +58,7 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Category' />
     ),
-    cell: ({ row }) => <div>{row.getValue('category') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('category') ?? '-'}</div>,
     meta: { className: 'hidden md:table-cell' },
   },
   {
@@ -96,7 +96,7 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
     ),
     cell: ({ row }) => {
       const value = row.getValue('estimated_cost') as string | null
-      return <div>{value ? `₱${Number(value).toFixed(2)}` : '—'}</div>
+      return <div>{value ? `₱${Number(value).toFixed(2)}` : '-'}</div>
     },
     meta: { className: 'hidden lg:table-cell' },
   },
@@ -105,7 +105,7 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Servings' />
     ),
-    cell: ({ row }) => <div>{row.getValue('servings') ?? '—'}</div>,
+    cell: ({ row }) => <div>{row.getValue('servings') ?? '-'}</div>,
     meta: { className: 'hidden lg:table-cell' },
   },
   {
@@ -114,7 +114,7 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
       <DataTableColumnHeader column={column} title='Difficulty' />
     ),
     cell: ({ row }) => (
-      <div className='capitalize'>{row.getValue('difficulty') ?? '—'}</div>
+      <div className='capitalize'>{row.getValue('difficulty') ?? '-'}</div>
     ),
     meta: { className: 'hidden lg:table-cell' },
   },
@@ -140,7 +140,7 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
       row.getValue('is_premium_only') ? (
         <Crown size={16} className='text-amber-500' />
       ) : (
-        <span className='text-muted-foreground'>—</span>
+        <span className='text-muted-foreground'>-</span>
       ),
     enableSorting: false,
     meta: { className: 'hidden md:table-cell' },

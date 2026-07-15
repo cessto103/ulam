@@ -43,7 +43,7 @@ const DEFAULT_PREMIUM_FEATURES: PremiumFeature[] = [
   { emoji: '📊', title_en: 'Budget Tracking', title_tl: 'Budget Tracking', desc_en: 'Log expenses, track your savings', desc_tl: 'Mag-log ng gastos, tingnan ang savings', free: true },
   { emoji: '📢', title_en: 'Price Reporting', title_tl: 'Price Reporting', desc_en: 'Report and check prices', desc_tl: 'Mag-report at makita ang presyo', free: true },
   { emoji: '👥', title_en: 'Community', title_tl: 'Komunidad', desc_en: 'Posts, likes, and tips from neighbors', desc_tl: 'Mga post, puso, at diskarte ng kapitbahay', free: true },
-  { emoji: '🔓', title_en: 'Unlimited AI Plans', title_tl: 'Unlimited AI Plans', desc_en: 'No limits — as many times as you want', desc_tl: 'Walang limitasyon — kahit ilang beses', free: false },
+  { emoji: '🔓', title_en: 'Unlimited AI Plans', title_tl: 'Unlimited AI Plans', desc_en: 'No limits, as many times as you want', desc_tl: 'Walang limitasyon, kahit ilang beses', free: false },
   { emoji: '⭐', title_en: 'Premium Recipes', title_tl: 'Premium Recipes', desc_en: 'Special recipes for the budget-savvy', desc_tl: 'Espesyal na mga recipe para sa matipid', free: false },
   { emoji: '🔔', title_en: 'Smart Reminders', title_tl: 'Smart Reminders', desc_en: 'Personalized reminders', desc_tl: 'Personalized na mga paalala', free: false },
   { emoji: '🚫', title_en: 'No Ads', title_tl: 'Walang Ads', desc_en: 'A clean experience, no interruptions', desc_tl: 'Malinis na karanasan, walang abala', free: false },
@@ -202,7 +202,7 @@ function BoostRow({ option }: { option: BoostOption }) {
     <div className='flex items-center justify-between gap-3 rounded-md border p-3'>
       <div>
         <p className='text-sm font-medium'>
-          Boost {option.target === 'tindahan' ? 'Store' : 'Recipe'} —{' '}
+          Boost {option.target === 'tindahan' ? 'Store' : 'Recipe'}:{' '}
           {option.duration_days} days
         </p>
         <p className='text-xs text-muted-foreground'>
@@ -273,7 +273,7 @@ function PaymentSettingsCard() {
         <CardTitle>Checkout availability</CardTitle>
         <CardDescription>
           Shown to sellers on the subscription screen. The kill switch hides
-          all payment UI in the app instantly — no app update needed.
+          all payment UI in the app instantly: no app update needed.
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-4'>
@@ -381,10 +381,10 @@ function PremiumFeaturesCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>uLam Premium — included features</CardTitle>
+        <CardTitle>uLam Premium: included features</CardTitle>
         <CardDescription>
           The "Included in Premium" list shown on the app's Upgrade screen (₱59/mo, ₱499/yr). Mark a row "Free" if it's
-          available to everyone (shown greyed-out, for comparison) — leave unchecked for Premium-only features.
+          available to everyone (shown greyed-out, for comparison), leave unchecked for Premium-only features.
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-3'>

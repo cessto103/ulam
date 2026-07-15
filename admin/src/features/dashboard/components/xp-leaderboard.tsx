@@ -36,7 +36,7 @@ export function XpLeaderboard() {
             <div className='space-y-1'>
               <p className='text-sm leading-none font-medium'>{user.name}</p>
               <p className='text-sm text-muted-foreground'>
-                {user.municipality ?? '—'} · {user.streak_days}d streak
+                {user.municipality ?? '-'} · {user.streak_days}d streak
               </p>
             </div>
             <div className='flex items-center gap-2'>
