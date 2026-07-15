@@ -8,8 +8,12 @@ import { playwright } from '@vitest/browser-playwright'
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
-  // Built app is served by WAMP from uLam/public/admin-panel; dev server stays at /.
-  base: command === 'build' ? '/uLam/public/admin-panel/' : '/',
+  // Dev server stays at /. Built app defaults to being served from a domain's
+  // own /admin-panel (Hostinger and any real deployment, where the domain's
+  // document root points straight at Laravel's public/ folder). For local
+  // WAMP, where the whole uLam folder sits under www/uLam/, override with:
+  //   VITE_ADMIN_BASE_PATH=/uLam/public/admin-panel/ npm run build
+  base: command === 'build' ? (process.env.VITE_ADMIN_BASE_PATH || '/admin-panel/') : '/',
   build: {
     outDir: '../public/admin-panel',
     emptyOutDir: true,
