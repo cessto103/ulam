@@ -82,14 +82,8 @@ Route::get('/premium-features', function () {
 });
 
 // Public "About the App" content — Settings > About the App reads this without auth.
-Route::get('/about', function () {
-    return response()->json([
-        'about_title' => \App\Models\AppSetting::get('about_title', 'About uLam'),
-        'about_body' => \App\Models\AppSetting::get('about_body', ''),
-        'about_company' => \App\Models\AppSetting::get('about_company', 'Cessto Web Solutions'),
-        'about_company_url' => \App\Models\AppSetting::get('about_company_url', 'http://cesstowebsolutions.com'),
-    ]);
-});
+// Reuses the admin controller's show() so the default text lives in one place.
+Route::get('/about', [AdminAboutController::class, 'show']);
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
 
 Route::post('/billing/webhooks/paymongo', PayMongoWebhookController::class);

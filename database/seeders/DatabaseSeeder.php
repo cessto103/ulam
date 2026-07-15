@@ -1085,6 +1085,7 @@ class DatabaseSeeder extends Seeder
             $recipe = \App\Models\Recipe::updateOrCreate(
                 ['title' => $r['title']],
                 array_merge($r, [
+                    'source'          => 'official',
                     'is_published'    => true,
                     'is_premium_only' => false,
                 ])
