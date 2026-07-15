@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRati
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
 use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\Admin\ThemeController as AdminThemeController;
+use App\Http\Controllers\Api\Admin\AboutController as AdminAboutController;
 use App\Http\Controllers\Api\Admin\PremiumFeatureController as AdminPremiumFeatureController;
 use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
 use App\Http\Controllers\Api\LegalController;
@@ -78,6 +79,16 @@ Route::get('/theme', function () {
 Route::get('/premium-features', function () {
     $raw = \App\Models\AppSetting::get('premium_features');
     return response()->json(['features' => $raw ? (json_decode($raw, true) ?: []) : []]);
+});
+
+// Public "About the App" content — Settings > About the App reads this without auth.
+Route::get('/about', function () {
+    return response()->json([
+        'about_title' => \App\Models\AppSetting::get('about_title', 'About uLam'),
+        'about_body' => \App\Models\AppSetting::get('about_body', ''),
+        'about_company' => \App\Models\AppSetting::get('about_company', 'Cessto Web Solutions'),
+        'about_company_url' => \App\Models\AppSetting::get('about_company_url', 'http://cesstowebsolutions.com'),
+    ]);
 });
 Route::post('/upgrade/webhook', [UpgradeController::class, 'webhook']); // PayMongo — no auth
 
@@ -347,6 +358,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/branding',        [AdminBrandingController::class, 'show']);
     Route::post('/branding/logo',  [AdminBrandingController::class, 'upload']);
     Route::delete('/branding/logo', [AdminBrandingController::class, 'reset']);
+
+    Route::get('/about', [AdminAboutController::class, 'show']);
+    Route::put('/about', [AdminAboutController::class, 'update']);
 
     Route::get('/theme/presets',                          [AdminThemeController::class, 'index']);
     Route::post('/theme/presets',                         [AdminThemeController::class, 'store']);

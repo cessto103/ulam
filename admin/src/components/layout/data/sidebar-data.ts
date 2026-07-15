@@ -7,6 +7,7 @@ import {
   CreditCard,
   Flag,
   Image as ImageIcon,
+  Info,
   Landmark,
   LayoutDashboard,
   LifeBuoy,
@@ -92,6 +93,11 @@ export const sidebarData: SidebarData = {
           title: 'Theme',
           url: '/theme',
           icon: ImageIcon,
+        },
+        {
+          title: 'About the App',
+          url: '/about',
+          icon: Info,
         },
         {
           title: 'Technical Guide',

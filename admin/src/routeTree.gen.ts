@@ -41,6 +41,7 @@ import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './r
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
 import { Route as AuthenticatedBrandingIndexRouteImport } from './routes/_authenticated/branding/index'
 import { Route as AuthenticatedBoostsIndexRouteImport } from './routes/_authenticated/boosts/index'
+import { Route as AuthenticatedAboutIndexRouteImport } from './routes/_authenticated/about/index'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings/security'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
@@ -223,6 +224,11 @@ const AuthenticatedBoostsIndexRoute =
     path: '/boosts/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAboutIndexRoute = AuthenticatedAboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSettingsSecurityRoute =
   AuthenticatedSettingsSecurityRouteImport.update({
     id: '/security',
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/about/': typeof AuthenticatedAboutIndexRoute
   '/boosts/': typeof AuthenticatedBoostsIndexRoute
   '/branding/': typeof AuthenticatedBrandingIndexRoute
   '/comments/': typeof AuthenticatedCommentsIndexRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/about': typeof AuthenticatedAboutIndexRoute
   '/boosts': typeof AuthenticatedBoostsIndexRoute
   '/branding': typeof AuthenticatedBrandingIndexRoute
   '/comments': typeof AuthenticatedCommentsIndexRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
+  '/_authenticated/about/': typeof AuthenticatedAboutIndexRoute
   '/_authenticated/boosts/': typeof AuthenticatedBoostsIndexRoute
   '/_authenticated/branding/': typeof AuthenticatedBrandingIndexRoute
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
@@ -365,6 +374,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/security'
+    | '/about/'
     | '/boosts/'
     | '/branding/'
     | '/comments/'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/security'
+    | '/about'
     | '/boosts'
     | '/branding'
     | '/comments'
@@ -437,6 +448,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/security'
+    | '/_authenticated/about/'
     | '/_authenticated/boosts/'
     | '/_authenticated/branding/'
     | '/_authenticated/comments/'
@@ -698,6 +710,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBoostsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/about/': {
+      id: '/_authenticated/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof AuthenticatedAboutIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/security': {
       id: '/_authenticated/settings/security'
       path: '/security'
@@ -745,6 +764,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAboutIndexRoute: typeof AuthenticatedAboutIndexRoute
   AuthenticatedBoostsIndexRoute: typeof AuthenticatedBoostsIndexRoute
   AuthenticatedBrandingIndexRoute: typeof AuthenticatedBrandingIndexRoute
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
@@ -772,6 +792,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAboutIndexRoute: AuthenticatedAboutIndexRoute,
   AuthenticatedBoostsIndexRoute: AuthenticatedBoostsIndexRoute,
   AuthenticatedBrandingIndexRoute: AuthenticatedBrandingIndexRoute,
   AuthenticatedCommentsIndexRoute: AuthenticatedCommentsIndexRoute,

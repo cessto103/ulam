@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.18.0 (2026-07-15)
+
+### Added
+- **About the App** (Content → About the App) — edit the title, body text, company name, and company link shown on the app's Settings → About the App screen, no app update needed.
+
 ## v1.17.1 (2026-07-15)
 
 ### Changed
