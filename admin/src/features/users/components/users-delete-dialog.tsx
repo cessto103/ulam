@@ -25,7 +25,7 @@ export function UsersDeleteDialog({
   const { mutate: deleteUser, isPending } = useDeleteUser()
 
   const handleDelete = () => {
-    if (value.trim() !== currentRow.username) return
+    if (value.trim() !== currentRow.username?.trim()) return
 
     deleteUser(currentRow.id, {
       onSuccess: () => {
@@ -43,7 +43,7 @@ export function UsersDeleteDialog({
       open={open}
       onOpenChange={onOpenChange}
       form='users-delete-form'
-      disabled={value.trim() !== currentRow.username || isPending}
+      disabled={value.trim() !== currentRow.username?.trim() || isPending}
       title={
         <span className='text-destructive'>
           <AlertTriangle
