@@ -6,6 +6,8 @@ use Anthropic\Client as AnthropicClient;
 use App\Models\MealPlan;
 use App\Models\MealPlanIngredient;
 use App\Models\MealPlanItem;
+use App\Models\Recipe;
+use App\Models\RecipeIngredient;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -62,16 +64,30 @@ class MealPlanService
               "description": "maikling paglalarawan",
               "estimated_cost": 0.00,
               "servings": {$householdSize},
+              "prep_time_minutes": 10,
+              "cook_time_minutes": 20,
+              "difficulty": "easy",
+              "tags": ["manok", "mabilis"],
               "ingredients": [
                 {"name": "sangkap", "quantity": "dami", "unit": "yunit", "estimated_price": 0.00}
+              ],
+              "steps": [
+                "Hakbang 1 sa pagluluto"
+              ],
+              "tips": [
+                "Opsyonal na tip para sa mas masarap na resulta"
               ]
             }
           ]
         }
+
+        Ang "difficulty" ay dapat "easy", "medium", o "hard" lamang.
+        Ang "steps" ay dapat malinaw, sunud-sunod na hakbang sa pagluluto, hindi maaaring walang laman.
+        Ang "tips" ay maaaring walang laman na array kung wala talagang opsyonal na tip.
         PROMPT;
 
         $response = $this->client->messages->create(
-            maxTokens: 2048,
+            maxTokens: 4096,
             messages: [['role' => 'user', 'content' => $prompt]],
             model: config('services.anthropic.model', 'claude-sonnet-4-6'),
             system: $system,
@@ -92,16 +108,54 @@ class MealPlanService
             ]);
 
             foreach ($data['meals'] ?? [] as $meal) {
+                $ingredients = $meal['ingredients'] ?? [];
+                $cost = (float) ($meal['estimated_cost'] ?? 0);
+
+                // Each AI-generated dish also becomes a real, ownable Recipe —
+                // same page, ratings, votes, and comments as any other recipe,
+                // deletable by the user like anything else they own.
+                $recipe = Recipe::create([
+                    'user_id' => $user->id,
+                    'title' => $meal['dish_name'],
+                    'description' => $meal['description'] ?? null,
+                    'source' => 'ai_generated',
+                    'budget_tag' => $this->budgetTagFor($cost),
+                    'estimated_cost' => $cost,
+                    'servings' => $meal['servings'] ?? 4,
+                    'prep_time_minutes' => $meal['prep_time_minutes'] ?? 0,
+                    'cook_time_minutes' => $meal['cook_time_minutes'] ?? 0,
+                    'difficulty' => in_array($meal['difficulty'] ?? null, ['easy', 'medium', 'hard'], true)
+                        ? $meal['difficulty']
+                        : 'easy',
+                    'tags' => array_values($meal['tags'] ?? []),
+                    'steps' => array_values($meal['steps'] ?? []),
+                    'tips' => array_values($meal['tips'] ?? []),
+                    'is_published' => true,
+                    'is_premium_only' => false,
+                ]);
+
+                foreach ($ingredients as $i => $ing) {
+                    RecipeIngredient::create([
+                        'recipe_id' => $recipe->id,
+                        'name' => $ing['name'],
+                        'quantity' => $ing['quantity'],
+                        'unit' => $ing['unit'],
+                        'estimated_price' => $ing['estimated_price'] ?? 0,
+                        'sort_order' => $i,
+                    ]);
+                }
+
                 $item = MealPlanItem::create([
                     'meal_plan_id' => $mealPlan->id,
                     'meal_type' => $meal['meal_type'],
                     'dish_name' => $meal['dish_name'],
                     'description' => $meal['description'] ?? null,
-                    'estimated_cost' => $meal['estimated_cost'] ?? 0,
+                    'estimated_cost' => $cost,
                     'servings' => $meal['servings'] ?? 4,
+                    'recipe_id' => $recipe->id,
                 ]);
 
-                foreach ($meal['ingredients'] ?? [] as $ing) {
+                foreach ($ingredients as $ing) {
                     MealPlanIngredient::create([
                         'meal_plan_item_id' => $item->id,
                         'name' => $ing['name'],
@@ -114,8 +168,22 @@ class MealPlanService
 
             $user->increment('ai_meal_plans_used_this_month');
 
-            return $mealPlan->load('items.ingredients');
+            return $mealPlan->load('items.ingredients', 'items.recipe');
         });
+    }
+
+    /** Buckets a raw peso amount into the same budget_tag scale the app already renders. */
+    private function budgetTagFor(float $cost): string
+    {
+        return match (true) {
+            $cost <= 100 => 'budget_100',
+            $cost <= 200 => 'budget_200',
+            $cost <= 400 => 'budget_400',
+            $cost <= 600 => 'budget_600',
+            $cost <= 800 => 'budget_800',
+            $cost <= 1000 => 'budget_1000',
+            default => 'budget_1000plus',
+        };
     }
 
     private function parseJson(string $text): array

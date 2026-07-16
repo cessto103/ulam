@@ -385,6 +385,48 @@ class RecipeController extends Controller
         return response()->json(['recipe' => $recipe->fresh()->load(['ingredients', 'user:id,name,username'])]);
     }
 
+    /** DELETE /recipes/{id} — a user deleting one of their own recipes. */
+    public function destroy(Request $request, int $id)
+    {
+        $recipe = Recipe::where('id', $id)->where('user_id', $request->user()->id)->firstOrFail();
+
+        $this->deleteRecipeAndFiles($recipe);
+
+        return response()->json(['message' => 'Recipe deleted.']);
+    }
+
+    /** DELETE /recipes — deletes every recipe the current user owns. */
+    public function destroyAll(Request $request)
+    {
+        $recipes = Recipe::where('user_id', $request->user()->id)->get();
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($recipes) {
+            foreach ($recipes as $recipe) {
+                $this->deleteRecipeAndFiles($recipe);
+            }
+        });
+
+        return response()->json(['message' => "Deleted {$recipes->count()} recipes.", 'deleted' => $recipes->count()]);
+    }
+
+    private function deleteRecipeAndFiles(Recipe $recipe): void
+    {
+        // meal_plan_items.recipe_id has no DB-level FK/cascade, so sever it
+        // manually — the meal plan item itself (dish name, its own copy of
+        // the ingredients) survives, it just stops linking to this recipe.
+        \App\Models\MealPlanItem::where('recipe_id', $recipe->id)->update(['recipe_id' => null]);
+
+        foreach (array_filter([$recipe->image_url, ...($recipe->image_urls ?? [])]) as $url) {
+            if (is_string($url) && str_starts_with($url, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $url));
+            }
+        }
+
+        // Comments, ratings, reactions, ingredients, and the nullable post
+        // link all cascade/null at the database level already.
+        $recipe->delete();
+    }
+
     public function share(Request $request, int $id)
     {
         $user   = $request->user();

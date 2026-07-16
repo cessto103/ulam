@@ -145,8 +145,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/recipes',               [RecipeController::class, 'index']);
     Route::post('/recipes',              [RecipeController::class, 'store']);
+    Route::delete('/recipes',            [RecipeController::class, 'destroyAll']);
     Route::get('/recipes/{id}',          [RecipeController::class, 'show']);
     Route::match(['post','patch'], '/recipes/{id}', [RecipeController::class, 'update']);
+    Route::delete('/recipes/{id}',       [RecipeController::class, 'destroy']);
     Route::patch('/recipes/{id}/share',   [RecipeController::class, 'share']);
     Route::get('/recipes/{id}/sharers',  [RecipeController::class, 'sharers']);
     Route::post('/recipes/{id}/save',    [RecipeController::class, 'saveToBook']);
