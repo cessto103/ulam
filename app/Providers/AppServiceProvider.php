@@ -24,17 +24,18 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(PaymentGateway::class, PayMongoGateway::class);
 
-        // Override default Resend client binding to provide a Guzzle client
-        // with the correct CA bundle — needed on WAMP/Windows where PHP's
-        // default CA store doesn't include the issuer for api.resend.com.
+        // Override default Resend client binding to provide a Guzzle client.
+        // No manual CA bundle override — that was previously hardcoded to a
+        // local WAMP path, which broke on every other machine (including
+        // live). Guzzle's default (no `verify` override) correctly uses
+        // PHP's own CA configuration: curl.cainfo/openssl.cafile in php.ini
+        // on Windows, the OS trust store automatically on Linux.
         $this->app->singleton(ResendClientContract::class, function () {
             $apiKey = ApiKey::from(config('resend.api_key') ?? '');
             $baseUri = BaseUri::from(getenv('RESEND_BASE_URL') ?: 'api.resend.com');
             $headers = Headers::withAuthorization($apiKey);
 
-            $guzzle = new GuzzleClient([
-                'verify' => 'C:\wamp64\bin\php\php8.2.18\cacert.pem',
-            ]);
+            $guzzle = new GuzzleClient();
 
             return new ResendClient(new HttpTransporter($guzzle, $baseUri, $headers));
         });
