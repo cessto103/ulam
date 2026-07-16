@@ -24,7 +24,7 @@ class MealPlanService
     public function generate(User $user, float $dailyBudget, ?string $preferences = null): MealPlan
     {
         if (!$user->canGenerateAiMealPlan()) {
-            throw new \RuntimeException('Naubos na ang iyong 3 AI meal plans ngayong buwan. Mag-upgrade sa Premium para sa unlimited!');
+            throw new \RuntimeException('AI meal plans are a Premium-only feature.');
         }
 
         $dietary = $user->dietary_preferences ?? [];

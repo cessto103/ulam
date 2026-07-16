@@ -102,12 +102,9 @@ class User extends Authenticatable
 
     public function canGenerateAiMealPlan(): bool
     {
-        if ($this->isPremium()) {
-            return true;
-        }
-
-        $this->resetQuotaIfNewMonth();
-        return $this->ai_meal_plans_used_this_month < 3;
+        // AI meal plan generation is Premium-only — each generation is a real,
+        // billed Anthropic API call, so there's no free-tier allowance.
+        return $this->isPremium();
     }
 
     public function resetQuotaIfNewMonth(): void

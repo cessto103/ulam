@@ -234,7 +234,7 @@ class AuthController extends Controller
             'xp' => $user->xp,
             'level' => $user->level,
             'streak_days' => $user->streak_days,
-            'ai_plans_remaining' => $user->isPremium() ? null : max(0, 3 - $user->ai_meal_plans_used_this_month),
+            'ai_plans_remaining' => $user->isPremium() ? null : 0,
             'onboarding_completed' => (bool) $user->onboarding_completed,
         ];
     }
