@@ -87,12 +87,14 @@ class UserSeeder extends Seeder
         $ownerAccounts = [
             ['email' => 'cessto103@yahoo.com',          'name' => 'Tolits Alarcon', 'username' => 'tolitsalarcon', 'role' => 'user'],
             ['email' => 'cessto103@gmail.com',          'name' => 'Lito Lozada',    'username' => 'tolits',        'role' => 'admin'],
-            ['email' => 'sleepwalker.knows@gmail.com',  'name' => 'Sleep Walker',   'username' => 'sleepwalker',   'role' => 'user'],
-            ['email' => 'cesstovibes@gmail.com',        'name' => 'Cessto Vibes',   'username' => 'cesstovibes',   'role' => 'user'],
+            ['email' => 'sleepwalker.knows@gmail.com',  'name' => 'Sleep Walker',   'username' => 'sleepwalker',   'role' => 'user', 'plan' => 'premium'],
+            ['email' => 'cesstovibes@gmail.com',        'name' => 'Cessto Vibes',   'username' => 'cesstovibes',   'role' => 'user', 'plan' => 'premium'],
             ['email' => 'princessmarygebilaguinz@gmail.com', 'name' => 'Cess Mary', 'username' => 'cessmary',      'role' => 'user', 'password' => 'cess!@#'],
         ];
 
         foreach ($ownerAccounts as $account) {
+            $isPremium = ($account['plan'] ?? 'libre') === 'premium';
+
             User::updateOrCreate(
                 ['email' => $account['email']],
                 [
@@ -105,7 +107,9 @@ class UserSeeder extends Seeder
                     'province' => 'Rizal',
                     'region' => 'IV-A',
                     'household_size' => 4,
-                    'plan' => 'libre',
+                    'plan' => $isPremium ? 'premium' : 'libre',
+                    'premium_expires_at' => $isPremium ? now()->addYear() : null,
+                    'premium_source' => $isPremium ? 'paid' : null,
                     'onboarding_completed' => true,
                     'xp' => 0,
                     'level' => 1,
