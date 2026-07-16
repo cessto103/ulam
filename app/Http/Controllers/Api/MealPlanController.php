@@ -205,15 +205,19 @@ class MealPlanController extends Controller
             ], 422);
         }
 
-        // Delete today's existing plan
+        if (!$user->canGenerateAiMealPlan()) {
+            return response()->json([
+                'message'        => 'AI meal plans are a Premium-only feature.',
+                'quota_exceeded' => true,
+            ], 422);
+        }
+
+        // Delete today's existing plan — only reached once we know a
+        // replacement is actually allowed, so a blocked user never loses
+        // their existing plan for nothing.
         MealPlan::where('user_id', $user->id)
             ->whereDate('plan_date', now()->toDateString())
             ->delete();
-
-        // Decrement count since we're replacing, not adding
-        if (!$user->isPremium() && $user->ai_meal_plans_used_this_month > 0) {
-            $user->decrement('ai_meal_plans_used_this_month');
-        }
 
         try {
             $mealPlan = $this->mealPlanService->generate(
