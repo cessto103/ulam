@@ -126,6 +126,10 @@ class MarketDiscoveryService
                 $tags = $el['tags'];
 
                 return [
+                    // OSM's own node/way id — the real identity of this specific physical
+                    // place. Names alone aren't unique (chains repeat everywhere in PH).
+                    'osm_id'        => $el['id'],
+                    'osm_type'      => $el['type'],
                     'name'          => trim($tags['name']),
                     'type'          => $this->mapType($tags),
                     'lat'           => $el['lat'] ?? ($el['center']['lat'] ?? null),
@@ -137,7 +141,7 @@ class MarketDiscoveryService
             ->filter(fn ($item) => $item['lat'] !== null && $item['lon'] !== null)
             // Wet markets/palengke are the most relevant for a price-checking app — prioritize them.
             ->sortBy(fn ($item) => $item['type'] === 'palengke' ? 0 : 1)
-            ->unique('name')
+            ->unique(fn ($item) => $item['osm_type'] . ':' . $item['osm_id'])
             ->take(self::MAX_RESULTS)
             ->values();
     }
@@ -155,14 +159,19 @@ class MarketDiscoveryService
     {
         $markets = collect();
         foreach ($pois as $poi) {
+            // Matched on the OSM element itself, not name+municipality — two different
+            // real branches of the same chain must never collapse into one DB row and
+            // overwrite each other's coordinates.
             $market = Market::updateOrCreate(
                 [
-                    'name'         => $poi['name'],
-                    'municipality' => $poi['addr_city'] ?? $locality['municipality'],
+                    'osm_id'   => $poi['osm_id'],
+                    'osm_type' => $poi['osm_type'],
                 ],
                 [
+                    'name'        => $poi['name'],
                     'type'        => $poi['type'],
                     'barangay'    => $locality['barangay'],
+                    'municipality'=> $poi['addr_city'] ?? $locality['municipality'],
                     'province'    => $poi['addr_province'] ?? $locality['province'],
                     'region'      => $locality['region'],
                     'latitude'    => $poi['lat'],

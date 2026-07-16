@@ -18,12 +18,15 @@ class Market extends Model
         'longitude',
         'is_active',
         'source',
+        'osm_id',
+        'osm_type',
     ];
 
     protected $casts = [
         'latitude' => 'float',
         'longitude' => 'float',
         'is_active' => 'boolean',
+        'osm_id' => 'integer',
     ];
 
     public function user()
