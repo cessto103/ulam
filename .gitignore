@@ -24,3 +24,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# editor SFTP/FTP credentials
+.vscode/sftp.json
