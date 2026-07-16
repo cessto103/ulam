@@ -7,13 +7,15 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { playwright } from '@vitest/browser-playwright'
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
-  // Dev server stays at /. Built app defaults to being served from a domain's
-  // own /admin-panel (Hostinger and any real deployment, where the domain's
-  // document root points straight at Laravel's public/ folder). For local
-  // WAMP, where the whole uLam folder sits under www/uLam/, override with:
-  //   VITE_ADMIN_BASE_PATH=/uLam/public/admin-panel/ npm run build
-  base: command === 'build' ? (process.env.VITE_ADMIN_BASE_PATH || '/admin-panel/') : '/',
+export default defineConfig(({ command, mode }) => ({
+  // Dev server stays at /. `npm run build` (mode=production) targets a real
+  // deployment, where the domain's document root points straight at
+  // Laravel's public/ folder, so the built app lives at /admin-panel.
+  // `npm run build:wamp` (mode=wamp) targets local WAMP instead, where the
+  // whole uLam folder sits under www/uLam/, so the built app lives at
+  // /uLam/public/admin-panel — same shape as production, just local, so you
+  // can test a real build before uploading it.
+  base: command === 'build' ? (mode === 'wamp' ? '/uLam/public/admin-panel/' : '/admin-panel/') : '/',
   build: {
     outDir: '../public/admin-panel',
     emptyOutDir: true,

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:wamp": "tsc -b && vite build --mode wamp",
     "lint": "eslint .",
     "preview": "vite preview",
     "format:check": "prettier --check .",
