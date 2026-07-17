@@ -25,6 +25,8 @@ use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
 use App\Http\Controllers\Api\Admin\AppSettingController as AdminAppSettingController;
 use App\Http\Controllers\Api\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Api\Admin\DailyTaskController as AdminDailyTaskController;
+use App\Http\Controllers\Api\Admin\RewardTierController as AdminRewardTierController;
 use App\Http\Controllers\Api\Admin\SellerPlanController as AdminSellerPlanController;
 use App\Http\Controllers\Api\Admin\SellerSubscriptionController as AdminSellerSubscriptionController;
 use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicketController;
@@ -162,6 +164,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/user/profile', [UserController::class, 'update']);
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::get('/user/achievements', [UserController::class, 'achievements']);
+    Route::get('/user/daily-tasks', [UserController::class, 'dailyTasks']);
     Route::get('/user/stats', [UserController::class, 'stats']);
 
     Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail']);
@@ -406,6 +409,16 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/faqs',        [AdminFaqController::class, 'store']);
     Route::patch('/faqs/{id}',  [AdminFaqController::class, 'update']);
     Route::delete('/faqs/{id}', [AdminFaqController::class, 'destroy']);
+
+    Route::get('/daily-tasks',         [AdminDailyTaskController::class, 'index']);
+    Route::post('/daily-tasks',        [AdminDailyTaskController::class, 'store']);
+    Route::patch('/daily-tasks/{id}',  [AdminDailyTaskController::class, 'update']);
+    Route::delete('/daily-tasks/{id}', [AdminDailyTaskController::class, 'destroy']);
+
+    Route::get('/reward-tiers',         [AdminRewardTierController::class, 'index']);
+    Route::post('/reward-tiers',        [AdminRewardTierController::class, 'store']);
+    Route::patch('/reward-tiers/{id}',  [AdminRewardTierController::class, 'update']);
+    Route::delete('/reward-tiers/{id}', [AdminRewardTierController::class, 'destroy']);
 
     Route::get('/listing-reports',      [AdminListingReportController::class, 'index']);
     Route::get('/listing-reports/{id}', [AdminListingReportController::class, 'show']);

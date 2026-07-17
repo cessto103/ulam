@@ -4,25 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DailyTask extends Model
+class RewardTier extends Model
 {
     protected $fillable = [
-        'slug',
         'title',
         'description',
         'icon',
-        'xp_reward',
-        'action_type',
-        'frequency',
+        'xp_threshold',
         'is_active',
     ];
 
     protected $casts = [
+        'xp_threshold' => 'integer',
         'is_active' => 'boolean',
     ];
-
-    public function userTasks()
-    {
-        return $this->hasMany(UserDailyTask::class);
-    }
 }

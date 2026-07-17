@@ -1,5 +1,12 @@
 # uLam Admin — Changelog
 
+## v1.20.0 (2026-07-17)
+
+### Added
+- **Gamification section** — new sidebar group with two managers:
+  - **Daily & Weekly Tasks** — create/edit/delete tasks shown as a checklist on the app's Awards screen. Each task has an emoji icon, a bonus XP amount, a frequency (daily/weekly), and which real user action auto-completes it (generate a meal plan, report a price, create a post, or log spending) — picked from a list matching the app's actual XP-awarding actions, not free-typed, to avoid a repeat of the `budget_400plus`-style typo bug fixed earlier today.
+  - **Reward Tiers** — XP milestones (e.g. "200 XP unlocks 3 Free AI Meal Plans"). Scaffolding only for now: describes the reward in a title/description, nothing is granted or redeemable automatically, and tiers aren't shown on mobile yet — that comes once actual reward types are decided.
+
 ## v1.19.1 (2026-07-17)
 
 ### Fixed

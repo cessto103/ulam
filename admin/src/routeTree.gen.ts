@@ -26,6 +26,7 @@ import { Route as AuthenticatedTechnicalIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedSupportTicketsIndexRouteImport } from './routes/_authenticated/support-tickets/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSellerSubscriptionsIndexRouteImport } from './routes/_authenticated/seller-subscriptions/index'
+import { Route as AuthenticatedRewardTiersIndexRouteImport } from './routes/_authenticated/reward-tiers/index'
 import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
 import { Route as AuthenticatedRecipeCommentsIndexRouteImport } from './routes/_authenticated/recipe-comments/index'
 import { Route as AuthenticatedPostsIndexRouteImport } from './routes/_authenticated/posts/index'
@@ -37,6 +38,7 @@ import { Route as AuthenticatedListingReportsIndexRouteImport } from './routes/_
 import { Route as AuthenticatedLegalIndexRouteImport } from './routes/_authenticated/legal/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
+import { Route as AuthenticatedDailyTasksIndexRouteImport } from './routes/_authenticated/daily-tasks/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
 import { Route as AuthenticatedBrandingIndexRouteImport } from './routes/_authenticated/branding/index'
@@ -137,6 +139,12 @@ const AuthenticatedSellerSubscriptionsIndexRoute =
     path: '/seller-subscriptions/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRewardTiersIndexRoute =
+  AuthenticatedRewardTiersIndexRouteImport.update({
+    id: '/reward-tiers/',
+    path: '/reward-tiers/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedRecipesIndexRoute =
   AuthenticatedRecipesIndexRouteImport.update({
     id: '/recipes/',
@@ -200,6 +208,12 @@ const AuthenticatedFaqsIndexRoute = AuthenticatedFaqsIndexRouteImport.update({
   path: '/faqs/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDailyTasksIndexRoute =
+  AuthenticatedDailyTasksIndexRouteImport.update({
+    id: '/daily-tasks/',
+    path: '/daily-tasks/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCommunityPriceReportsIndexRoute =
   AuthenticatedCommunityPriceReportsIndexRouteImport.update({
     id: '/community-price-reports/',
@@ -265,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/branding/': typeof AuthenticatedBrandingIndexRoute
   '/comments/': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
+  '/daily-tasks/': typeof AuthenticatedDailyTasksIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/legal/': typeof AuthenticatedLegalIndexRoute
@@ -276,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/posts/': typeof AuthenticatedPostsIndexRoute
   '/recipe-comments/': typeof AuthenticatedRecipeCommentsIndexRoute
   '/recipes/': typeof AuthenticatedRecipesIndexRoute
+  '/reward-tiers/': typeof AuthenticatedRewardTiersIndexRoute
   '/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
@@ -301,6 +317,7 @@ export interface FileRoutesByTo {
   '/branding': typeof AuthenticatedBrandingIndexRoute
   '/comments': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
+  '/daily-tasks': typeof AuthenticatedDailyTasksIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/legal': typeof AuthenticatedLegalIndexRoute
@@ -312,6 +329,7 @@ export interface FileRoutesByTo {
   '/posts': typeof AuthenticatedPostsIndexRoute
   '/recipe-comments': typeof AuthenticatedRecipeCommentsIndexRoute
   '/recipes': typeof AuthenticatedRecipesIndexRoute
+  '/reward-tiers': typeof AuthenticatedRewardTiersIndexRoute
   '/seller-subscriptions': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/support-tickets': typeof AuthenticatedSupportTicketsIndexRoute
@@ -340,6 +358,7 @@ export interface FileRoutesById {
   '/_authenticated/branding/': typeof AuthenticatedBrandingIndexRoute
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
+  '/_authenticated/daily-tasks/': typeof AuthenticatedDailyTasksIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/_authenticated/legal/': typeof AuthenticatedLegalIndexRoute
@@ -351,6 +370,7 @@ export interface FileRoutesById {
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
   '/_authenticated/recipe-comments/': typeof AuthenticatedRecipeCommentsIndexRoute
   '/_authenticated/recipes/': typeof AuthenticatedRecipesIndexRoute
+  '/_authenticated/reward-tiers/': typeof AuthenticatedRewardTiersIndexRoute
   '/_authenticated/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
@@ -379,6 +399,7 @@ export interface FileRouteTypes {
     | '/branding/'
     | '/comments/'
     | '/community-price-reports/'
+    | '/daily-tasks/'
     | '/faqs/'
     | '/government-price-references/'
     | '/legal/'
@@ -390,6 +411,7 @@ export interface FileRouteTypes {
     | '/posts/'
     | '/recipe-comments/'
     | '/recipes/'
+    | '/reward-tiers/'
     | '/seller-subscriptions/'
     | '/settings/'
     | '/support-tickets/'
@@ -415,6 +437,7 @@ export interface FileRouteTypes {
     | '/branding'
     | '/comments'
     | '/community-price-reports'
+    | '/daily-tasks'
     | '/faqs'
     | '/government-price-references'
     | '/legal'
@@ -426,6 +449,7 @@ export interface FileRouteTypes {
     | '/posts'
     | '/recipe-comments'
     | '/recipes'
+    | '/reward-tiers'
     | '/seller-subscriptions'
     | '/settings'
     | '/support-tickets'
@@ -453,6 +477,7 @@ export interface FileRouteTypes {
     | '/_authenticated/branding/'
     | '/_authenticated/comments/'
     | '/_authenticated/community-price-reports/'
+    | '/_authenticated/daily-tasks/'
     | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
     | '/_authenticated/legal/'
@@ -464,6 +489,7 @@ export interface FileRouteTypes {
     | '/_authenticated/posts/'
     | '/_authenticated/recipe-comments/'
     | '/_authenticated/recipes/'
+    | '/_authenticated/reward-tiers/'
     | '/_authenticated/seller-subscriptions/'
     | '/_authenticated/settings/'
     | '/_authenticated/support-tickets/'
@@ -605,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSellerSubscriptionsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reward-tiers/': {
+      id: '/_authenticated/reward-tiers/'
+      path: '/reward-tiers'
+      fullPath: '/reward-tiers/'
+      preLoaderRoute: typeof AuthenticatedRewardTiersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/recipes/': {
       id: '/_authenticated/recipes/'
       path: '/recipes'
@@ -680,6 +713,13 @@ declare module '@tanstack/react-router' {
       path: '/faqs'
       fullPath: '/faqs/'
       preLoaderRoute: typeof AuthenticatedFaqsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/daily-tasks/': {
+      id: '/_authenticated/daily-tasks/'
+      path: '/daily-tasks'
+      fullPath: '/daily-tasks/'
+      preLoaderRoute: typeof AuthenticatedDailyTasksIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/community-price-reports/': {
@@ -769,6 +809,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBrandingIndexRoute: typeof AuthenticatedBrandingIndexRoute
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
+  AuthenticatedDailyTasksIndexRoute: typeof AuthenticatedDailyTasksIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   AuthenticatedLegalIndexRoute: typeof AuthenticatedLegalIndexRoute
@@ -780,6 +821,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
   AuthenticatedRecipeCommentsIndexRoute: typeof AuthenticatedRecipeCommentsIndexRoute
   AuthenticatedRecipesIndexRoute: typeof AuthenticatedRecipesIndexRoute
+  AuthenticatedRewardTiersIndexRoute: typeof AuthenticatedRewardTiersIndexRoute
   AuthenticatedSellerSubscriptionsIndexRoute: typeof AuthenticatedSellerSubscriptionsIndexRoute
   AuthenticatedSupportTicketsIndexRoute: typeof AuthenticatedSupportTicketsIndexRoute
   AuthenticatedTechnicalIndexRoute: typeof AuthenticatedTechnicalIndexRoute
@@ -798,6 +840,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCommentsIndexRoute: AuthenticatedCommentsIndexRoute,
   AuthenticatedCommunityPriceReportsIndexRoute:
     AuthenticatedCommunityPriceReportsIndexRoute,
+  AuthenticatedDailyTasksIndexRoute: AuthenticatedDailyTasksIndexRoute,
   AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,
@@ -810,6 +853,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
   AuthenticatedRecipeCommentsIndexRoute: AuthenticatedRecipeCommentsIndexRoute,
   AuthenticatedRecipesIndexRoute: AuthenticatedRecipesIndexRoute,
+  AuthenticatedRewardTiersIndexRoute: AuthenticatedRewardTiersIndexRoute,
   AuthenticatedSellerSubscriptionsIndexRoute:
     AuthenticatedSellerSubscriptionsIndexRoute,
   AuthenticatedSupportTicketsIndexRoute: AuthenticatedSupportTicketsIndexRoute,

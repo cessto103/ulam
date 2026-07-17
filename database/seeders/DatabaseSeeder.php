@@ -252,11 +252,16 @@ class DatabaseSeeder extends Seeder
     private function seedDailyTasks(): void
     {
         $tasks = [
-            ['slug' => 'generate-meal-plan', 'title' => 'Mag-generate ng meal plan ngayon', 'description' => 'I-generate ang iyong daily meal plan para makatipid!', 'xp_reward' => 20, 'action_type' => 'generate_meal_plan', 'is_active' => true],
-            ['slug' => 'log-spending', 'title' => 'I-log ang gastos ngayon', 'description' => 'I-record kung magkano ang iyong ginastos sa pagkain ngayon.', 'xp_reward' => 10, 'action_type' => 'log_spending', 'is_active' => true],
-            ['slug' => 'check-prices', 'title' => 'Tingnan ang presyo ng palengke', 'description' => 'Alamin ang pinakabagong presyo ng mga pangunahing sangkap.', 'xp_reward' => 5, 'action_type' => 'check_prices', 'is_active' => true],
-            ['slug' => 'share-tip', 'title' => 'Mag-share ng tip sa komunidad', 'description' => 'Ibahagi ang iyong budget cooking tip sa kapwa!', 'xp_reward' => 15, 'action_type' => 'create_post', 'is_active' => true],
-            ['slug' => 'report-price', 'title' => 'Mag-report ng presyo', 'description' => 'I-report ang presyo ng isang sangkap sa palengke.', 'xp_reward' => 10, 'action_type' => 'report_price', 'is_active' => true],
+            ['slug' => 'generate-meal-plan', 'title' => 'Mag-generate ng meal plan ngayon', 'description' => 'I-generate ang iyong daily meal plan para makatipid!', 'icon' => '🍽️', 'xp_reward' => 20, 'action_type' => 'generate_meal_plan', 'frequency' => 'daily', 'is_active' => true],
+            // action_type must match the XpService::award() reason actually
+            // fired by BudgetController — it's 'log_budget', not 'log_spending'.
+            ['slug' => 'log-spending', 'title' => 'I-log ang gastos ngayon', 'description' => 'I-record kung magkano ang iyong ginastos sa pagkain ngayon.', 'icon' => '💰', 'xp_reward' => 10, 'action_type' => 'log_budget', 'frequency' => 'daily', 'is_active' => true],
+            // No existing action anywhere awards XP with reason 'check_prices' —
+            // this task has nothing to auto-complete against yet. Ships
+            // inactive until a real trigger exists.
+            ['slug' => 'check-prices', 'title' => 'Tingnan ang presyo ng palengke', 'description' => 'Alamin ang pinakabagong presyo ng mga pangunahing sangkap.', 'icon' => '🏷️', 'xp_reward' => 5, 'action_type' => 'check_prices', 'frequency' => 'daily', 'is_active' => false],
+            ['slug' => 'share-tip', 'title' => 'Mag-share ng tip sa komunidad', 'description' => 'Ibahagi ang iyong budget cooking tip sa kapwa!', 'icon' => '💬', 'xp_reward' => 15, 'action_type' => 'create_post', 'frequency' => 'daily', 'is_active' => true],
+            ['slug' => 'report-price', 'title' => 'Mag-report ng presyo', 'description' => 'I-report ang presyo ng isang sangkap sa palengke.', 'icon' => '📢', 'xp_reward' => 10, 'action_type' => 'report_price', 'frequency' => 'daily', 'is_active' => true],
         ];
 
         foreach ($tasks as $task) {

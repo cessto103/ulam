@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Achievement;
 use App\Models\CommunityPriceReport;
+use App\Models\DailyTask;
 use App\Models\User;
+use App\Models\UserDailyTask;
 use App\Models\XpLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +38,7 @@ class XpService
             // is reflected in leveled_up/new_level, not missed by a level
             // check that ran too early.
             $newAchievements = $this->checkAchievements($user, $reason);
+            $this->checkDailyTasks($user, $reason);
             $user->refresh();
 
             $newLevel = self::calculateLevel($user->xp);
@@ -135,5 +138,45 @@ class XpService
         }
 
         return $newlyUnlocked;
+    }
+
+    /**
+     * Marks any active daily/weekly task matching this action complete for
+     * the current period and awards its bonus XP — separate from, and on
+     * top of, the XP the triggering action itself already granted. Applies
+     * XP directly (not via self::award()) to avoid re-entering this same
+     * method for a reason no task will ever match.
+     */
+    private function checkDailyTasks(User $user, string $reason): void
+    {
+        $tasks = DailyTask::where('action_type', $reason)
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($tasks as $task) {
+            $periodDate = $task->frequency === 'weekly'
+                ? now()->startOfWeek()->toDateString()
+                : now()->toDateString();
+
+            $userTask = UserDailyTask::firstOrCreate(
+                ['user_id' => $user->id, 'daily_task_id' => $task->id, 'task_date' => $periodDate],
+                ['is_completed' => false],
+            );
+
+            if ($userTask->is_completed) continue;
+
+            $userTask->update(['is_completed' => true, 'completed_at' => now()]);
+
+            if ($task->xp_reward > 0) {
+                XpLog::create([
+                    'user_id'     => $user->id,
+                    'xp_amount'   => $task->xp_reward,
+                    'reason'      => 'daily_task_completed',
+                    'source_type' => DailyTask::class,
+                    'source_id'   => $task->id,
+                ]);
+                $user->increment('xp', $task->xp_reward);
+            }
+        }
     }
 }

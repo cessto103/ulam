@@ -211,6 +211,37 @@ class UserController extends Controller
         return response()->json(['achievements' => $all]);
     }
 
+    public function dailyTasks(Request $request)
+    {
+        $user  = $request->user();
+        $today = now()->toDateString();
+        $weekStart = now()->startOfWeek()->toDateString();
+
+        $tasks = \App\Models\DailyTask::where('is_active', true)->get();
+
+        $completedDates = \App\Models\UserDailyTask::where('user_id', $user->id)
+            ->whereIn('task_date', [$today, $weekStart])
+            ->where('is_completed', true)
+            ->pluck('task_date', 'daily_task_id');
+
+        $result = $tasks->map(function ($task) use ($completedDates, $today, $weekStart) {
+            $periodDate = $task->frequency === 'weekly' ? $weekStart : $today;
+            $completedFor = $completedDates[$task->id] ?? null;
+
+            return [
+                'id'           => $task->id,
+                'title'        => $task->title,
+                'description'  => $task->description,
+                'icon'         => $task->icon,
+                'xp_reward'    => $task->xp_reward,
+                'frequency'    => $task->frequency,
+                'is_completed' => $completedFor && $completedFor->toDateString() === $periodDate,
+            ];
+        });
+
+        return response()->json(['tasks' => $result]);
+    }
+
     public function stats(Request $request)
     {
         $user = $request->user();
