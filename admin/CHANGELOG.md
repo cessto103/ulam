@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.19.1 (2026-07-17)
+
+### Fixed
+- **Recipe budget tag was stuck on an old 4-tier scheme** (₱100/₱200/₱400/₱400+) in the recipe editor's dropdown and filter, and in the API's own validation — meaning a recipe over ₱400 could only ever be tagged "₱400+", which didn't match the mobile app's real 7-tier scheme (₱100 through ₱1,000+) used everywhere recipes are displayed. This is how 3 official recipes ended up with an invalid `budget_400plus` tag that showed as a raw, unformatted string on mobile. Both the editor and the API now offer and accept the full 7-tier scheme.
+
 ## v1.19.0 (2026-07-15)
 
 ### Added

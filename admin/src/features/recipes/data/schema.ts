@@ -11,7 +11,10 @@ export const recipeBudgetTags = [
   'budget_100',
   'budget_200',
   'budget_400',
-  'budget_400plus',
+  'budget_600',
+  'budget_800',
+  'budget_1000',
+  'budget_1000plus',
 ] as const
 
 export const recipeDifficulties = ['madali', 'katamtaman', 'mahirap'] as const

@@ -12,7 +12,15 @@ const recipesSearchSchema = z.object({
     .catch([]),
   budget_tag: z
     .array(
-      z.enum(['budget_100', 'budget_200', 'budget_400', 'budget_400plus'])
+      z.enum([
+        'budget_100',
+        'budget_200',
+        'budget_400',
+        'budget_600',
+        'budget_800',
+        'budget_1000',
+        'budget_1000plus',
+      ])
     )
     .optional()
     .catch([]),

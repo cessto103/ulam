@@ -111,7 +111,7 @@ class RecipeController extends Controller
             'description' => ['nullable', 'string'],
             'category' => ['nullable', 'string', 'max:50'],
             'source' => [$req, 'in:ai_generated,community,admin,official'],
-            'budget_tag' => [$req, 'in:budget_100,budget_200,budget_400,budget_400plus'],
+            'budget_tag' => [$req, 'in:budget_100,budget_200,budget_400,budget_600,budget_800,budget_1000,budget_1000plus'],
             'estimated_cost' => ['nullable', 'numeric', 'min:0'],
             'servings' => ['nullable', 'integer', 'min:1'],
             'prep_time_minutes' => ['nullable', 'integer', 'min:0'],

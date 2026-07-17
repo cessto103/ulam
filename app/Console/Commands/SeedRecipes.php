@@ -12,7 +12,7 @@ class SeedRecipes extends Command
 {
     protected $signature = 'ulam:seed-recipes
                             {--count=100 : Total number of recipes to generate}
-                            {--budget= : Seed only this budget tier (budget_100|budget_200|budget_400|budget_400plus)}
+                            {--budget= : Seed only this budget tier (budget_100|budget_200|budget_400|budget_600|budget_800|budget_1000|budget_1000plus)}
                             {--fresh : Delete all existing AI recipes before seeding}';
 
     protected $description = 'Generate Filipino recipes using Claude and seed them into the database';
@@ -35,10 +35,25 @@ class SeedRecipes extends Command
             'range'       => '₱200–₱400',
             'description' => 'Mid-range Filipino dishes, good for special days',
         ],
-        'budget_400plus' => [
-            'label'       => '₱400+',
-            'range'       => '₱400–₱800',
-            'description' => 'Weekend or celebration dishes with premium ingredients',
+        'budget_600' => [
+            'label'       => '₱400–₱600',
+            'range'       => '₱400–₱600',
+            'description' => 'Weekend dishes with a few extra premium ingredients',
+        ],
+        'budget_800' => [
+            'label'       => '₱600–₱800',
+            'range'       => '₱600–₱800',
+            'description' => 'Celebration-worthy dishes for a bigger family gathering',
+        ],
+        'budget_1000' => [
+            'label'       => '₱800–₱1,000',
+            'range'       => '₱800–₱1,000',
+            'description' => 'Special-occasion dishes with premium ingredients',
+        ],
+        'budget_1000plus' => [
+            'label'       => '₱1,000+',
+            'range'       => '₱1,000–₱1,500',
+            'description' => 'Fiesta or holiday-scale dishes for a large gathering',
         ],
     ];
 

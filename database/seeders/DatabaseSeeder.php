@@ -478,11 +478,11 @@ class DatabaseSeeder extends Seeder
                     ['name' => 'Bawang, sibuyas', 'quantity' => 'ayon sa lasa', 'unit' => '', 'estimated_price' => 15, 'sort_order' => 9],
                 ],
             ],
-            // â”€â”€ â‚±400+ tier â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // â”€â”€ higher-cost dishes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             [
                 'title'              => 'Kare-Kare',
                 'description'        => 'Espesyal na ulam sa gabi ng pamilya â€” beef na may mani at gulay, ihain kasama ang bagoong.',
-                'budget_tag'         => 'budget_400plus',
+                'budget_tag'         => 'budget_600',
                 'estimated_cost'     => 450.00,
                 'servings'           => 6,
                 'prep_time_minutes'  => 20,
@@ -724,7 +724,7 @@ class DatabaseSeeder extends Seeder
                 'title'             => 'Pork Ribs BBQ',
                 'description'       => 'Inihaw na tadyang ng baboy sa homemade BBQ sauce — pampistahan.',
                 'category'          => 'baboy',
-                'budget_tag'        => 'budget_400plus',
+                'budget_tag'        => 'budget_600',
                 'estimated_cost'    => 560.00,
                 'servings'          => 6,
                 'prep_time_minutes' => 60,
@@ -1054,7 +1054,7 @@ class DatabaseSeeder extends Seeder
             [
                 'title'              => 'Lechon Kawali',
                 'description'        => 'Crispy na lechon kawali na kaya mong gawin sa bahay. Para sa espesyal na okasyon o simpleng salu-salo.',
-                'budget_tag'         => 'budget_400plus',
+                'budget_tag'         => 'budget_400',
                 'estimated_cost'     => 380.00,
                 'servings'           => 6,
                 'prep_time_minutes'  => 10,
