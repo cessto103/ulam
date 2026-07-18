@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.20.2 (2026-07-18)
+
+### Added
+- **Premium Subscriptions page** (Monetization section) — lists consumers currently on uLam Premium (plain `User.plan`/`premium_expires_at`/`premium_source`, not a Subscription row), with paid/trial/expiring-soon metrics and per-user expiry countdown. The section previously only covered store-owner (Seller) subscriptions and price config, with no view of actual Premium subscribers.
+
 ## v1.20.1 (2026-07-18)
 
 ### Added
