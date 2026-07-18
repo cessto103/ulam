@@ -125,4 +125,44 @@ class UserController extends Controller
 
         return response()->json(['user' => $user->fresh()]);
     }
+
+    // Consumer Premium is a plain User attribute (plan/premium_expires_at/
+    // premium_source), not a row in the seller Subscription table — this is
+    // the "who currently has Premium" view the Monetization section was
+    // missing. index() above already supports ?plan=premium filtering for
+    // the general Users list; this is the same data shaped for monitoring
+    // expiries instead of general account management.
+    public function premiumSubscribers(Request $request)
+    {
+        $query = User::where('plan', 'premium');
+
+        if ($request->filled('source')) {
+            $query->where('premium_source', $request->string('source'));
+        }
+
+        if ($request->boolean('expiring_soon')) {
+            $query->whereNotNull('premium_expires_at')
+                ->whereBetween('premium_expires_at', [now(), now()->addDays(7)]);
+        }
+
+        return response()->json(
+            $query->orderBy('premium_expires_at')
+                ->select(['id', 'name', 'username', 'email', 'premium_source', 'premium_expires_at', 'created_at'])
+                ->paginate($request->integer('per_page', 15))
+        );
+    }
+
+    public function premiumSubscribersSummary()
+    {
+        $base = User::where('plan', 'premium');
+
+        return response()->json([
+            'total' => (clone $base)->count(),
+            'paid' => (clone $base)->where('premium_source', 'paid')->count(),
+            'trial' => (clone $base)->where('premium_source', 'trial')->count(),
+            'expiring_soon' => (clone $base)->whereNotNull('premium_expires_at')
+                ->whereBetween('premium_expires_at', [now(), now()->addDays(7)])
+                ->count(),
+        ]);
+    }
 }

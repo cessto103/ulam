@@ -5,6 +5,7 @@ import {
   CircleHelp,
   ClipboardList,
   CreditCard,
+  Crown,
   Flag,
   Gift,
   Image as ImageIcon,
@@ -61,6 +62,11 @@ export const sidebarData: SidebarData = {
     {
       title: 'Monetization',
       items: [
+        {
+          title: 'Premium Subscriptions',
+          url: '/premium-subscribers',
+          icon: Crown,
+        },
         {
           title: 'Seller Subscriptions',
           url: '/seller-subscriptions',

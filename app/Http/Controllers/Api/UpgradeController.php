@@ -95,45 +95,60 @@ class UpgradeController extends Controller
         $plan   = $meta['plan_type'] ?? 'monthly';
 
         if (! $userId) {
+            // This used to fail silently — a user could pay, PayMongo could
+            // deliver the webhook successfully, and nothing would grant
+            // premium or leave a trace to explain why. If PayMongo ever
+            // stops copying Link metadata onto the nested payment object,
+            // this is what it looks like.
+            Log::warning('PayMongo upgrade webhook missing user_id in metadata', ['event' => $event]);
             return response()->json(['error' => 'Missing user_id in metadata.'], 422);
         }
 
-        $user = User::find($userId);
-        if ($user) {
-            $expiry = $plan === 'yearly'
-                ? now()->addYear()
-                : now()->addMonth();
+        // Once the signature is verified, everything below is our own
+        // processing — any bug in it must still resolve to 200 (PayMongo
+        // reads a 4xx/5xx as "delivery failed" and disables the webhook
+        // after enough of those; processing failures are ours to find via
+        // the log line, not something PayMongo should be told to retry).
+        try {
+            $user = User::find($userId);
+            if ($user) {
+                $expiry = $plan === 'yearly'
+                    ? now()->addYear()
+                    : now()->addMonth();
 
-            $user->update([
-                'plan'                => 'premium',
-                'premium_expires_at'  => $expiry,
-                'premium_source'      => 'paid',
-            ]);
-        }
+                $user->update([
+                    'plan'                => 'premium',
+                    'premium_expires_at'  => $expiry,
+                    'premium_source'      => 'paid',
+                ]);
+            }
 
-        // Record the payment in the ledger. Keyed on PayMongo's payment id so
-        // webhook retries don't double-record.
-        $payment = $event['data'] ?? [];
-        $paymentId = $payment['id'] ?? null;
-        $amount = $payment['attributes']['amount'] ?? $this->resolveAmountCentavos($plan);
+            // Record the payment in the ledger. Keyed on PayMongo's payment id so
+            // webhook retries don't double-record.
+            $payment = $event['data'] ?? [];
+            $paymentId = $payment['id'] ?? null;
+            $amount = $payment['attributes']['amount'] ?? $this->resolveAmountCentavos($plan);
 
-        $record = [
-            'user_id' => $userId,
-            'provider' => 'paymongo',
-            'plan_type' => $plan,
-            'amount' => $amount,
-            'currency' => 'PHP',
-            'status' => 'paid',
-            'paid_at' => now(),
-            'meta' => $meta ?: null,
-        ];
+            $record = [
+                'user_id' => $userId,
+                'provider' => 'paymongo',
+                'plan_type' => $plan,
+                'amount' => $amount,
+                'currency' => 'PHP',
+                'status' => 'paid',
+                'paid_at' => now(),
+                'meta' => $meta ?: null,
+            ];
 
-        if ($paymentId) {
-            Payment::firstOrCreate(['provider_payment_id' => $paymentId], $record);
-        } else {
-            // No payment id in the event — record anyway (a null key would wrongly
-            // dedupe against any earlier id-less payment via firstOrCreate).
-            Payment::create($record);
+            if ($paymentId) {
+                Payment::firstOrCreate(['provider_payment_id' => $paymentId], $record);
+            } else {
+                // No payment id in the event — record anyway (a null key would wrongly
+                // dedupe against any earlier id-less payment via firstOrCreate).
+                Payment::create($record);
+            }
+        } catch (\Throwable $e) {
+            Log::error('PayMongo upgrade webhook processing failed', ['user_id' => $userId, 'exception' => $e]);
         }
 
         return response()->json(['received' => true]);

@@ -29,6 +29,7 @@ import { Route as AuthenticatedSellerSubscriptionsIndexRouteImport } from './rou
 import { Route as AuthenticatedRewardTiersIndexRouteImport } from './routes/_authenticated/reward-tiers/index'
 import { Route as AuthenticatedRecipesIndexRouteImport } from './routes/_authenticated/recipes/index'
 import { Route as AuthenticatedRecipeCommentsIndexRouteImport } from './routes/_authenticated/recipe-comments/index'
+import { Route as AuthenticatedPremiumSubscribersIndexRouteImport } from './routes/_authenticated/premium-subscribers/index'
 import { Route as AuthenticatedPostsIndexRouteImport } from './routes/_authenticated/posts/index'
 import { Route as AuthenticatedPaymentsIndexRouteImport } from './routes/_authenticated/payments/index'
 import { Route as AuthenticatedMonetizationIndexRouteImport } from './routes/_authenticated/monetization/index'
@@ -155,6 +156,12 @@ const AuthenticatedRecipeCommentsIndexRoute =
   AuthenticatedRecipeCommentsIndexRouteImport.update({
     id: '/recipe-comments/',
     path: '/recipe-comments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPremiumSubscribersIndexRoute =
+  AuthenticatedPremiumSubscribersIndexRouteImport.update({
+    id: '/premium-subscribers/',
+    path: '/premium-subscribers/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPostsIndexRoute = AuthenticatedPostsIndexRouteImport.update({
@@ -289,6 +296,7 @@ export interface FileRoutesByFullPath {
   '/monetization/': typeof AuthenticatedMonetizationIndexRoute
   '/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/posts/': typeof AuthenticatedPostsIndexRoute
+  '/premium-subscribers/': typeof AuthenticatedPremiumSubscribersIndexRoute
   '/recipe-comments/': typeof AuthenticatedRecipeCommentsIndexRoute
   '/recipes/': typeof AuthenticatedRecipesIndexRoute
   '/reward-tiers/': typeof AuthenticatedRewardTiersIndexRoute
@@ -327,6 +335,7 @@ export interface FileRoutesByTo {
   '/monetization': typeof AuthenticatedMonetizationIndexRoute
   '/payments': typeof AuthenticatedPaymentsIndexRoute
   '/posts': typeof AuthenticatedPostsIndexRoute
+  '/premium-subscribers': typeof AuthenticatedPremiumSubscribersIndexRoute
   '/recipe-comments': typeof AuthenticatedRecipeCommentsIndexRoute
   '/recipes': typeof AuthenticatedRecipesIndexRoute
   '/reward-tiers': typeof AuthenticatedRewardTiersIndexRoute
@@ -368,6 +377,7 @@ export interface FileRoutesById {
   '/_authenticated/monetization/': typeof AuthenticatedMonetizationIndexRoute
   '/_authenticated/payments/': typeof AuthenticatedPaymentsIndexRoute
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
+  '/_authenticated/premium-subscribers/': typeof AuthenticatedPremiumSubscribersIndexRoute
   '/_authenticated/recipe-comments/': typeof AuthenticatedRecipeCommentsIndexRoute
   '/_authenticated/recipes/': typeof AuthenticatedRecipesIndexRoute
   '/_authenticated/reward-tiers/': typeof AuthenticatedRewardTiersIndexRoute
@@ -409,6 +419,7 @@ export interface FileRouteTypes {
     | '/monetization/'
     | '/payments/'
     | '/posts/'
+    | '/premium-subscribers/'
     | '/recipe-comments/'
     | '/recipes/'
     | '/reward-tiers/'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/monetization'
     | '/payments'
     | '/posts'
+    | '/premium-subscribers'
     | '/recipe-comments'
     | '/recipes'
     | '/reward-tiers'
@@ -487,6 +499,7 @@ export interface FileRouteTypes {
     | '/_authenticated/monetization/'
     | '/_authenticated/payments/'
     | '/_authenticated/posts/'
+    | '/_authenticated/premium-subscribers/'
     | '/_authenticated/recipe-comments/'
     | '/_authenticated/recipes/'
     | '/_authenticated/reward-tiers/'
@@ -650,6 +663,13 @@ declare module '@tanstack/react-router' {
       path: '/recipe-comments'
       fullPath: '/recipe-comments/'
       preLoaderRoute: typeof AuthenticatedRecipeCommentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/premium-subscribers/': {
+      id: '/_authenticated/premium-subscribers/'
+      path: '/premium-subscribers'
+      fullPath: '/premium-subscribers/'
+      preLoaderRoute: typeof AuthenticatedPremiumSubscribersIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/posts/': {
@@ -819,6 +839,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMonetizationIndexRoute: typeof AuthenticatedMonetizationIndexRoute
   AuthenticatedPaymentsIndexRoute: typeof AuthenticatedPaymentsIndexRoute
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
+  AuthenticatedPremiumSubscribersIndexRoute: typeof AuthenticatedPremiumSubscribersIndexRoute
   AuthenticatedRecipeCommentsIndexRoute: typeof AuthenticatedRecipeCommentsIndexRoute
   AuthenticatedRecipesIndexRoute: typeof AuthenticatedRecipesIndexRoute
   AuthenticatedRewardTiersIndexRoute: typeof AuthenticatedRewardTiersIndexRoute
@@ -851,6 +872,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMonetizationIndexRoute: AuthenticatedMonetizationIndexRoute,
   AuthenticatedPaymentsIndexRoute: AuthenticatedPaymentsIndexRoute,
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
+  AuthenticatedPremiumSubscribersIndexRoute:
+    AuthenticatedPremiumSubscribersIndexRoute,
   AuthenticatedRecipeCommentsIndexRoute: AuthenticatedRecipeCommentsIndexRoute,
   AuthenticatedRecipesIndexRoute: AuthenticatedRecipesIndexRoute,
   AuthenticatedRewardTiersIndexRoute: AuthenticatedRewardTiersIndexRoute,

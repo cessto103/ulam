@@ -275,6 +275,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/users/{id}/ban', [AdminUserController::class, 'ban']);
     Route::post('/users/{id}/unban', [AdminUserController::class, 'unban']);
 
+    Route::get('/premium-subscribers',         [AdminUserController::class, 'premiumSubscribers']);
+    Route::get('/premium-subscribers/summary', [AdminUserController::class, 'premiumSubscribersSummary']);
+
     Route::get('/posts',        [AdminPostController::class, 'index']);
     Route::get('/posts/{id}',   [AdminPostController::class, 'show']);
     Route::patch('/posts/{id}', [AdminPostController::class, 'update']);
