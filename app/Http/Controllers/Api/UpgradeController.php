@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Models\Payment;
+use App\Models\PaymentLink;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -68,6 +69,21 @@ class UpgradeController extends Controller
 
         $attrs = $response->json('data.attributes');
 
+        // The `metadata` sent above does NOT survive onto the Payment PayMongo
+        // creates once this Link is paid (confirmed against a real live
+        // transaction — the resulting Payment's metadata only ever contains
+        // PayMongo's own pm_reference_number, never what we set here). What
+        // DOES survive is this Link's reference_number, as the Payment's
+        // external_reference_number — so that's what the webhook looks up by.
+        PaymentLink::create([
+            'user_id' => $user->id,
+            'plan_type' => $request->plan,
+            'provider_link_id' => $response->json('data.id'),
+            'reference_number' => $attrs['reference_number'],
+            'amount' => $amount,
+            'status' => 'pending',
+        ]);
+
         return response()->json([
             'checkout_url'    => $attrs['checkout_url'],
             'payment_link_id' => $response->json('data.id'),
@@ -90,19 +106,18 @@ class UpgradeController extends Controller
             return response()->json(['received' => true]); // Acknowledge other events
         }
 
-        $meta   = $event['data']['attributes']['metadata'] ?? [];
-        $userId = $meta['user_id'] ?? null;
-        $plan   = $meta['plan_type'] ?? 'monthly';
+        $payment      = $event['data'] ?? [];
+        $paymentId    = $payment['id'] ?? null;
+        $paymentAttrs = $payment['attributes'] ?? [];
 
-        if (! $userId) {
-            // This used to fail silently — a user could pay, PayMongo could
-            // deliver the webhook successfully, and nothing would grant
-            // premium or leave a trace to explain why. If PayMongo ever
-            // stops copying Link metadata onto the nested payment object,
-            // this is what it looks like.
-            Log::warning('PayMongo upgrade webhook missing user_id in metadata', ['event' => $event]);
-            return response()->json(['error' => 'Missing user_id in metadata.'], 422);
-        }
+        // The Link's own metadata (user_id/plan_type, set in checkout() above)
+        // does not carry over onto this Payment — confirmed against a real
+        // live transaction, where the Payment's metadata contained only
+        // PayMongo's own pm_reference_number. external_reference_number is
+        // the field that actually survives, matching the Link's
+        // reference_number captured in payment_links at checkout time.
+        $referenceNumber = $paymentAttrs['external_reference_number']
+            ?? ($paymentAttrs['metadata']['pm_reference_number'] ?? null);
 
         // Once the signature is verified, everything below is our own
         // processing — any bug in it must still resolve to 200 (PayMongo
@@ -110,9 +125,21 @@ class UpgradeController extends Controller
         // after enough of those; processing failures are ours to find via
         // the log line, not something PayMongo should be told to retry).
         try {
-            $user = User::find($userId);
+            $paymentLink = $referenceNumber
+                ? PaymentLink::where('reference_number', $referenceNumber)->first()
+                : null;
+
+            if (! $paymentLink) {
+                Log::warning('PayMongo upgrade webhook: no matching payment_links row', [
+                    'reference_number' => $referenceNumber,
+                    'payment_id' => $paymentId,
+                ]);
+                return response()->json(['received' => true]);
+            }
+
+            $user = User::find($paymentLink->user_id);
             if ($user) {
-                $expiry = $plan === 'yearly'
+                $expiry = $paymentLink->plan_type === 'yearly'
                     ? now()->addYear()
                     : now()->addMonth();
 
@@ -123,21 +150,21 @@ class UpgradeController extends Controller
                 ]);
             }
 
+            $paymentLink->update(['status' => 'paid']);
+
             // Record the payment in the ledger. Keyed on PayMongo's payment id so
             // webhook retries don't double-record.
-            $payment = $event['data'] ?? [];
-            $paymentId = $payment['id'] ?? null;
-            $amount = $payment['attributes']['amount'] ?? $this->resolveAmountCentavos($plan);
+            $amount = $paymentAttrs['amount'] ?? $paymentLink->amount;
 
             $record = [
-                'user_id' => $userId,
+                'user_id' => $paymentLink->user_id,
                 'provider' => 'paymongo',
-                'plan_type' => $plan,
+                'plan_type' => $paymentLink->plan_type,
                 'amount' => $amount,
                 'currency' => 'PHP',
                 'status' => 'paid',
                 'paid_at' => now(),
-                'meta' => $meta ?: null,
+                'meta' => $paymentAttrs['metadata'] ?? null,
             ];
 
             if ($paymentId) {
@@ -148,7 +175,7 @@ class UpgradeController extends Controller
                 Payment::create($record);
             }
         } catch (\Throwable $e) {
-            Log::error('PayMongo upgrade webhook processing failed', ['user_id' => $userId, 'exception' => $e]);
+            Log::error('PayMongo upgrade webhook processing failed', ['reference_number' => $referenceNumber, 'exception' => $e]);
         }
 
         return response()->json(['received' => true]);
