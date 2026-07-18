@@ -111,3 +111,18 @@ export function useRefreshMarketAi() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-markets'] }),
   })
 }
+
+type RefreshAllResult = {
+  message: string
+  total: number
+  results: { market: string; count?: number; error?: string }[]
+}
+
+export function useRefreshAllMarketsAi() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      apiClient.post<RefreshAllResult>('/admin/markets/refresh-ai-all'),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-markets'] }),
+  })
+}

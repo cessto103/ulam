@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
 import { type Market } from '../data/schema'
 
-type MarketsDialogType = 'add' | 'edit' | 'delete' | 'refresh-ai'
+type MarketsDialogType = 'add' | 'edit' | 'delete' | 'refresh-ai' | 'refresh-ai-all'
 
 type MarketsContextType = {
   open: MarketsDialogType | null

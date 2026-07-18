@@ -301,6 +301,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::patch('/markets/{id}',         [AdminMarketController::class, 'update']);
     Route::delete('/markets/{id}',        [AdminMarketController::class, 'destroy']);
     Route::post('/markets/{id}/refresh-ai', [AdminMarketController::class, 'refreshAi']);
+    Route::post('/markets/refresh-ai-all',  [AdminMarketController::class, 'refreshAiAll']);
 
     Route::get('/tindahan',        [AdminTindahanController::class, 'index']);
     Route::post('/tindahan',       [AdminTindahanController::class, 'store']);

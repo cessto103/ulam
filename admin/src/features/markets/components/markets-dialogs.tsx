@@ -1,6 +1,7 @@
 import { MarketsActionDialog } from './markets-action-dialog'
 import { MarketsDeleteDialog } from './markets-delete-dialog'
 import { useMarkets } from './markets-provider'
+import { MarketsRefreshAiAllDialog } from './markets-refresh-ai-all-dialog'
 import { MarketsRefreshAiDialog } from './markets-refresh-ai-dialog'
 
 export function MarketsDialogs() {
@@ -11,6 +12,12 @@ export function MarketsDialogs() {
         key='market-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
+      />
+
+      <MarketsRefreshAiAllDialog
+        key='market-refresh-ai-all'
+        open={open === 'refresh-ai-all'}
+        onOpenChange={() => setOpen('refresh-ai-all')}
       />
 
       {currentRow && (

@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.20.1 (2026-07-18)
+
+### Added
+- **"Refresh All Prices" button on the Markets page** — manually triggers the same AI price-lookup loop that already runs automatically every day at 2 AM, instead of waiting for the next scheduled run or refreshing markets one by one. Runs one live Claude API + web-search call per active market; the confirm dialog spells out the per-market cost and that it can take a while.
+
 ## v1.20.0 (2026-07-17)
 
 ### Added

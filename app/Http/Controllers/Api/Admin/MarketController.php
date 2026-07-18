@@ -105,4 +105,41 @@ class MarketController extends Controller
 
         return response()->json(['message' => "Refreshed {$count} prices.", 'count' => $count]);
     }
+
+    // Manual trigger for the same loop the 2am `prices:refresh-ai` schedule
+    // runs — lets an admin get fresh prices on demand instead of waiting
+    // for the next run. One real Claude API + web-search call per active
+    // market, so cost and request time both scale with market count.
+    public function refreshAiAll(PriceIntelligenceService $service)
+    {
+        $markets = Market::where('is_active', true)->get();
+
+        if ($markets->isEmpty()) {
+            return response()->json(['message' => 'No active markets found.'], 422);
+        }
+
+        $total   = 0;
+        $results = [];
+
+        foreach ($markets as $market) {
+            try {
+                $count   = $service->refreshMarket($market);
+                $total  += $count;
+                $results[] = ['market' => $market->name, 'count' => $count];
+            } catch (\Throwable $e) {
+                $results[] = ['market' => $market->name, 'error' => $e->getMessage()];
+            }
+
+            // Brief pause between markets to avoid rate-limiting — same as prices:refresh-ai.
+            if ($market->isNot($markets->last())) {
+                sleep(2);
+            }
+        }
+
+        return response()->json([
+            'message' => "Refreshed {$markets->count()} markets, {$total} prices saved.",
+            'total' => $total,
+            'results' => $results,
+        ]);
+    }
 }
