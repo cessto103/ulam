@@ -18,6 +18,47 @@ type PaginatedResponse<T> = {
   total: number
 }
 
+export type MarketStall = {
+  id: number
+  name: string
+  type: string
+  barangay: string | null
+  municipality: string | null
+  is_active: boolean
+  is_verified: boolean
+  average_rating: number
+  ratings_count: number
+  prices_count: number
+}
+
+export type MarketPriceRow = {
+  id: number
+  item_name: string
+  category: string
+  price_per_unit: string
+  unit: string
+  is_available: boolean
+  updated_at: string
+  tindahan_id: number | null
+  tindahan: { id: number; name: string } | null
+}
+
+export type MarketDetail = Market & {
+  source: string | null
+  osm_id: number | null
+  user: { id: number; name: string; email: string } | null
+  tindahan: MarketStall[]
+  prices: MarketPriceRow[]
+}
+
+export function useMarketDetailQuery(id: number) {
+  return useQuery({
+    queryKey: ['admin-market-detail', id],
+    queryFn: async () =>
+      (await apiClient.get<{ market: MarketDetail }>(`/admin/markets/${id}`)).data.market,
+  })
+}
+
 export function useMarketsQuery(search: MarketsSearch) {
   return useQuery({
     queryKey: ['admin-markets', search],

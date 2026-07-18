@@ -39,7 +39,13 @@ class MarketController extends Controller
 
     public function show(int $id)
     {
-        $market = Market::withCount(['tindahan', 'prices'])->findOrFail($id);
+        $market = Market::with([
+                'user:id,name,email',
+                'tindahan' => fn ($q) => $q->withCount('prices')->orderBy('name'),
+                'prices' => fn ($q) => $q->with('tindahan:id,name')->orderByDesc('updated_at'),
+            ])
+            ->withCount(['tindahan', 'prices'])
+            ->findOrFail($id);
 
         return response()->json(['market' => $market]);
     }

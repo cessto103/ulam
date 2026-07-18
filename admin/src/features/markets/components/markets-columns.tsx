@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { CheckCircle2, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -41,7 +42,13 @@ export const marketsColumns: ColumnDef<Market>[] = [
     accessorKey: 'name',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
     cell: ({ row }) => (
-      <LongText className='max-w-48 ps-3'>{row.getValue('name')}</LongText>
+      <Link
+        to='/markets/$marketId'
+        params={{ marketId: String(row.original.id) }}
+        className='ps-3 font-medium text-primary hover:underline'
+      >
+        <LongText className='max-w-48'>{row.getValue('name')}</LongText>
+      </Link>
     ),
     meta: {
       className: cn(
