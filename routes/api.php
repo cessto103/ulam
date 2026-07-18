@@ -171,6 +171,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/secondary-email/verify',  [UserController::class, 'verifySecondaryEmail']);
     Route::delete('/user/secondary-email',       [UserController::class, 'removeSecondaryEmail']);
 
+    Route::post('/auth/verify-email',       [AuthController::class, 'verifyEmail'])->middleware('throttle:6,1');
+    Route::post('/auth/resend-verification', [AuthController::class, 'resendEmailVerification'])->middleware('throttle:3,1');
+
     Route::get('/insights/summary', [InsightsController::class, 'summary']);
     Route::get('/insights/graph',   [InsightsController::class, 'graph']);
 

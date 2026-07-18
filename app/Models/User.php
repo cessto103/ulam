@@ -19,6 +19,9 @@ class User extends Authenticatable
         'secondary_email_verified_at',
         'secondary_email_otp',
         'secondary_email_otp_expires_at',
+        'email_verified_at',
+        'email_verification_otp',
+        'email_verification_otp_expires_at',
         'password_reset_otp',
         'password_reset_otp_expires_at',
         'twofa_secret',
@@ -56,6 +59,8 @@ class User extends Authenticatable
         'remember_token',
         'secondary_email_otp',
         'secondary_email_otp_expires_at',
+        'email_verification_otp',
+        'email_verification_otp_expires_at',
         'password_reset_otp',
         'password_reset_otp_expires_at',
         'twofa_secret',
@@ -66,6 +71,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_verification_otp_expires_at' => 'datetime',
             'secondary_email_verified_at' => 'datetime',
             'secondary_email_otp_expires_at' => 'datetime',
             'password_reset_otp_expires_at' => 'datetime',

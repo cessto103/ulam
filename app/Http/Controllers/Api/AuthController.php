@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EmailVerificationOtpMail;
 use App\Mail\PasswordResetOtpMail;
 use App\Mail\WelcomeMail;
 use App\Models\User;
@@ -45,7 +46,28 @@ class AuthController extends Controller
             'ai_quota_reset_date' => now()->startOfMonth()->toDateString(),
         ]);
 
-        Mail::to($user->email)->queue(new WelcomeMail($user));
+        // Mail is queued but QUEUE_CONNECTION=sync runs it inline, in this
+        // same request — an unwrapped send here used to take the whole
+        // registration down (500, no token) whenever the mail provider
+        // rejected the recipient, even though the account had already been
+        // created. Never let mail delivery fail the request.
+        try {
+            Mail::to($user->email)->queue(new WelcomeMail($user));
+        } catch (\Throwable $e) {
+            Log::error('Welcome mail failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+        }
+
+        $code = (string) random_int(100000, 999999);
+        $user->update([
+            'email_verification_otp' => Hash::make($code),
+            'email_verification_otp_expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new EmailVerificationOtpMail($user, $code));
+        } catch (\Throwable $e) {
+            Log::error('Email verification mail failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+        }
 
         $token = $user->createToken('mobile')->plainTextToken;
 
@@ -53,6 +75,64 @@ class AuthController extends Controller
             'user' => $this->formatUser($user),
             'token' => $token,
         ], 201);
+    }
+
+    /** POST /auth/verify-email — confirms the code emailed at registration. */
+    public function verifyEmail(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->email_verified_at) {
+            return response()->json(['user' => $this->formatUser($user)]);
+        }
+
+        if (!$user->email_verification_otp || !$user->email_verification_otp_expires_at) {
+            throw ValidationException::withMessages(['code' => 'No pending verification. Please request a new code.']);
+        }
+
+        if ($user->email_verification_otp_expires_at->isPast()) {
+            throw ValidationException::withMessages(['code' => 'This code has expired. Please request a new one.']);
+        }
+
+        if (!Hash::check($validated['code'], $user->email_verification_otp)) {
+            throw ValidationException::withMessages(['code' => 'Incorrect code.']);
+        }
+
+        $user->update([
+            'email_verified_at' => now(),
+            'email_verification_otp' => null,
+            'email_verification_otp_expires_at' => null,
+        ]);
+
+        return response()->json(['user' => $this->formatUser($user)]);
+    }
+
+    /** POST /auth/resend-verification — emails a fresh 6-digit code. */
+    public function resendEmailVerification(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => 'Your email is already verified.']);
+        }
+
+        $code = (string) random_int(100000, 999999);
+        $user->update([
+            'email_verification_otp' => Hash::make($code),
+            'email_verification_otp_expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new EmailVerificationOtpMail($user, $code));
+        } catch (\Throwable $e) {
+            Log::error('Email verification mail failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+        }
+
+        return response()->json(['message' => 'Verification code sent.']);
     }
 
     public function login(Request $request)
@@ -224,6 +304,7 @@ class AuthController extends Controller
             'name' => $user->name,
             'username' => $user->username,
             'email' => $user->email,
+            'email_verified_at' => $user->email_verified_at,
             'avatar' => $user->avatar,
             'bio' => $user->bio,
             'plan' => $user->plan,

@@ -22,6 +22,7 @@ class UserController extends Controller
             'name'                         => $user->name,
             'username'                     => $user->username,
             'email'                        => $user->email,
+            'email_verified_at'            => $user->email_verified_at,
             'secondary_email'              => $user->secondary_email,
             'secondary_email_verified_at'  => $user->secondary_email_verified_at,
             'avatar'                       => $user->avatar,
