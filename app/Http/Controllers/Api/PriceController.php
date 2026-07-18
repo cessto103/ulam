@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdBoost;
 use App\Models\CommunityPriceReport;
 use App\Models\GovernmentPriceReference;
+use App\Models\Market;
 use App\Models\MarketPrice;
 use App\Models\Tindahan;
 use App\Services\XpService;
@@ -89,8 +90,8 @@ class PriceController extends Controller
             'reported_price' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:30'],
             'photo' => ['nullable', 'image', 'max:4096'],
-            'tindahan_id' => ['nullable', 'integer', 'exists:tindahan,id'],
-            'market_id' => ['nullable', 'integer', 'exists:markets,id'],
+            'tindahan_id' => ['nullable', 'required_without:market_id', 'integer', 'exists:tindahan,id'],
+            'market_id' => ['nullable', 'required_without:tindahan_id', 'integer', 'exists:markets,id'],
             'barangay' => ['nullable', 'string', 'max:100'],
             'municipality' => ['nullable', 'string', 'max:100'],
         ]);
@@ -103,12 +104,21 @@ class PriceController extends Controller
             $photoPath = '/storage/' . $request->file('photo')->store('items', 'public');
         }
 
+        // A market/store is now mandatory (exactly one of tindahan_id/market_id
+        // is always set per the validation above), so its own address is a
+        // more accurate location for this report than the reporting user's
+        // own registered address — they could easily be reporting a price
+        // while out of their home area.
+        $target = ! empty($validated['tindahan_id'])
+            ? Tindahan::find($validated['tindahan_id'])
+            : Market::find($validated['market_id']);
+
         $report = CommunityPriceReport::create([
             ...$validated,
             'photo'        => $photoPath,
             'user_id'      => $user->id,
-            'barangay'     => $validated['barangay'] ?? $user->barangay,
-            'municipality' => $validated['municipality'] ?? $user->municipality,
+            'barangay'     => $target?->barangay ?? $validated['barangay'] ?? $user->barangay,
+            'municipality' => $target?->municipality ?? $validated['municipality'] ?? $user->municipality,
             'province'     => $user->province,
             // Store-targeted reports need the owner's approval before they
             // appear on the store page; market-level reports publish directly.
