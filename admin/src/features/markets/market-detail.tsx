@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -11,7 +12,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { marketTypeOptions } from './data/data'
-import { useMarketDetailQuery } from './hooks/use-markets'
+import { type MarketDetail, type MarketPriceRow, useMarketDetailQuery } from './hooks/use-markets'
 
 function typeLabel(type: string) {
   return marketTypeOptions.find((t) => t.value === type)?.label ?? type
@@ -116,39 +117,85 @@ export function MarketDetail({ marketId }: { marketId: number }) {
 
             <div>
               <h3 className='mb-2 text-lg font-semibold'>Prices at this market</h3>
-              <div className='overflow-hidden rounded-md border'>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Item</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Stall</TableHead>
-                      <TableHead>Updated</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {market.prices.length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className='h-20 text-center text-muted-foreground'>No prices listed for this market yet.</TableCell></TableRow>
-                    ) : (
-                      market.prices.map((price) => (
-                        <TableRow key={price.id}>
-                          <TableCell className='font-medium'>{price.item_name}</TableCell>
-                          <TableCell className='capitalize'>{price.category}</TableCell>
-                          <TableCell>₱{Number(price.price_per_unit).toFixed(2)} / {price.unit}</TableCell>
-                          <TableCell>{price.tindahan?.name ?? <span className='text-muted-foreground'>General market</span>}</TableCell>
-                          <TableCell>{new Date(price.updated_at).toLocaleDateString()}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              <PricesByStall market={market} />
             </div>
           </>
         )}
       </Main>
     </>
+  )
+}
+
+/** Groups this market's prices into one tab per stall, plus a "General"
+ * tab for prices attached to the market itself (no specific tindahan_id). */
+function PricesByStall({ market }: { market: MarketDetail }) {
+  const generalPrices = market.prices.filter((p) => !p.tindahan)
+  const stallTabs = market.tindahan.map((stall) => ({
+    key: String(stall.id),
+    label: stall.name,
+    prices: market.prices.filter((p) => p.tindahan?.id === stall.id),
+  }))
+  const tabs = [
+    ...(generalPrices.length > 0 ? [{ key: 'general', label: 'General', prices: generalPrices }] : []),
+    ...stallTabs,
+  ]
+
+  if (tabs.length === 0) {
+    return (
+      <div className='overflow-hidden rounded-md border'>
+        <div className='flex h-20 items-center justify-center text-muted-foreground'>
+          No prices listed for this market yet.
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <Tabs defaultValue={tabs[0].key}>
+      <TabsList className='h-auto flex-wrap justify-start p-1'>
+        {tabs.map((t) => (
+          <TabsTrigger key={t.key} value={t.key}>
+            {t.label} <span className='ms-1 text-xs text-muted-foreground'>({t.prices.length})</span>
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {tabs.map((t) => (
+        <TabsContent key={t.key} value={t.key}>
+          <PriceTable prices={t.prices} />
+        </TabsContent>
+      ))}
+    </Tabs>
+  )
+}
+
+function PriceTable({ prices }: { prices: MarketPriceRow[] }) {
+  return (
+    <div className='overflow-hidden rounded-md border'>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Item</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Updated</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {prices.length === 0 ? (
+            <TableRow><TableCell colSpan={4} className='h-20 text-center text-muted-foreground'>No prices for this stall yet.</TableCell></TableRow>
+          ) : (
+            prices.map((price) => (
+              <TableRow key={price.id}>
+                <TableCell className='font-medium'>{price.item_name}</TableCell>
+                <TableCell className='capitalize'>{price.category}</TableCell>
+                <TableCell>₱{Number(price.price_per_unit).toFixed(2)} / {price.unit}</TableCell>
+                <TableCell>{new Date(price.updated_at).toLocaleDateString()}</TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
   )
 }
 
