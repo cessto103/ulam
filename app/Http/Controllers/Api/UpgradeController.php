@@ -106,18 +106,17 @@ class UpgradeController extends Controller
             return response()->json(['received' => true]); // Acknowledge other events
         }
 
-        $payment      = $event['data'] ?? [];
-        $paymentId    = $payment['id'] ?? null;
-        $paymentAttrs = $payment['attributes'] ?? [];
-
-        // The Link's own metadata (user_id/plan_type, set in checkout() above)
-        // does not carry over onto this Payment — confirmed against a real
-        // live transaction, where the Payment's metadata contained only
-        // PayMongo's own pm_reference_number. external_reference_number is
-        // the field that actually survives, matching the Link's
-        // reference_number captured in payment_links at checkout time.
-        $referenceNumber = $paymentAttrs['external_reference_number']
-            ?? ($paymentAttrs['metadata']['pm_reference_number'] ?? null);
+        // For link.payment.paid, event.data is the LINK itself (id "link_...",
+        // type "link") — NOT the payment, despite the event name. Confirmed
+        // against a real webhook delivery payload. The link's own
+        // reference_number is what checkout() stored in payment_links; the
+        // actual Payment resource is nested one level deeper, inside this
+        // link's own `payments` array, each entry wrapped in its own `data` key.
+        $linkAttrs        = $event['data']['attributes'] ?? [];
+        $referenceNumber  = $linkAttrs['reference_number'] ?? null;
+        $nestedPayment    = $linkAttrs['payments'][0]['data'] ?? [];
+        $paymentId        = $nestedPayment['id'] ?? null;
+        $paymentAttrs     = $nestedPayment['attributes'] ?? $linkAttrs;
 
         // Once the signature is verified, everything below is our own
         // processing — any bug in it must still resolve to 200 (PayMongo
