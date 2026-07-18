@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.20.3 (2026-07-18)
+
+### Added
+- **Markets are now clickable**, opening a detail page showing the market's full info, every stall attached to it, and every price listed (with which stall each belongs to). Previously the Markets list only showed counts with no way to drill in.
+
 ## v1.20.2 (2026-07-18)
 
 ### Added
