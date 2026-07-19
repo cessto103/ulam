@@ -566,10 +566,13 @@ export function ThemePage() {
                 defaultColors={['#386641']}
                 cfg={sections.dashboard_awards}
               />
+              {/* The section key stays dashboard_recipe_book (renaming it would
+                  orphan every stored preset's background for this tile) — the
+                  app repurposed this home-tile slot into My Shopping List. */}
               <ImageSectionCard
                 presetId={selected.id}
                 sectionKey='dashboard_recipe_book'
-                title='Home: Recipe Book tile'
+                title='Home: My Shopping List tile'
                 description=''
                 defaultColors={['#3C3A2F']}
                 cfg={sections.dashboard_recipe_book}

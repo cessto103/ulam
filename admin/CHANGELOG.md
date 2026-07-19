@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.22.1 (2026-07-20)
+
+### Changed
+- **Theme page: the "Home: Recipe Book tile" card is now labeled "Home: My Shopping List tile"**, matching the app's repurposed home tile. The underlying section key is unchanged, so existing preset backgrounds for that tile keep working.
+
 ## v1.22.0 (2026-07-19)
 
 ### Added
