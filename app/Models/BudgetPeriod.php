@@ -11,9 +11,11 @@ class BudgetPeriod extends Model
         'total_amount',
         'total_days',
         'household_size',
-        'daily_fare',
-        'daily_allowance',
-        // daily_food_budget is a stored generated column — DB computes it
+        'custom_expenses',
+        // daily_food_budget is computed in BudgetController::setup() —
+        // total_amount/total_days minus the sum of custom_expenses, since a
+        // same-row generated column can't sum a JSON list.
+        'daily_food_budget',
         'start_date',
         'end_date',
         'is_active',
@@ -23,8 +25,7 @@ class BudgetPeriod extends Model
         'total_amount'       => 'decimal:2',
         'total_days'         => 'integer',
         'household_size'     => 'integer',
-        'daily_fare'         => 'decimal:2',
-        'daily_allowance'    => 'decimal:2',
+        'custom_expenses'    => 'array',
         'daily_food_budget'  => 'decimal:2',
         'start_date'         => 'date',
         'end_date'           => 'date',

@@ -68,13 +68,27 @@ class BudgetController extends Controller
             'total_amount'   => ['required', 'numeric', 'min:1'],
             'total_days'     => ['nullable', 'integer', 'min:1', 'max:31'],
             'household_size' => ['required', 'integer', 'min:1', 'max:20'],
-            'daily_fare'     => ['nullable', 'numeric', 'min:0'],
-            'daily_allowance' => ['nullable', 'numeric', 'min:0'],
+            'custom_expenses'             => ['nullable', 'array', 'max:10'],
+            'custom_expenses.*.category'  => ['required', 'in:travel,load,baon,other'],
+            'custom_expenses.*.amount'    => ['required', 'numeric', 'min:0'],
+            'custom_expenses.*.label'     => ['nullable', 'string', 'max:40'],
         ]);
 
         $user      = $request->user();
         $today     = today();
         $totalDays = $data['total_days'] ?? $today->daysInMonth;
+
+        $customExpenses = collect($data['custom_expenses'] ?? [])
+            ->map(fn ($e) => [
+                'category' => $e['category'],
+                'amount'   => round((float) $e['amount'], 2),
+                'label'    => $e['category'] === 'other' ? ($e['label'] ?? null) : null,
+            ])
+            ->values()
+            ->all();
+
+        $expensesTotal   = collect($customExpenses)->sum('amount');
+        $dailyFoodBudget = round(($data['total_amount'] / $totalDays) - $expensesTotal, 2);
 
         // 1-day budget: today only; ~month budget: full calendar month; otherwise: today + N-1
         if ($totalDays === 1) {
@@ -94,15 +108,15 @@ class BudgetController extends Controller
             ->update(['is_active' => false]);
 
         $period = BudgetPeriod::create([
-            'user_id'        => $user->id,
-            'total_amount'   => $data['total_amount'],
-            'total_days'     => $totalDays,
-            'household_size' => $data['household_size'],
-            'daily_fare'     => $data['daily_fare'] ?? 0,
-            'daily_allowance' => $data['daily_allowance'] ?? 0,
-            'start_date'     => $startDate,
-            'end_date'       => $endDate,
-            'is_active'      => true,
+            'user_id'           => $user->id,
+            'total_amount'      => $data['total_amount'],
+            'total_days'        => $totalDays,
+            'household_size'    => $data['household_size'],
+            'custom_expenses'   => $customExpenses,
+            'daily_food_budget' => $dailyFoodBudget,
+            'start_date'        => $startDate,
+            'end_date'          => $endDate,
+            'is_active'         => true,
         ]);
 
         $user->update(['household_size' => $data['household_size']]);
