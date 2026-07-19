@@ -289,6 +289,8 @@ class AuthController extends Controller
             // Relationship tables that reference users under other column names
             \Illuminate\Support\Facades\DB::table('connections')
                 ->where('requester_id', $user->id)->orWhere('recipient_id', $user->id)->delete();
+            \Illuminate\Support\Facades\DB::table('follows')
+                ->where('follower_id', $user->id)->orWhere('followed_id', $user->id)->delete();
 
             $user->tokens()->delete();
             $user->delete();

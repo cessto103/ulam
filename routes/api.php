@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
 use App\Http\Controllers\Api\Admin\AppSettingController as AdminAppSettingController;
 use App\Http\Controllers\Api\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Api\Admin\ConnectionLabelController as AdminConnectionLabelController;
 use App\Http\Controllers\Api\Admin\DailyTaskController as AdminDailyTaskController;
 use App\Http\Controllers\Api\Admin\RewardTierController as AdminRewardTierController;
 use App\Http\Controllers\Api\Admin\SellerPlanController as AdminSellerPlanController;
@@ -195,6 +196,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/{id}/follow',   [ConnectionController::class, 'unfollow']);
     Route::get('/connections/following',  [ConnectionController::class, 'following']);
     Route::get('/connections/followers',  [ConnectionController::class, 'followers']);
+
+    // Mutual connections (request/accept flow) — distinct from follows above.
+    Route::get('/connections',                        [ConnectionController::class, 'index']);
+    Route::get('/connections/pending',                [ConnectionController::class, 'pending']);
+    Route::get('/connection-labels',                  [ConnectionController::class, 'labels']);
+    Route::post('/connections/requests',              [ConnectionController::class, 'request'])->middleware('throttle:20,1');
+    Route::post('/connections/requests/{id}/accept',  [ConnectionController::class, 'accept']);
+    Route::post('/connections/requests/{id}/decline', [ConnectionController::class, 'decline']);
+    Route::delete('/connections/requests/{id}',       [ConnectionController::class, 'cancel']);
+    Route::delete('/connections/{id}',                [ConnectionController::class, 'remove']);
+    Route::patch('/connections/{id}/label',           [ConnectionController::class, 'setLabel']);
 
     Route::post('/upgrade/checkout',      [UpgradeController::class, 'checkout']);
 
@@ -426,6 +438,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/reward-tiers',        [AdminRewardTierController::class, 'store']);
     Route::patch('/reward-tiers/{id}',  [AdminRewardTierController::class, 'update']);
     Route::delete('/reward-tiers/{id}', [AdminRewardTierController::class, 'destroy']);
+
+    Route::get('/connection-labels',         [AdminConnectionLabelController::class, 'index']);
+    Route::post('/connection-labels',        [AdminConnectionLabelController::class, 'store']);
+    Route::patch('/connection-labels/{id}',  [AdminConnectionLabelController::class, 'update']);
+    Route::delete('/connection-labels/{id}', [AdminConnectionLabelController::class, 'destroy']);
 
     Route::get('/listing-reports',      [AdminListingReportController::class, 'index']);
     Route::get('/listing-reports/{id}', [AdminListingReportController::class, 'show']);

@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.21.0 (2026-07-19)
+
+### Added
+- **Connection Labels page** (Users section): manage the relationship options a user can put on an accepted connection (seeded: Household, Relative, Normal). Labels are private to the person who set them; the other side never sees them. Part of the new Followers-vs-Connections split: following stays one-tap, while Connections now require the other user's approval.
+
 ## v1.20.3 (2026-07-18)
 
 ### Added

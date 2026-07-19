@@ -222,6 +222,11 @@ export const sidebarData: SidebarData = {
           url: '/users',
           icon: Users,
         },
+        {
+          title: 'Connection Labels',
+          url: '/connection-labels',
+          icon: Tags,
+        },
       ],
     },
     {
