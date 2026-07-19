@@ -53,7 +53,7 @@ class CommentController extends Controller
                 app(NotificationService::class)->send(
                     $owner,
                     'comment',
-                    '💬 May nagkomento sa iyong post!',
+                    '💬 New comment on your post!',
                     "{$user->name}: {$request->input('body')}",
                     ['post_id' => $postId],
                     "/post/{$postId}"

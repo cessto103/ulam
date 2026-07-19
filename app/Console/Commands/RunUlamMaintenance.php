@@ -32,7 +32,7 @@ class RunUlamMaintenance extends Command
                     $sub->user,
                     'seller_subscription',
                     'Subscription ending soon ⏰',
-                    "Your {$sub->plan} subscription ends on {$sub->expires_at->timezone('Asia/Manila')->format('M j')}. Renew para tuloy-tuloy ang iyong tindahan!",
+                    "Your {$sub->plan} subscription ends on {$sub->expires_at->timezone('Asia/Manila')->format('M j')}. Renew to keep your store running!",
                     ['ad_subscription_id' => $sub->id],
                     '/subscription',
                 );

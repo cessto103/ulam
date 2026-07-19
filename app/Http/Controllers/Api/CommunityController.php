@@ -171,8 +171,8 @@ class CommunityController extends Controller
                 app(NotificationService::class)->send(
                     $owner,
                     'reaction',
-                    '❤️ May puso sa iyong post!',
-                    "{$user->name} ay nagbigay ng puso sa iyong post.",
+                    '❤️ Someone liked your post!',
+                    "{$user->name} liked your post.",
                     ['post_id' => $id],
                     '/(tabs)/komunidad',
                 );

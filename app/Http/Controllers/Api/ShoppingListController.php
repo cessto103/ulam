@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\BudgetLogService;
 use App\Services\NotificationService;
 use App\Services\ShoppingListService;
+use App\Services\XpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -318,8 +319,8 @@ class ShoppingListController extends Controller
                     $notifier->send(
                         $recipient,
                         'list_shared',
-                        '🛒 May shared shopping list ka!',
-                        "{$handle} ay nag-share ng \"{$list->title}\" sa iyo.",
+                        '🛒 A shopping list was shared with you!',
+                        "{$handle} shared \"{$list->title}\" with you.",
                         ['shopping_list_id' => $list->id],
                         "/shopping-list/{$list->id}"
                     );
@@ -413,20 +414,39 @@ class ShoppingListController extends Controller
         }
 
         // Notify recipients outside the transaction (network calls).
-        $list = $result['list']->fresh(['shares.user']);
+        $list = $result['list']->fresh(['shares.user', 'items']);
         $notifier = app(NotificationService::class);
+        $xpService = app(XpService::class);
         $handle = $me->username ? "@{$me->username}" : $me->name;
+
+        // Anyone who checked at least one item actually went and shopped —
+        // completion by the owner is their confirmation it really happened,
+        // so award the helper XP here rather than requiring a separate
+        // "thanks" tap from the owner. Capped once/day/reason via
+        // awardOncePerDay so repeatedly sharing trivial lists can't farm it.
+        $checkedByUserIds = $list->items->pluck('checked_by')->filter()->unique();
+
         foreach ($list->shares as $share) {
-            if ($share->user) {
-                $notifier->send(
-                    $share->user,
-                    'list_completed',
-                    '✅ Tapos na ang shopping list!',
-                    "Minarkahan ni {$handle} na kumpleto na ang \"{$list->title}\".",
-                    ['shopping_list_id' => $list->id],
-                    "/shopping-list/{$list->id}"
-                );
-            }
+            if (! $share->user) continue;
+
+            // "Helped" and "earned XP" are separate: the daily cap should
+            // only withhold the XP, never the thank-you itself.
+            $helped = $checkedByUserIds->contains($share->user->id);
+            $helperReward = $helped
+                ? $xpService->awardOncePerDay($share->user, 15, 'help_shopping', $list)
+                : null;
+            $xpEarned = $helperReward['xp_awarded'] ?? null;
+
+            $notifier->send(
+                $share->user,
+                'list_completed',
+                $helped ? '🙏 Thanks for helping!' : '✅ Shopping list complete!',
+                $helped
+                    ? "Thanks for helping {$handle} shop for \"{$list->title}\"!" . ($xpEarned ? " +{$xpEarned} XP" : '')
+                    : "{$handle} marked \"{$list->title}\" complete.",
+                ['shopping_list_id' => $list->id],
+                "/shopping-list/{$list->id}"
+            );
         }
 
         $reward = $result['logResult']['reward'] ?? null;

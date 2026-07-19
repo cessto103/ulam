@@ -55,6 +55,30 @@ class XpService
         });
     }
 
+    /**
+     * Same ledger as award(), but skipped if this user already earned XP for
+     * this reason today. Guard rail for XP that's granted automatically
+     * (not from a single deliberate user action) — e.g. "helped with a
+     * shared shopping list" — so it can't be farmed by repeating the same
+     * trivial action all day.
+     *
+     * @return array{xp_awarded:int,leveled_up:bool,new_level:int,new_achievements:array<int,array{id:int,name:string,icon:?string,xp_reward:int}>}|null
+     *         null when today's cap for this reason was already hit.
+     */
+    public function awardOncePerDay(User $user, int $xp, string $reason, ?Model $source = null): ?array
+    {
+        $alreadyToday = XpLog::where('user_id', $user->id)
+            ->where('reason', $reason)
+            ->whereDate('created_at', today())
+            ->exists();
+
+        if ($alreadyToday) {
+            return null;
+        }
+
+        return $this->award($user, $xp, $reason, $source);
+    }
+
     public static function calculateLevel(int $xp): int
     {
         $level = 1;
@@ -123,7 +147,7 @@ class XpService
                     $user,
                     'achievement',
                     '🏆 Achievement Unlocked!',
-                    "Na-unlock mo ang \"{$achievement->title}\"! +{$achievement->xp_reward} XP",
+                    "You unlocked \"{$achievement->title}\"! +{$achievement->xp_reward} XP",
                     ['achievement_id' => $achievement->id],
                     '/(tabs)/awards',
                 );

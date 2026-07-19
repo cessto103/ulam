@@ -55,7 +55,7 @@ class TindahanCommentController extends Controller
                 app(NotificationService::class)->send(
                     $owner,
                     'comment',
-                    '💬 May nagkomento sa iyong tindahan!',
+                    '💬 New comment on your store!',
                     "{$user->name}: {$request->input('body')}",
                     ['tindahan_id' => $tindahanId],
                     "/stall/{$tindahanId}"

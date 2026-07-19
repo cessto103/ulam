@@ -74,6 +74,7 @@ const KNOWN_ACTION_TYPES = [
   { value: 'report_price', label: 'Report a price' },
   { value: 'create_post', label: 'Create a community post' },
   { value: 'log_budget', label: 'Log daily spending' },
+  { value: 'help_shopping', label: 'Help with a shared shopping list' },
 ]
 
 const QUERY_KEY = 'admin-daily-tasks'

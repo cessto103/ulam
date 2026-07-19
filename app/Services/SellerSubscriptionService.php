@@ -69,7 +69,7 @@ class SellerSubscriptionService
             $submission->user,
             'seller_subscription',
             'Subscription activated! 🎉',
-            "Your {$planName} subscription is now active until {$expiresAt->format('M j, Y')}. Salamat sa iyong suporta!",
+            "Your {$planName} subscription is now active until {$expiresAt->format('M j, Y')}. Thank you for your support!",
             ['ad_subscription_id' => $submission->id],
             '/subscription',
         );

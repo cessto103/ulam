@@ -115,8 +115,8 @@ class ConnectionController extends Controller
                 app(NotificationService::class)->send(
                     $followed,
                     'follow',
-                    '👤 May bagong sumusunod sa iyo!',
-                    "{$handle} ay nagsimulang sumunod sa iyo.",
+                    '👤 You have a new follower!',
+                    "{$handle} started following you.",
                     ['follower_id' => $me->id],
                     "/user/{$me->id}"
                 );
@@ -257,8 +257,8 @@ class ConnectionController extends Controller
             app(NotificationService::class)->send(
                 $target,
                 'connection_request',
-                '🤝 May connection request ka!',
-                "{$handle} ay gustong maging konektado sa iyo.",
+                '🤝 You have a connection request!',
+                "{$handle} wants to connect with you.",
                 ['requester_id' => $me->id],
                 '/connections'
             );
@@ -285,8 +285,8 @@ class ConnectionController extends Controller
             app(NotificationService::class)->send(
                 $requester,
                 'connection_accepted',
-                '🎉 Tinanggap ang iyong connection request!',
-                "{$handle} ay tinanggap ang iyong request. Konektado na kayo.",
+                '🎉 Your connection request was accepted!',
+                "{$handle} accepted your request. You're connected now.",
                 ['accepter_id' => $me->id],
                 "/user/{$me->id}"
             );

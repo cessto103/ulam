@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.22.2 (2026-07-20)
+
+### Added
+- **Daily & Weekly Tasks: "Help with a shared shopping list" action type.** Recipients who check off at least one item on a shared list now earn XP when the owner completes it; this new option lets a task be built on top of that (e.g. bonus XP), matching the same real-action pattern as the other task types.
+
 ## v1.22.1 (2026-07-20)
 
 ### Changed

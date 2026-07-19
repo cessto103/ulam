@@ -53,7 +53,7 @@ class RecipeCommentController extends Controller
                 app(NotificationService::class)->send(
                     $owner,
                     'comment',
-                    '💬 May nagkomento sa iyong recipe!',
+                    '💬 New comment on your recipe!',
                     "{$user->name}: {$request->input('body')}",
                     ['recipe_id' => $recipeId],
                     "/recipe/{$recipeId}"

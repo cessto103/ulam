@@ -38,8 +38,8 @@ class SendDailyReminders extends Command
         // Bulk push — one HTTP call for all tokens
         $notifs->sendBulk(
             $tokens,
-            '🍳 I-log na ang gastos mo!',
-            'Hoy! Huwag kalimutang i-track ang iyong food budget ngayon.',
+            "🍳 Don't forget to log today's spending!",
+            'A quick reminder to track your food budget for today.',
             ['action_url' => '/log-spending', 'type' => 'daily_reminder'],
         );
 
@@ -48,8 +48,8 @@ class SendDailyReminders extends Command
         $rows = $users->map(fn ($u) => [
             'user_id'    => $u->id,
             'type'       => 'daily_reminder',
-            'title'      => '🍳 I-log na ang gastos mo!',
-            'body'       => 'Hoy! Huwag kalimutang i-track ang iyong food budget ngayon.',
+            'title'      => "🍳 Don't forget to log today's spending!",
+            'body'       => 'A quick reminder to track your food budget for today.',
             'data'       => json_encode(['action_url' => '/log-spending']),
             'action_url' => '/log-spending',
             'read_at'    => null,
