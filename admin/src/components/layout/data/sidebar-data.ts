@@ -193,6 +193,11 @@ export const sidebarData: SidebarData = {
           icon: Landmark,
         },
         {
+          title: 'Tingi Staple Prices',
+          url: '/staple-prices',
+          icon: Receipt,
+        },
+        {
           title: 'Reported Listings',
           url: '/listing-reports',
           icon: Flag,

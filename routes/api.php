@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\Admin\AppSettingController as AdminAppSettingContro
 use App\Http\Controllers\Api\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Api\Admin\ConnectionLabelController as AdminConnectionLabelController;
 use App\Http\Controllers\Api\Admin\DailyTaskController as AdminDailyTaskController;
+use App\Http\Controllers\Api\Admin\StaplePriceController as AdminStaplePriceController;
 use App\Http\Controllers\Api\Admin\RewardTierController as AdminRewardTierController;
 use App\Http\Controllers\Api\Admin\SellerPlanController as AdminSellerPlanController;
 use App\Http\Controllers\Api\Admin\SellerSubscriptionController as AdminSellerSubscriptionController;
@@ -51,6 +52,7 @@ use App\Http\Controllers\Api\CommunityController;
 use App\Http\Controllers\Api\InsightsController;
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\SellerSubscriptionController;
+use App\Http\Controllers\Api\ShoppingListController;
 use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TindahanController;
 use App\Http\Controllers\Api\TindahanCommentController;
@@ -196,6 +198,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/{id}/follow',   [ConnectionController::class, 'unfollow']);
     Route::get('/connections/following',  [ConnectionController::class, 'following']);
     Route::get('/connections/followers',  [ConnectionController::class, 'followers']);
+
+    // Shopping lists (server-backed, shareable to connections)
+    Route::get('/shopping-lists',                          [ShoppingListController::class, 'index']);
+    Route::post('/shopping-lists/daily',                   [ShoppingListController::class, 'openDaily']);
+    Route::post('/shopping-lists',                         [ShoppingListController::class, 'store']);
+    Route::get('/shopping-lists/{id}',                     [ShoppingListController::class, 'show']);
+    Route::patch('/shopping-lists/{id}',                   [ShoppingListController::class, 'update']);
+    Route::delete('/shopping-lists/{id}',                  [ShoppingListController::class, 'destroy']);
+    Route::post('/shopping-lists/{id}/items',              [ShoppingListController::class, 'addItem']);
+    Route::patch('/shopping-lists/{id}/items/{itemId}',    [ShoppingListController::class, 'updateItem']);
+    Route::post('/shopping-lists/{id}/items/bulk-check',   [ShoppingListController::class, 'bulkCheck']);
+    Route::delete('/shopping-lists/{id}/items/{itemId}',   [ShoppingListController::class, 'destroyItem']);
+    Route::post('/shopping-lists/{id}/shares',             [ShoppingListController::class, 'share']);
+    Route::delete('/shopping-lists/{id}/shares/{userId}',  [ShoppingListController::class, 'unshare']);
+    Route::post('/shopping-lists/{id}/complete',           [ShoppingListController::class, 'complete']);
 
     // Mutual connections (request/accept flow) — distinct from follows above.
     Route::get('/connections',                        [ConnectionController::class, 'index']);
@@ -443,6 +460,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/connection-labels',        [AdminConnectionLabelController::class, 'store']);
     Route::patch('/connection-labels/{id}',  [AdminConnectionLabelController::class, 'update']);
     Route::delete('/connection-labels/{id}', [AdminConnectionLabelController::class, 'destroy']);
+
+    Route::get('/staple-prices',         [AdminStaplePriceController::class, 'index']);
+    Route::post('/staple-prices',        [AdminStaplePriceController::class, 'store']);
+    Route::patch('/staple-prices/{id}',  [AdminStaplePriceController::class, 'update']);
+    Route::delete('/staple-prices/{id}', [AdminStaplePriceController::class, 'destroy']);
 
     Route::get('/listing-reports',      [AdminListingReportController::class, 'index']);
     Route::get('/listing-reports/{id}', [AdminListingReportController::class, 'show']);

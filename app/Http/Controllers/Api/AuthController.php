@@ -291,6 +291,10 @@ class AuthController extends Controller
                 ->where('requester_id', $user->id)->orWhere('recipient_id', $user->id)->delete();
             \Illuminate\Support\Facades\DB::table('follows')
                 ->where('follower_id', $user->id)->orWhere('followed_id', $user->id)->delete();
+            // shopping_lists uses owner_id, so the generic user_id loop above
+            // misses it (items/shares then cascade via their FKs).
+            \Illuminate\Support\Facades\DB::table('shopping_lists')
+                ->where('owner_id', $user->id)->delete();
 
             $user->tokens()->delete();
             $user->delete();

@@ -204,28 +204,21 @@ class BudgetController extends Controller
             'notes'             => ['nullable', 'string', 'max:500'],
         ]);
 
-        $user   = $request->user();
-        $today  = today();
-        $period = $this->activePeriod($user->id);
+        $user = $request->user();
 
-        if (! $period) {
+        $result = app(\App\Services\BudgetLogService::class)->logToday(
+            $user,
+            (float) $data['actual_spent'],
+            $data['expense_breakdown'] ?? null,
+            $data['notes'] ?? null,
+        );
+
+        if (! $result) {
             return response()->json(['message' => 'I-setup muna ang budget.'], 422);
         }
 
-        $log = DailyBudgetLog::updateOrCreate(
-            ['user_id' => $user->id, 'log_date' => $today],
-            [
-                'budget_period_id'  => $period->id,
-                'budgeted_amount'   => $period->daily_food_budget,
-                'actual_spent'      => $data['actual_spent'],
-                'expense_breakdown' => $data['expense_breakdown'] ?? null,
-                'notes'             => $data['notes'] ?? null,
-            ]
-        );
-
-        $reward = $log->wasRecentlyCreated
-            ? app(XpService::class)->award($user, 10, 'log_budget', $log)
-            : null;
+        $reward = $result['reward'];
+        $period = $result['period'];
 
         $budget    = (float) $period->daily_food_budget;
         $spent     = (float) $data['actual_spent'];

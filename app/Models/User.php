@@ -169,6 +169,16 @@ class User extends Authenticatable
         return $this->hasMany(Follow::class, 'followed_id');
     }
 
+    public function shoppingLists()
+    {
+        return $this->hasMany(ShoppingList::class, 'owner_id');
+    }
+
+    public function sharedShoppingLists()
+    {
+        return $this->belongsToMany(ShoppingList::class, 'shopping_list_shares');
+    }
+
     public function recipeBook()
     {
         return $this->hasMany(RecipeBook::class);

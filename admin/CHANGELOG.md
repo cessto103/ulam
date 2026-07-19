@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.22.0 (2026-07-19)
+
+### Added
+- **Tingi Staple Prices page** (Prices & Markets section): the smallest purchasable unit and price for staples/condiments (sachet ng toyo, takal na asin). When a meal-plan ingredient matches an item here, its shopping list line uses the tingi price instead of the recipe's proportional estimate (you can't buy 2 tbsp of soy sauce), keeping the recipe amount as a note. Seeded: Toyo, Suka, Asin, Paminta, Mantika, Asukal.
+
 ## v1.21.0 (2026-07-19)
 
 ### Added
