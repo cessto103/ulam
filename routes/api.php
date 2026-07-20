@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Api\Admin\BoostController as AdminBoostController;
+use App\Http\Controllers\Api\Admin\SponsoredAdController as AdminSponsoredAdController;
 use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCommentController;
 use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
@@ -55,6 +56,7 @@ use App\Http\Controllers\Api\InsightsController;
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\SellerSubscriptionController;
 use App\Http\Controllers\Api\ShoppingListController;
+use App\Http\Controllers\Api\SponsoredAdController;
 use App\Http\Controllers\Api\SupportController;
 use App\Http\Controllers\Api\TindahanController;
 use App\Http\Controllers\Api\TindahanCommentController;
@@ -162,6 +164,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/recipes/{id}/rate',    [RecipeController::class, 'rate']);
     Route::post('/recipes/{id}/react',   [RecipeController::class, 'react']);
     Route::get('/recipe-book',           [RecipeController::class, 'book']);
+
+    Route::get('/ads/feed',             [SponsoredAdController::class, 'feed']);
+    Route::post('/ads/{id}/impression', [SponsoredAdController::class, 'impression'])->middleware('throttle:60,1');
+    Route::post('/ads/{id}/click',      [SponsoredAdController::class, 'click'])->middleware('throttle:30,1');
 
     Route::get('/users/search', [UserController::class, 'search']);
     Route::get('/user', [UserController::class, 'me']);
@@ -382,6 +388,13 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/boosts',               [AdminBoostController::class, 'index']);
     Route::post('/boosts/{id}/approve', [AdminBoostController::class, 'approve']);
     Route::post('/boosts/{id}/reject',  [AdminBoostController::class, 'reject']);
+
+    Route::get('/sponsored-ads',               [AdminSponsoredAdController::class, 'index']);
+    Route::post('/sponsored-ads',              [AdminSponsoredAdController::class, 'store']);
+    Route::post('/sponsored-ads/upload-image', [AdminSponsoredAdController::class, 'uploadImage']);
+    Route::get('/sponsored-ads/{id}',          [AdminSponsoredAdController::class, 'show']);
+    Route::patch('/sponsored-ads/{id}',        [AdminSponsoredAdController::class, 'update']);
+    Route::delete('/sponsored-ads/{id}',       [AdminSponsoredAdController::class, 'destroy']);
 
     Route::get('/2fa/status',   [AdminTwoFactorController::class, 'status']);
     Route::post('/2fa/setup',   [AdminTwoFactorController::class, 'setup']);
