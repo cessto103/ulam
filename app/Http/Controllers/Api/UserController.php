@@ -229,13 +229,15 @@ class UserController extends Controller
             $completedFor = $completedPeriods[$task->id] ?? null;
 
             return [
-                'id'           => $task->id,
-                'title'        => $task->title,
-                'description'  => $task->description,
-                'icon'         => $task->icon,
-                'xp_reward'    => $task->xp_reward,
-                'frequency'    => $task->frequency,
-                'is_completed' => $completedFor && $completedFor->toDateString() === $periodDate,
+                'id'              => $task->id,
+                'title'           => $task->title,
+                'title_en'        => $task->title_en,
+                'description'     => $task->description,
+                'description_en'  => $task->description_en,
+                'icon'            => $task->icon,
+                'xp_reward'       => $task->xp_reward,
+                'frequency'       => $task->frequency,
+                'is_completed'    => $completedFor && $completedFor->toDateString() === $periodDate,
             ];
         };
 
