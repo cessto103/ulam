@@ -69,7 +69,7 @@ class AuthController extends Controller
             Log::error('Email verification mail failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
         }
 
-        $token = $user->createToken('mobile')->plainTextToken;
+        $token = $user->createToken('mobile', expiresAt: now()->addDays(60))->plainTextToken;
 
         return response()->json([
             'user' => $this->formatUser($user),
@@ -154,7 +154,7 @@ class AuthController extends Controller
         }
 
         $user->update(['last_active_date' => now()->toDateString()]);
-        $token = $user->createToken('mobile')->plainTextToken;
+        $token = $user->createToken('mobile', expiresAt: now()->addDays(60))->plainTextToken;
 
         return response()->json([
             'user' => $this->formatUser($user),

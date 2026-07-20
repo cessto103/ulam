@@ -51,7 +51,7 @@ class AuthController extends Controller
             $user->update(['twofa_last_ts' => $ts]);
         }
 
-        $token = $user->createToken('admin-panel')->plainTextToken;
+        $token = $user->createToken('admin-panel', expiresAt: now()->addDays(14))->plainTextToken;
 
         return response()->json(['user' => $this->formatAdminUser($user), 'token' => $token]);
     }

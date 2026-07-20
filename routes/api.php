@@ -124,32 +124,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/prices/nearby',          [PriceController::class, 'nearby']);
     Route::get('/prices/my-reports',      [PriceController::class, 'myReports']);
     Route::get('/prices/search',          [PriceController::class, 'search']);
-    Route::post('/prices/report',         [PriceController::class, 'report']);
+    Route::post('/prices/report',         [PriceController::class, 'report'])->middleware('throttle:10,1');
     Route::post('/content-reports',       [\App\Http\Controllers\Api\ContentReportController::class, 'store']);
     Route::get('/prices/item/{name}',     [PriceController::class, 'item']);
-    Route::post('/prices/report/{id}/vote', [PriceController::class, 'vote']);
+    Route::post('/prices/report/{id}/vote', [PriceController::class, 'vote'])->middleware('throttle:30,1');
     Route::get('/prices/history/{item}',  [PriceController::class, 'history']);
 
     Route::get('/community/feed',              [CommunityController::class, 'feed']);
     Route::get('/community/post/{id}',         [CommunityController::class, 'show']);
-    Route::post('/community/post',             [CommunityController::class, 'store']);
+    Route::post('/community/post',             [CommunityController::class, 'store'])->middleware('throttle:6,1');
     Route::post('/community/post/{id}/react',    [CommunityController::class, 'react']);
     Route::post('/community/post/{id}/dislike', [CommunityController::class, 'dislike']);
     Route::post('/community/post/{id}/save',    [CommunityController::class, 'save']);
     Route::patch('/community/post/{id}',       [CommunityController::class, 'update']);
     Route::delete('/community/post/{id}',      [CommunityController::class, 'destroy']);
     Route::get('/community/post/{id}/comments',   [CommentController::class, 'index']);
-    Route::post('/community/post/{id}/comments',  [CommentController::class, 'store']);
+    Route::post('/community/post/{id}/comments',  [CommentController::class, 'store'])->middleware('throttle:20,1');
     Route::patch('/community/comment/{id}',       [CommentController::class, 'update']);
     Route::delete('/community/comment/{id}',      [CommentController::class, 'destroy']);
 
     Route::get('/recipes/{id}/comments',   [RecipeCommentController::class, 'index']);
-    Route::post('/recipes/{id}/comments',  [RecipeCommentController::class, 'store']);
+    Route::post('/recipes/{id}/comments',  [RecipeCommentController::class, 'store'])->middleware('throttle:20,1');
     Route::patch('/recipe-comments/{id}',  [RecipeCommentController::class, 'update']);
     Route::delete('/recipe-comments/{id}', [RecipeCommentController::class, 'destroy']);
 
     Route::get('/recipes',               [RecipeController::class, 'index']);
-    Route::post('/recipes',              [RecipeController::class, 'store']);
+    Route::post('/recipes',              [RecipeController::class, 'store'])->middleware('throttle:6,1');
     Route::delete('/recipes',            [RecipeController::class, 'destroyAll']);
     Route::get('/recipes/{id}',          [RecipeController::class, 'show']);
     Route::match(['post','patch'], '/recipes/{id}', [RecipeController::class, 'update']);
@@ -235,7 +235,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/billing/subscriptions/{id}/cancel', [BillingController::class, 'cancel'])->middleware('throttle:6,1');
 
     Route::get('/markets',              [MarketController::class, 'index']);
-    Route::post('/markets',             [MarketController::class, 'store']);
+    Route::post('/markets',             [MarketController::class, 'store'])->middleware('throttle:6,1');
     Route::get('/markets/{id}',         [MarketController::class, 'show']);
     Route::post('/markets/{id}/refresh',[MarketController::class, 'refreshPrices']);
 
@@ -244,13 +244,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tindahan-reports/{id}/accept',   [TindahanController::class, 'acceptReport']);
     Route::post('/tindahan-reports/{id}/decline',  [TindahanController::class, 'declineReport']);
     Route::get('/tindahan/{id}',   [TindahanController::class, 'show']);
-    Route::post('/tindahan',       [TindahanController::class, 'store']);
+    Route::post('/tindahan',       [TindahanController::class, 'store'])->middleware('throttle:6,1');
     Route::patch('/tindahan/{id}', [TindahanController::class, 'update']);
     Route::delete('/tindahan/{id}',[TindahanController::class, 'destroy']);
     Route::post('/tindahan/{id}/rate', [TindahanController::class, 'rate']);
 
     Route::get('/tindahan/{id}/comments',  [TindahanCommentController::class, 'index']);
-    Route::post('/tindahan/{id}/comments', [TindahanCommentController::class, 'store']);
+    Route::post('/tindahan/{id}/comments', [TindahanCommentController::class, 'store'])->middleware('throttle:20,1');
     Route::delete('/tindahan/comments/{id}', [TindahanCommentController::class, 'destroy']);
     Route::post('/tindahan/{id}/photos',  [TindahanController::class, 'uploadPhotos']);
     Route::post('/tindahan/{id}/prices',  [TindahanController::class, 'addPrice']);

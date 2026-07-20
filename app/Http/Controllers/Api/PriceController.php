@@ -8,6 +8,7 @@ use App\Models\CommunityPriceReport;
 use App\Models\GovernmentPriceReference;
 use App\Models\Market;
 use App\Models\MarketPrice;
+use App\Models\PriceReportVote;
 use App\Models\Tindahan;
 use App\Services\XpService;
 use Illuminate\Http\Request;
@@ -227,11 +228,35 @@ class PriceController extends Controller
         $request->validate(['vote' => ['required', 'in:up,down']]);
 
         $report = CommunityPriceReport::findOrFail($id);
+        $user   = $request->user();
+        $column = $request->vote === 'up' ? 'upvotes' : 'downvotes';
 
-        if ($request->vote === 'up') {
-            $report->increment('upvotes');
+        $existing = PriceReportVote::where('user_id', $user->id)
+            ->where('community_price_report_id', $id)
+            ->first();
+
+        if ($existing && $existing->vote === $request->vote) {
+            // Tapping the same vote again withdraws it, same toggle-off
+            // behavior as PostReaction.
+            $existing->delete();
+            $report->decrement($column);
+        } elseif ($existing) {
+            // Switching from up to down (or vice versa): move the count,
+            // don't just add another vote on top of the old one. Capture the
+            // prior vote before update() overwrites it (update() re-syncs
+            // the model's "original" state on save, so reading it after
+            // would just return the new value).
+            $previousColumn = $existing->vote === 'up' ? 'upvotes' : 'downvotes';
+            $existing->update(['vote' => $request->vote]);
+            $report->decrement($previousColumn);
+            $report->increment($column);
         } else {
-            $report->increment('downvotes');
+            PriceReportVote::create([
+                'user_id' => $user->id,
+                'community_price_report_id' => $id,
+                'vote' => $request->vote,
+            ]);
+            $report->increment($column);
         }
 
         return response()->json(['report' => $report->fresh()]);
