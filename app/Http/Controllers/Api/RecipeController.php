@@ -175,15 +175,17 @@ class RecipeController extends Controller
 
         // Only on save, never on unsave -- no XP-clawback pattern exists
         // anywhere else in this codebase, so removing a save doesn't
-        // subtract XP either.
-        $reward = app(XpService::class)->award($user, 5, 'recipe_saved', $recipe);
+        // subtract XP either. That also means the join row leaves no trace
+        // once unsaved, so awardOncePerSource (not award) is required here --
+        // otherwise save/unsave/save/... on the same recipe farms XP forever.
+        $reward = app(XpService::class)->awardOncePerSource($user, 5, 'recipe_saved', $recipe);
 
         return response()->json([
             'saved'            => true,
-            'xp_earned'        => $reward['xp_awarded'],
-            'leveled_up'       => $reward['leveled_up'],
-            'new_level'        => $reward['new_level'],
-            'new_achievements' => $reward['new_achievements'],
+            'xp_earned'        => $reward['xp_awarded'] ?? 0,
+            'leveled_up'       => $reward['leveled_up'] ?? false,
+            'new_level'        => $reward['new_level'] ?? null,
+            'new_achievements' => $reward['new_achievements'] ?? [],
         ]);
     }
 

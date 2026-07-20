@@ -79,6 +79,31 @@ class XpService
         return $this->award($user, $xp, $reason, $source);
     }
 
+    /**
+     * Same ledger as award(), but skipped if this user already earned XP for
+     * this exact reason+source before. Guard rail for actions backed by a
+     * toggleable row (e.g. saving a recipe deletes the join row on unsave,
+     * leaving no trace that it was ever saved) — without this, save/unsave
+     * repeated on the same item farms XP without limit.
+     *
+     * @return array{xp_awarded:int,leveled_up:bool,new_level:int,new_achievements:array<int,array{id:int,name:string,icon:?string,xp_reward:int,tier:?string,frequency:string}>}|null
+     *         null when this user already earned XP for this reason+source.
+     */
+    public function awardOncePerSource(User $user, int $xp, string $reason, Model $source): ?array
+    {
+        $alreadyAwarded = XpLog::where('user_id', $user->id)
+            ->where('reason', $reason)
+            ->where('source_type', get_class($source))
+            ->where('source_id', $source->id)
+            ->exists();
+
+        if ($alreadyAwarded) {
+            return null;
+        }
+
+        return $this->award($user, $xp, $reason, $source);
+    }
+
     public static function calculateLevel(int $xp): int
     {
         $level = 1;
