@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SecondaryEmailOtpMail;
+use App\Models\RewardTier;
 use App\Models\Task;
+use App\Models\UserRewardTier;
 use App\Models\UserTask;
 use App\Services\XpService;
 use Illuminate\Http\Request;
@@ -296,6 +298,75 @@ class UserController extends Controller
                 'tier_groups' => $tierGroups,
             ],
         ]);
+    }
+
+    /**
+     * Powers the Awards screen's Rewards section and BoostButton's free-credit
+     * check. 'earned' includes both redeemed (badge/premium) and unredeemed
+     * (boost credit) tiers -- mobile branches on redeemed_at to decide what to
+     * show. 'locked' carries per-task progress so the UI can show X/Y done.
+     */
+    public function rewardTiers(Request $request)
+    {
+        $user = $request->user();
+
+        $userTiers = UserRewardTier::where('user_id', $user->id)->with('rewardTier')->get();
+        $earnedTierIds = $userTiers->pluck('reward_tier_id');
+
+        $boostableTarget = fn (string $rewardType) => match ($rewardType) {
+            'booster_credit'     => 'recipe',
+            'store_boost_credit' => 'tindahan',
+            default               => null,
+        };
+
+        $earned = $userTiers->map(function ($userTier) use ($boostableTarget) {
+            $tier = $userTier->rewardTier;
+
+            return [
+                'id'               => $tier->id,
+                'user_reward_tier_id' => $userTier->id,
+                'title'            => $tier->title,
+                'description'      => $tier->description,
+                'icon'             => $tier->icon,
+                'reward_type'      => $tier->reward_type,
+                'reward_value'     => $tier->reward_value,
+                'earned_at'        => $userTier->earned_at,
+                'redeemed_at'      => $userTier->redeemed_at,
+                'boostable_target' => $boostableTarget($tier->reward_type),
+            ];
+        })->values();
+
+        $completedTaskIds = UserTask::where('user_id', $user->id)
+            ->where('is_completed', true)
+            ->pluck('task_id');
+
+        $locked = RewardTier::where('is_active', true)
+            ->whereNotIn('id', $earnedTierIds)
+            ->with('requiredTasks:id,title,icon')
+            ->get()
+            ->map(function ($tier) use ($completedTaskIds) {
+                $requiredTasks = $tier->requiredTasks->map(fn ($t) => [
+                    'id'           => $t->id,
+                    'title'        => $t->title,
+                    'icon'         => $t->icon,
+                    'is_completed' => $completedTaskIds->contains($t->id),
+                ]);
+
+                return [
+                    'id'             => $tier->id,
+                    'title'          => $tier->title,
+                    'description'    => $tier->description,
+                    'icon'           => $tier->icon,
+                    'reward_type'    => $tier->reward_type,
+                    'reward_value'   => $tier->reward_value,
+                    'xp_threshold'   => $tier->xp_threshold,
+                    'required_tasks' => $requiredTasks->values(),
+                    'tasks_completed' => $requiredTasks->where('is_completed', true)->count(),
+                    'tasks_required'  => $requiredTasks->count(),
+                ];
+            })->values();
+
+        return response()->json(['earned' => $earned, 'locked' => $locked]);
     }
 
     public function stats(Request $request)

@@ -168,6 +168,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/user/profile', [UserController::class, 'update']);
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::get('/user/tasks', [UserController::class, 'tasks']);
+    Route::get('/user/reward-tiers', [UserController::class, 'rewardTiers']);
     Route::get('/user/stats', [UserController::class, 'stats']);
 
     Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail']);

@@ -8,6 +8,10 @@ use App\Models\AppSetting;
 use App\Models\BoostOption;
 use App\Models\Recipe;
 use App\Models\Tindahan;
+use App\Models\User;
+use App\Models\UserRewardTier;
+use App\Services\BoostService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -16,6 +20,12 @@ class BoostController extends Controller
     private const TARGET_MODELS = [
         'recipe' => Recipe::class,
         'tindahan' => Tindahan::class,
+    ];
+
+    /** Which reward_type a free credit must have to boost each target. */
+    private const CREDIT_REWARD_TYPES = [
+        'recipe' => 'booster_credit',
+        'tindahan' => 'store_boost_credit',
     ];
 
     /** GET /boosts?target=recipe&boostable_id=5 — the caller's boost history, optionally scoped to one item. */
@@ -33,19 +43,21 @@ class BoostController extends Controller
         return response()->json(['boosts' => $query->get()]);
     }
 
-    /** POST /boosts — submit a manual GCash payment to boost a recipe or store. */
+    /**
+     * POST /boosts — either a manual GCash payment, or (when
+     * user_reward_tier_id is present) spending a free boost credit earned
+     * from a Reward Tier. The credit path skips payment entirely, so it's
+     * branched off before the payments_enabled gate and the paid-option
+     * lookup, both of which only make sense for real money.
+     */
     public function store(Request $request)
     {
-        $settings = AppSetting::allCached();
-        if (($settings['payments_enabled'] ?? '1') !== '1') {
-            return response()->json(['message' => 'Payments are temporarily unavailable. Please try again later.'], 503);
-        }
-
         $validated = $request->validate([
             'target' => ['required', 'string', Rule::in(array_keys(self::TARGET_MODELS))],
             'boostable_id' => ['required', 'integer'],
-            'duration_days' => ['required', 'integer', 'min:1'],
-            'payment_reference' => ['required', 'regex:/^[0-9]{8,20}$/', 'unique:ad_boosts,payment_reference'],
+            'user_reward_tier_id' => ['nullable', 'integer'],
+            'duration_days' => ['required_without:user_reward_tier_id', 'integer', 'min:1'],
+            'payment_reference' => ['required_without:user_reward_tier_id', 'regex:/^[0-9]{8,20}$/', 'unique:ad_boosts,payment_reference'],
         ], [
             'payment_reference.regex' => 'The reference number should be the digits from your GCash receipt.',
             'payment_reference.unique' => 'This reference number has already been used.',
@@ -59,15 +71,6 @@ class BoostController extends Controller
             return response()->json(['message' => 'You can only boost your own content.'], 403);
         }
 
-        $option = BoostOption::where('target', $validated['target'])
-            ->where('duration_days', $validated['duration_days'])
-            ->where('is_active', true)
-            ->first();
-
-        if (! $option) {
-            return response()->json(['message' => 'That boost option is not available.'], 422);
-        }
-
         $alreadyBoosted = AdBoost::where('boostable_type', $modelClass)
             ->where('boostable_id', $boostable->id)
             ->whereIn('status', ['pending', 'active'])
@@ -78,6 +81,24 @@ class BoostController extends Controller
 
         if ($alreadyBoosted) {
             return response()->json(['message' => 'This is already boosted or has a payment awaiting review.'], 422);
+        }
+
+        if (! empty($validated['user_reward_tier_id'])) {
+            return $this->storeFromCredit($validated, $modelClass, $boostable, $user);
+        }
+
+        $settings = AppSetting::allCached();
+        if (($settings['payments_enabled'] ?? '1') !== '1') {
+            return response()->json(['message' => 'Payments are temporarily unavailable. Please try again later.'], 503);
+        }
+
+        $option = BoostOption::where('target', $validated['target'])
+            ->where('duration_days', $validated['duration_days'])
+            ->where('is_active', true)
+            ->first();
+
+        if (! $option) {
+            return response()->json(['message' => 'That boost option is not available.'], 422);
         }
 
         $boost = AdBoost::create([
@@ -93,6 +114,31 @@ class BoostController extends Controller
 
         return response()->json([
             'message' => 'Salamat! Your payment is being verified — usually within 24 hours.',
+            'boost' => $boost,
+        ], 201);
+    }
+
+    private function storeFromCredit(array $validated, string $modelClass, Model $boostable, User $user)
+    {
+        $credit = UserRewardTier::where('user_id', $user->id)
+            ->where('id', $validated['user_reward_tier_id'])
+            ->whereNull('redeemed_at')
+            ->with('rewardTier')
+            ->first();
+
+        if (! $credit) {
+            return response()->json(['message' => 'That boost credit is not available.'], 404);
+        }
+
+        $expectedType = self::CREDIT_REWARD_TYPES[$validated['target']];
+        if ($credit->rewardTier->reward_type !== $expectedType) {
+            return response()->json(['message' => 'This credit cannot be used for that target.'], 422);
+        }
+
+        $boost = app(BoostService::class)->activateFromCredit($boostable, $modelClass, $credit, $user);
+
+        return response()->json([
+            'message' => 'Boost activated! 🚀',
             'boost' => $boost,
         ], 201);
     }
