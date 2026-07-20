@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.27.0 (2026-07-21)
+
+### Added
+- **Sponsored Ads**: new admin-managed third-party paid product placements (paired uLam Phase 1 + uLam-app) — distinct from Boost, which is a creator paying to rank their own content. Admin manually enters each deal (product/company, tagline, description, photo, link, button text, flight dates, amount paid + payment-received bookkeeping date, contact info for renewal outreach, free/premium and recipe-feed/community-feed targeting) via a new full CRUD screen with quick-pick flight-length buttons. "Running/Scheduled/Ended/Disabled" status is always computed live from the enabled flag + date range, never a stored status. New "Sponsored Ads" entry in the Monetization sidebar group, after Boost Review.
+
 ## v1.26.0 (2026-07-20)
 
 ### Added
