@@ -157,25 +157,39 @@ class PriceController extends Controller
         $marketPrices = MarketPrice::where('item_name', 'like', "%{$q}%")
             ->where('is_available', true)
             ->with([
-                'tindahan:id,name,type,municipality',
+                'tindahan:id,name,type,municipality,market_id',
+                'tindahan.market:id,name,type,municipality',
                 'market:id,name,type,municipality',
             ])
             ->limit(20)
             ->get()
             ->map(fn ($p) => [
-                'id'         => $p->id,
-                'store_name' => $p->tindahan?->name ?? $p->market?->name ?? '—',
-                'store_type' => $p->tindahan?->type ?? $p->market?->type ?? 'tindahan',
-                'price'      => (float) $p->price_per_unit,
-                'unit'       => $p->unit,
-                'updated_at' => $p->updated_at,
+                'id'          => $p->id,
+                'store_name'  => $p->tindahan?->name ?? $p->market?->name ?? '—',
+                'store_type'  => $p->tindahan?->type ?? $p->market?->type ?? 'tindahan',
+                // Lets the frontend link a result straight to its stall (a
+                // sliding detail sheet) and prepopulate Report a Price with
+                // the exact stall + market it belongs to -- resolved via the
+                // tindahan first since that's the authoritative parent once
+                // a stall exists, falling back to the row's own market_id
+                // for direct-to-market prices with no stall at all.
+                'tindahan_id' => $p->tindahan_id,
+                'market_id'   => $p->tindahan?->market_id ?? $p->market_id,
+                'market_name' => $p->tindahan?->market?->name ?? $p->market?->name,
+                'price'       => (float) $p->price_per_unit,
+                'unit'        => $p->unit,
+                'updated_at'  => $p->updated_at,
             ]);
 
         $communityReports = CommunityPriceReport::where('item_name', 'like', "%{$q}%")
             ->where('municipality', $user->municipality ?? '')
             ->where('created_at', '>=', now()->subDays(7))
             ->orderByDesc('upvotes')
-            ->with(['tindahan:id,name', 'market:id,name'])
+            ->with([
+                'tindahan:id,name,market_id',
+                'tindahan.market:id,name',
+                'market:id,name',
+            ])
             ->limit(10)
             ->get()
             ->map(fn ($r) => [
@@ -183,6 +197,9 @@ class PriceController extends Controller
                 'store_name'  => $r->tindahan?->name ?? $r->market?->name ?? ($r->barangay ?? 'Local'),
                 'store_type'  => 'Community',
                 'distance_km' => 0.0,
+                'tindahan_id' => $r->tindahan_id,
+                'market_id'   => $r->tindahan?->market_id ?? $r->market_id,
+                'market_name' => $r->tindahan?->market?->name ?? $r->market?->name,
                 'price'       => (float) $r->reported_price,
                 'unit'        => $r->unit,
                 'updated_at'  => $r->created_at,
