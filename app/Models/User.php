@@ -34,6 +34,7 @@ class User extends Authenticatable
         'role',
         'banned_at',
         'ban_reason',
+        'restricted_until',
         'premium_expires_at',
         'premium_source',
         'household_size',
@@ -81,6 +82,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'premium_expires_at' => 'datetime',
             'banned_at' => 'datetime',
+            'restricted_until' => 'datetime',
             'last_active_date' => 'date',
             'ai_quota_reset_date' => 'date',
             'dietary_preferences' => 'array',
@@ -98,6 +100,24 @@ class User extends Authenticatable
     public function isBanned(): bool
     {
         return (bool) $this->banned_at;
+    }
+
+    public function isRestricted(): bool
+    {
+        return (bool) $this->restricted_until && $this->restricted_until->isFuture();
+    }
+
+    public function strikes()
+    {
+        return $this->hasMany(UserStrike::class);
+    }
+
+    /** Strikes still counting against this user -- expired warnings/restrictions drop off. */
+    public function activeStrikes()
+    {
+        return $this->strikes()->where(function ($q) {
+            $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+        });
     }
 
     public function isPremium(): bool
