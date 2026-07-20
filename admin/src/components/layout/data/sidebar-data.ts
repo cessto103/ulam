@@ -21,6 +21,7 @@ import {
   Rocket,
   ScrollText,
   Settings,
+  ShieldAlert,
   Store,
   Tags,
   UserCog,
@@ -197,10 +198,20 @@ export const sidebarData: SidebarData = {
           url: '/staple-prices',
           icon: Receipt,
         },
+      ],
+    },
+    {
+      title: 'Moderation',
+      items: [
         {
           title: 'Reported Listings',
           url: '/listing-reports',
           icon: Flag,
+        },
+        {
+          title: 'Content Reports',
+          url: '/content-reports',
+          icon: ShieldAlert,
         },
       ],
     },

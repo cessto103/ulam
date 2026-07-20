@@ -41,6 +41,7 @@ import { Route as AuthenticatedListingReportsIndexRouteImport } from './routes/_
 import { Route as AuthenticatedLegalIndexRouteImport } from './routes/_authenticated/legal/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
+import { Route as AuthenticatedContentReportsIndexRouteImport } from './routes/_authenticated/content-reports/index'
 import { Route as AuthenticatedConnectionLabelsIndexRouteImport } from './routes/_authenticated/connection-labels/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
@@ -229,6 +230,12 @@ const AuthenticatedFaqsIndexRoute = AuthenticatedFaqsIndexRouteImport.update({
   path: '/faqs/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedContentReportsIndexRoute =
+  AuthenticatedContentReportsIndexRouteImport.update({
+    id: '/content-reports/',
+    path: '/content-reports/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedConnectionLabelsIndexRoute =
   AuthenticatedConnectionLabelsIndexRouteImport.update({
     id: '/connection-labels/',
@@ -308,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/comments/': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
+  '/content-reports/': typeof AuthenticatedContentReportsIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/legal/': typeof AuthenticatedLegalIndexRoute
@@ -350,6 +358,7 @@ export interface FileRoutesByTo {
   '/comments': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels': typeof AuthenticatedConnectionLabelsIndexRoute
+  '/content-reports': typeof AuthenticatedContentReportsIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/legal': typeof AuthenticatedLegalIndexRoute
@@ -395,6 +404,7 @@ export interface FileRoutesById {
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/_authenticated/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
+  '/_authenticated/content-reports/': typeof AuthenticatedContentReportsIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/_authenticated/legal/': typeof AuthenticatedLegalIndexRoute
@@ -440,6 +450,7 @@ export interface FileRouteTypes {
     | '/comments/'
     | '/community-price-reports/'
     | '/connection-labels/'
+    | '/content-reports/'
     | '/faqs/'
     | '/government-price-references/'
     | '/legal/'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/comments'
     | '/community-price-reports'
     | '/connection-labels'
+    | '/content-reports'
     | '/faqs'
     | '/government-price-references'
     | '/legal'
@@ -526,6 +538,7 @@ export interface FileRouteTypes {
     | '/_authenticated/comments/'
     | '/_authenticated/community-price-reports/'
     | '/_authenticated/connection-labels/'
+    | '/_authenticated/content-reports/'
     | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
     | '/_authenticated/legal/'
@@ -787,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFaqsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/content-reports/': {
+      id: '/_authenticated/content-reports/'
+      path: '/content-reports'
+      fullPath: '/content-reports/'
+      preLoaderRoute: typeof AuthenticatedContentReportsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/connection-labels/': {
       id: '/_authenticated/connection-labels/'
       path: '/connection-labels'
@@ -890,6 +910,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
   AuthenticatedConnectionLabelsIndexRoute: typeof AuthenticatedConnectionLabelsIndexRoute
+  AuthenticatedContentReportsIndexRoute: typeof AuthenticatedContentReportsIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   AuthenticatedLegalIndexRoute: typeof AuthenticatedLegalIndexRoute
@@ -926,6 +947,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedCommunityPriceReportsIndexRoute,
   AuthenticatedConnectionLabelsIndexRoute:
     AuthenticatedConnectionLabelsIndexRoute,
+  AuthenticatedContentReportsIndexRoute: AuthenticatedContentReportsIndexRoute,
   AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,
