@@ -1,5 +1,11 @@
 # uLam Admin — Changelog
 
+## v1.26.0 (2026-07-20)
+
+### Added
+- **Content Reports**: reported posts/recipes/stores previously went nowhere — no admin surface existed at all. New queue (list/filter by status and content type) with Warn/Restrict/Ban/Dismiss actions; each action dialog shows the reported user's active strike history inline before you act. Warning sends a notification only; Restrict applies a 7-day content-creation restriction; Ban is permanent and works regardless of current strike count (for severity-override on serious violations). Dismiss auto-resolves other pending reports against the same content.
+- New "Moderation" sidebar group holds both Content Reports and the existing Reported Listings, which moved out of "Prices & Markets".
+
 ## v1.25.1 (2026-07-20)
 
 ### Fixed
