@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.25.1 (2026-07-20)
+
+### Fixed
+- **Editing a recipe tagged with the legacy `budget_400plus` value was completely broken** — the Zod schema and backend validation both only allowed the current 7-tier set, so the request was rejected outright regardless of what else changed. Legacy tag is now valid to keep (labeled "(legacy)" in the picker), just not selectable for new recipes.
+
 ## v1.25.0 (2026-07-20)
 
 ### Added

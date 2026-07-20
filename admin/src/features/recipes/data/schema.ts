@@ -11,6 +11,7 @@ export const recipeBudgetTags = [
   'budget_100',
   'budget_200',
   'budget_400',
+  'budget_400plus', // legacy tag from an older tier scheme -- no longer assignable to new recipes, but old ones still carry it
   'budget_600',
   'budget_800',
   'budget_1000',
