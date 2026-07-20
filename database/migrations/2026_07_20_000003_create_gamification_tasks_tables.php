@@ -88,6 +88,15 @@ return new class extends Migration
 
     public function up(): void
     {
+        // Retry-safe: if a prior attempt got this far and then failed inside
+        // the DB::transaction() below (e.g. an invalid action_type on some
+        // deploy's legacy daily_tasks data), these 3 tables would already
+        // exist but empty, since Schema::create is DDL and commits
+        // immediately regardless of the later transaction's outcome.
+        Schema::dropIfExists('user_tasks');
+        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('task_action_types');
+
         Schema::create('task_action_types', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
@@ -178,12 +187,16 @@ return new class extends Migration
     {
         $now = now();
         $ids = [];
+        // Whitelist against what seedActionTypes() just inserted, rather
+        // than special-casing individual known-bad values (originally just
+        // 'check_prices') -- some deploys' daily_tasks data carries other
+        // stale action_type strings too (e.g. a pre-rename 'log_spending'
+        // instead of the current 'log_budget'), and any of those would
+        // otherwise violate tasks.action_type's FK into task_action_types.
+        $validActionTypes = DB::table('task_action_types')->pluck('key')->all();
 
         foreach (DB::table('daily_tasks')->get() as $dt) {
-            // 'check-prices' was never wired to any real XpService::award()
-            // call -- null is more honest than preserving a dangling string
-            // that will never match a real reason.
-            $actionType = $dt->action_type === 'check_prices' ? null : $dt->action_type;
+            $actionType = in_array($dt->action_type, $validActionTypes, true) ? $dt->action_type : null;
 
             $id = DB::table('tasks')->insertGetId([
                 'slug'            => $dt->slug,
