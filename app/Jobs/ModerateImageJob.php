@@ -85,7 +85,7 @@ class ModerateImageJob implements ShouldQueue
                 case 'post.images':
                     return $this->removeFromJsonArray('posts', 'images');
                 case 'recipe.images':
-                    return $this->removeFromJsonArray('recipes', 'image_urls');
+                    return $this->removeFromRecipeImages();
             }
         } catch (\Throwable $e) {
             Log::warning("Moderation removal failed ({$this->contextType}#{$this->contextId}): " . $e->getMessage());
@@ -101,6 +101,25 @@ class ModerateImageJob implements ShouldQueue
         $filtered = array_values(array_filter($images, fn ($img) => $img !== $this->publicPath));
         if (count($filtered) === count($images)) return false;
         DB::table($table)->where('id', $this->contextId)->update([$column => json_encode($filtered)]);
+        return true;
+    }
+
+    /** Same as removeFromJsonArray('recipes', 'image_urls'), but also keeps the
+     * denormalized image_url (singular) column in sync -- otherwise it can be
+     * left pointing at a file that was just quarantined out from under it,
+     * which every recipe-photo display in the app treats as the fallback
+     * source whenever image_urls is empty. */
+    private function removeFromRecipeImages(): bool
+    {
+        $row = DB::table('recipes')->where('id', $this->contextId)->first(['image_urls']);
+        if (! $row) return false;
+        $images = json_decode($row->image_urls ?? '[]', true) ?: [];
+        $filtered = array_values(array_filter($images, fn ($img) => $img !== $this->publicPath));
+        if (count($filtered) === count($images)) return false;
+        DB::table('recipes')->where('id', $this->contextId)->update([
+            'image_urls' => json_encode($filtered),
+            'image_url' => $filtered[0] ?? null,
+        ]);
         return true;
     }
 

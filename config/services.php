@@ -42,7 +42,7 @@ return [
 
     'moderation' => [
         'enabled'      => env('MODERATION_ENABLED', true),
-        'fail_open'    => env('MODERATION_FAIL_OPEN', false),
+        'fail_open'    => env('MODERATION_FAIL_OPEN', true),
         'model'        => env('MODERATION_MODEL', 'claude-haiku-4-5-20251001'),
         // Max Claude-moderated images per calendar month; beyond this the
         // local NSFWJS fallback takes over. 2000 imgs ≈ ₱120/month worst case.
