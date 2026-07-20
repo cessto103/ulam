@@ -288,6 +288,18 @@ class MarketController extends Controller
     {
         $market = Market::where('is_active', true)->findOrFail($id);
 
+        // Each refresh is a billed AI call, so cool down per market (same
+        // Cache pattern as discoverNearbyMarkets) so this can't be looped
+        // into an unbounded API cost. Set before the call, and not cleared
+        // on failure, so a failing attempt doesn't reopen the loophole.
+        $cooldownKey = "market_price_refresh:{$market->id}";
+        if (Cache::has($cooldownKey)) {
+            return response()->json([
+                'message' => "Prices for {$market->name} were refreshed recently. Please try again later.",
+            ], 429);
+        }
+        Cache::put($cooldownKey, true, now()->addHours(6));
+
         try {
             $count = $service->refreshMarket($market);
         } catch (\Throwable $e) {
