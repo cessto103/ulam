@@ -10,6 +10,7 @@ use App\Models\Post;
 use App\Models\PostReaction;
 use App\Models\PostSave;
 use App\Models\User;
+use App\Models\UserRewardTier;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
@@ -71,6 +72,20 @@ class ConnectionController extends Controller
                 return $t;
             });
 
+        // Public, cosmetic-only slice of Reward Tiers -- deliberately not the
+        // authenticated /user/reward-tiers endpoint, which also exposes
+        // locked progress and unspent credits that shouldn't leak to viewers.
+        $badges = UserRewardTier::where('user_id', $id)
+            ->whereNotNull('redeemed_at')
+            ->whereHas('rewardTier', fn ($q) => $q->where('reward_type', 'badge'))
+            ->with('rewardTier:id,title,icon')
+            ->get()
+            ->map(fn ($urt) => [
+                'id'    => $urt->reward_tier_id,
+                'title' => $urt->rewardTier->title,
+                'icon'  => $urt->rewardTier->icon,
+            ]);
+
         return response()->json([
             'stores' => $stores,
             'user' => [
@@ -90,6 +105,7 @@ class ConnectionController extends Controller
                 'connection_status' => $connectionStatus,
                 'connection_id'     => $connection?->id,
                 'my_label_id'       => $myLabelId,
+                'badges'            => $badges,
             ],
             'posts' => $posts,
         ]);
