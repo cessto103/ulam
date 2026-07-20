@@ -23,3 +23,8 @@ Schedule::command('billing:process-lifecycle')->hourly()->withoutOverlapping();
 // Manual-GCash seller subscriptions + boosts: renewal reminders, expiry
 // flips (+ store visibility re-sync), and stale OTP pruning.
 Schedule::command('ulam:maintenance')->hourly()->withoutOverlapping();
+
+// Courtesy "your record is clear" notification for recently-expired strikes.
+// Not load-bearing -- a restriction lifts on its own via restricted_until
+// regardless of whether this ever runs.
+Schedule::command('ulam:expire-strikes')->dailyAt('04:00');
