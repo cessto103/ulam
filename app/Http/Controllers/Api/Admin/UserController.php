@@ -4,11 +4,16 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\UserModerationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function __construct(private UserModerationService $moderation)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = User::query();
@@ -112,8 +117,7 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($id);
-        $user->update(['banned_at' => now(), 'ban_reason' => $validated['ban_reason']]);
-        $user->tokens()->delete();
+        $this->moderation->ban($user, $validated['ban_reason'], $request->user());
 
         return response()->json(['user' => $user->fresh()]);
     }
@@ -121,7 +125,7 @@ class UserController extends Controller
     public function unban(int $id)
     {
         $user = User::findOrFail($id);
-        $user->update(['banned_at' => null, 'ban_reason' => null]);
+        $this->moderation->unban($user);
 
         return response()->json(['user' => $user->fresh()]);
     }

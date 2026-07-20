@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ListingReport;
+use App\Services\UserModerationService;
 use Illuminate\Http\Request;
 
 // No store/update — this is a read + moderate surface. Mutation only happens through
 // the three actions below, ported from Filament's ListingReportResource row actions.
 class ListingReportController extends Controller
 {
+    public function __construct(private UserModerationService $moderation)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = ListingReport::with(['reporter:id,name', 'resolvedBy:id,name', 'reportable']);
@@ -51,10 +56,7 @@ class ListingReportController extends Controller
             return response()->json(['message' => 'No owner found for this listing.'], 422);
         }
 
-        $owner->update([
-            'banned_at' => now(),
-            'ban_reason' => "Reported listing: {$report->reason}",
-        ]);
+        $this->moderation->ban($owner, "Reported listing: {$report->reason}", $request->user(), listingReport: $report);
 
         $this->resolve($report, $request);
 
