@@ -39,6 +39,8 @@ class XpService
             $completedTasks = $this->checkTasks($user, $reason);
             $user->refresh();
 
+            $newRewardTiers = app(RewardTierService::class)->checkRewardTiers($user);
+
             $newLevel = self::calculateLevel($user->xp);
             if ($newLevel > $user->level) {
                 $user->update(['level' => $newLevel]);
@@ -48,7 +50,7 @@ class XpService
                 'xp_awarded' => $xp,
                 'leveled_up' => $newLevel > $previousLevel,
                 'new_level' => $newLevel,
-                'new_achievements' => $completedTasks,
+                'new_achievements' => array_merge($completedTasks, $newRewardTiers),
             ];
         });
     }

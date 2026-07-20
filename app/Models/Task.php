@@ -31,6 +31,11 @@ class Task extends Model
         return $this->hasMany(UserTask::class);
     }
 
+    public function rewardTiers()
+    {
+        return $this->belongsToMany(RewardTier::class, 'reward_tier_tasks');
+    }
+
     /**
      * Mr./Ms. Palengke is the only task whose title depends on the user, so
      * it's a special case here rather than new schema columns for every
