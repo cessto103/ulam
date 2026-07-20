@@ -199,80 +199,8 @@ class UserController extends Controller
     }
 
     /**
-     * Old shape kept as a compatibility shim -- backed by Task/UserTask now,
-     * but the mobile app doesn't change until Phase 4 of the gamification
-     * revamp lands. Every 'once'-frequency task (both single achievements
-     * and all 4 rows of a tier group) shows up flat, same as before.
-     */
-    public function achievements(Request $request)
-    {
-        $user = $request->user();
-
-        $earned = UserTask::where('user_id', $user->id)
-            ->where('is_completed', true)
-            ->pluck('completed_at', 'task_id');
-
-        $all = Task::where('is_active', true)
-            ->where('frequency', 'once')
-            ->orderBy('xp_reward')
-            ->get()
-            ->map(function ($task) use ($earned, $user) {
-                return [
-                    'id'              => $task->id,
-                    'slug'            => $task->slug,
-                    'title'           => Task::displayTitle($task, $user->gender, 'tl'),
-                    'title_en'        => Task::displayTitle($task, $user->gender, 'en'),
-                    'description'     => $task->description,
-                    'description_en'  => $task->description_en,
-                    'icon'            => $task->icon,
-                    'xp_reward'       => $task->xp_reward,
-                    'tier'            => $task->tier,
-                    'tier_group'      => $task->tier_group,
-                    'is_active'       => $task->is_active,
-                    'is_earned'       => $earned->has($task->id),
-                    'earned_at'       => $earned[$task->id] ?? null,
-                ];
-            });
-
-        return response()->json(['achievements' => $all]);
-    }
-
-    /** Old shape kept as a compatibility shim, see achievements() above. */
-    public function dailyTasks(Request $request)
-    {
-        $user  = $request->user();
-        $today = now()->toDateString();
-        $weekStart = now()->startOfWeek()->toDateString();
-
-        $tasks = Task::where('is_active', true)->whereIn('frequency', ['daily', 'weekly'])->get();
-
-        $completedDates = UserTask::where('user_id', $user->id)
-            ->whereIn('period_date', [$today, $weekStart])
-            ->where('is_completed', true)
-            ->pluck('period_date', 'task_id');
-
-        $result = $tasks->map(function ($task) use ($completedDates, $today, $weekStart) {
-            $periodDate = $task->frequency === 'weekly' ? $weekStart : $today;
-            $completedFor = $completedDates[$task->id] ?? null;
-
-            return [
-                'id'           => $task->id,
-                'title'        => $task->title,
-                'description'  => $task->description,
-                'icon'         => $task->icon,
-                'xp_reward'    => $task->xp_reward,
-                'frequency'    => $task->frequency,
-                'is_completed' => $completedFor && $completedFor->toDateString() === $periodDate,
-            ];
-        });
-
-        return response()->json(['tasks' => $result]);
-    }
-
-    /**
-     * Unified replacement for achievements()/dailyTasks() above -- not
-     * consumed by the mobile app until Phase 4 of the gamification revamp,
-     * added now since the underlying query logic is already here.
+     * Unified replacement for the old achievements()/dailyTasks() shims,
+     * both removed now that the mobile app consumes this exclusively.
      */
     public function tasks(Request $request)
     {
