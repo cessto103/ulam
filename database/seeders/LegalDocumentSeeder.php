@@ -22,7 +22,7 @@ class LegalDocumentSeeder extends Seeder
     {
         $doc = LegalDocument::updateOrCreate(['slug' => $slug], ['title' => $title]);
 
-        // Only seed v1.0.0 once — never clobber admin-managed versions.
+        // Only seed v1.0.0 once, never clobber admin-managed versions.
         if ($doc->versions()->exists()) {
             return;
         }
@@ -130,7 +130,7 @@ The uLam name, logo, app design, and all content we create are owned by uLam and
 ## 12. Moderation, Suspension & Termination
 
 - We may review, moderate, or remove any content that violates these Terms.
-- We may suspend or permanently ban accounts that violate these Terms, abuse other users, or attempt to defraud the platform — with or without prior notice, depending on severity.
+- We may suspend or permanently ban accounts that violate these Terms, abuse other users, or attempt to defraud the platform, with or without prior notice, depending on severity.
 - You may delete your account at any time in **Settings → Danger Zone**. Deletion is permanent.
 - Sections that by their nature should survive termination (e.g., limitation of liability, indemnification) survive it.
 
@@ -140,7 +140,7 @@ THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE." TO THE MAXIMUM EXTENT PERMITTED 
 
 ## 14. Limitation of Liability
 
-To the maximum extent permitted by Philippine law, uLam and its operator shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or for lost profits, arising from your use of the app — including disputes with sellers, reliance on price information, or food-related issues from purchases made with third parties. Where liability cannot be excluded, our total liability is limited to the amount you paid to uLam in the three (3) months before the claim.
+To the maximum extent permitted by Philippine law, uLam and its operator shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or for lost profits, arising from your use of the app, including disputes with sellers, reliance on price information, or food-related issues from purchases made with third parties. Where liability cannot be excluded, our total liability is limited to the amount you paid to uLam in the three (3) months before the claim.
 
 ## 15. Indemnification
 
@@ -173,25 +173,25 @@ This Privacy Policy explains how **uLam** ("uLam", "we", "us") collects, uses, s
 
 **Information you give us:**
 
-- **Account details** — name, username, email address, password (stored encrypted/hashed, never in plain text), and an optional secondary email;
-- **Profile details** — photo, bio, household size, dietary preferences;
-- **Location details** — barangay, city/municipality, province, region, and (only if you use location features) your GPS coordinates;
-- **Content you create** — recipes, posts, comments, ratings, price reports, store listings, and photos;
-- **Payment references** — when you pay for seller features, we record the payment reference number and amount. **We never see or store your GCash PIN, bank credentials, or full wallet details.**
+- **Account details**: name, username, email address, password (stored encrypted/hashed, never in plain text), and an optional secondary email;
+- **Profile details**: photo, bio, household size, dietary preferences;
+- **Location details**: barangay, city/municipality, province, region, and (only if you use location features) your GPS coordinates;
+- **Content you create**: recipes, posts, comments, ratings, price reports, store listings, and photos;
+- **Payment references**: when you pay for seller features, we record the payment reference number and amount. **We never see or store your GCash PIN, bank credentials, or full wallet details.**
 
 **Information collected automatically:**
 
-- **Usage data** — features you use, content you view (e.g., which recipes you open), XP and activity streaks;
-- **Device data** — device model and operating system (used for support and push notifications);
-- **Approximate network information** — such as IP address, in server logs kept for security.
+- **Usage data**: features you use, content you view (e.g., which recipes you open), XP and activity streaks;
+- **Device data**: device model and operating system (used for support and push notifications);
+- **Approximate network information**: such as IP address, in server logs kept for security.
 
 We do **not** use third-party advertising trackers.
 
 ## 2. How We Use Your Information
 
 - To operate the app: accounts, meal plans, budgets, community feeds, price information, and seller listings;
-- To generate AI meal plans — your budget, household size, and dietary preferences are sent to our AI provider to produce your plan;
-- To show nearby markets and stores — your coordinates are used to search locations near you;
+- To generate AI meal plans: your budget, household size, and dietary preferences are sent to our AI provider to produce your plan;
+- To show nearby markets and stores: your coordinates are used to search locations near you;
 - To process and verify payments for seller features;
 - To send service emails (e.g., verification codes, password reset codes) and push notifications you can control in your device settings;
 - To keep the community safe: moderation, fraud prevention, and enforcing our Terms;
@@ -203,12 +203,12 @@ We do not sell your personal information. Ever.
 
 We share data only with the service providers needed to run uLam:
 
-- **Anthropic (Claude AI)** — receives your budget, household size, and dietary preferences (not your name or contact details) to generate meal plans;
-- **Resend** — delivers our emails (verification and password-reset codes) to your email address;
-- **Expo** — delivers push notifications to your device token;
-- **OpenStreetMap / Nominatim** — receives coordinates (never your identity) for location lookups;
-- **Payment providers** (e.g., PayMongo, when active) — process payments for seller features;
-- **Authorities** — only when required by law, court order, or to protect users from harm.
+- **Anthropic (Claude AI)**: receives your budget, household size, and dietary preferences (not your name or contact details) to generate meal plans;
+- **Resend**: delivers our emails (verification and password-reset codes) to your email address;
+- **Expo**: delivers push notifications to your device token;
+- **OpenStreetMap / Nominatim**: receives coordinates (never your identity) for location lookups;
+- **Payment providers** (e.g., PayMongo, when active): process payments for seller features;
+- **Authorities**: only when required by law, court order, or to protect users from harm.
 
 Other users can see what you choose to publish: your profile name/username/photo, your posts, recipes, comments, ratings, and store listings. Your email, exact location coordinates, and budget details are never shown to other users.
 
@@ -232,9 +232,9 @@ Under the Data Privacy Act, you have the right to:
 
 - **Access** the personal data we hold about you;
 - **Correct** inaccurate data (most details can be edited directly in Settings and Edit Profile);
-- **Delete** your data — available anytime in **Settings → Danger Zone → Delete Account**;
+- **Delete** your data: available anytime in **Settings → Danger Zone → Delete Account**;
 - **Object** to certain processing, and **withdraw consent** where processing is based on consent;
-- **Data portability** — request a copy of your data in a usable format;
+- **Data portability**: request a copy of your data in a usable format;
 - **Lodge a complaint** with the National Privacy Commission (privacy.gov.ph).
 
 To exercise any of these rights, contact us through Help & Support or the email below.
@@ -255,7 +255,7 @@ When we publish an updated Privacy Policy, the app will show it to you and ask f
 
 For privacy questions or requests, reach us through **Help & Support** inside the app, or by email at **cessto103@gmail.com**.
 
-*uLam — Para sa bawat Pilipinong pamilya.*
+*uLam: Para sa bawat Pilipinong pamilya.*
 MD;
     }
 }
