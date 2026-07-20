@@ -75,6 +75,39 @@ class MarketController extends Controller
         return $this->haversineNearby($lat, $lng);
     }
 
+    // A user's profile municipality can come from either free-text entry
+    // ("Antipolo City") or PSGC-derived reverse geocoding ("CITY OF ANTIPOLO")
+    // -- the old regex here only stripped a trailing " City" suffix, so a
+    // PSGC-style "CITY OF X" value never matched a single row, silently
+    // returning zero markets/stores for anyone whose profile was filled in
+    // that way (confirmed live: report-price's picker uses this exact path
+    // and came back empty for a real user despite real nearby markets
+    // existing). Normalizes both directions ("City of X" prefix or " City"
+    // suffix) in PHP and matches case-insensitively against the actual
+    // distinct values on file, rather than guessing at string formats.
+    private function municipalityMatcher(?string $municipality): \Closure
+    {
+        $normalize = fn (string $v) => trim(preg_replace(['/^city of\s+/i', '/\s+city$/i'], '', trim($v)));
+        $target = $normalize((string) $municipality);
+
+        $matches = Market::whereNotNull('municipality')
+            ->distinct()
+            ->pluck('municipality')
+            ->filter(fn ($m) => strcasecmp($normalize($m), $target) === 0)
+            ->values();
+
+        return function ($q) use ($municipality, $matches) {
+            if ($matches->isNotEmpty()) {
+                $q->whereIn('municipality', $matches);
+            } else {
+                // No known municipality matches this profile value at all --
+                // fall back to the old exact-match behavior rather than
+                // matching nothing intelligently and returning everything.
+                $q->where('municipality', $municipality);
+            }
+        };
+    }
+
     public function index(Request $request, MarketDiscoveryService $discovery)
     {
         $user = $request->user();
@@ -94,13 +127,7 @@ class MarketController extends Controller
             }
         } else {
             // ── Municipality-based fallback ────────────────────────────────────
-            $municipalityMatch = function ($q) use ($user) {
-                // loose match: "Antipolo City" or "Antipolo"
-                $base = preg_replace('/\s+city$/i', '', $user->municipality);
-                $q->where('municipality', $user->municipality)
-                  ->orWhere('municipality', $base)
-                  ->orWhere('municipality', $base . ' City');
-            };
+            $municipalityMatch = $this->municipalityMatcher($user->municipality);
 
             $markets = Market::where('is_active', true)
                 ->where($municipalityMatch)
