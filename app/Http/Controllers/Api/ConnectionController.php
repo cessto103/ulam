@@ -78,12 +78,13 @@ class ConnectionController extends Controller
         $badges = UserRewardTier::where('user_id', $id)
             ->whereNotNull('redeemed_at')
             ->whereHas('rewardTier', fn ($q) => $q->where('reward_type', 'badge'))
-            ->with('rewardTier:id,title,icon')
+            ->with('rewardTier:id,title,title_en,icon')
             ->get()
             ->map(fn ($urt) => [
-                'id'    => $urt->reward_tier_id,
-                'title' => $urt->rewardTier->title,
-                'icon'  => $urt->rewardTier->icon,
+                'id'       => $urt->reward_tier_id,
+                'title'    => $urt->rewardTier->title,
+                'title_en' => $urt->rewardTier->title_en,
+                'icon'     => $urt->rewardTier->icon,
             ]);
 
         return response()->json([

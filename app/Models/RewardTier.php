@@ -14,7 +14,9 @@ class RewardTier extends Model
 
     protected $fillable = [
         'title',
+        'title_en',
         'description',
+        'description_en',
         'icon',
         'xp_threshold',
         'reward_type',

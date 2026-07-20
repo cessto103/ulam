@@ -51,7 +51,9 @@ class RewardTierController extends Controller
     {
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'title_en' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'description_en' => ['nullable', 'string', 'max:1000'],
             'icon' => ['nullable', 'string', 'max:10'],
             'xp_threshold' => ['nullable', 'integer', 'min:0'],
             'reward_type' => ['required', Rule::in(RewardTier::SELECTABLE_REWARD_TYPES)],

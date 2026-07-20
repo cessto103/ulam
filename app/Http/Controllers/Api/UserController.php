@@ -328,7 +328,9 @@ class UserController extends Controller
                 'id'               => $tier->id,
                 'user_reward_tier_id' => $userTier->id,
                 'title'            => $tier->title,
+                'title_en'         => $tier->title_en,
                 'description'      => $tier->description,
+                'description_en'   => $tier->description_en,
                 'icon'             => $tier->icon,
                 'reward_type'      => $tier->reward_type,
                 'reward_value'     => $tier->reward_value,
@@ -350,6 +352,7 @@ class UserController extends Controller
                 $requiredTasks = $tier->requiredTasks->map(fn ($t) => [
                     'id'           => $t->id,
                     'title'        => $t->title,
+                    'title_en'     => $t->title_en,
                     'icon'         => $t->icon,
                     'is_completed' => $completedTaskIds->contains($t->id),
                 ]);
@@ -357,7 +360,9 @@ class UserController extends Controller
                 return [
                     'id'             => $tier->id,
                     'title'          => $tier->title,
+                    'title_en'       => $tier->title_en,
                     'description'    => $tier->description,
+                    'description_en' => $tier->description_en,
                     'icon'           => $tier->icon,
                     'reward_type'    => $tier->reward_type,
                     'reward_value'   => $tier->reward_value,

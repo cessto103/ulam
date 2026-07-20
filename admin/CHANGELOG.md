@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.25.0 (2026-07-20)
+
+### Added
+- **Reward Tiers now support an English translation**, matching how Tasks already work: new "Title (English)" and "Description (English)" fields, falling back to the Tagalog text if left blank.
+
 ## v1.24.0 (2026-07-20)
 
 ### Added

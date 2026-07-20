@@ -39,7 +39,9 @@ type TaskRef = { id: number; title: string; icon: string | null }
 type RewardTier = {
   id: number
   title: string
+  title_en: string | null
   description: string | null
+  description_en: string | null
   icon: string | null
   xp_threshold: number | null
   reward_type: RewardType
@@ -52,7 +54,9 @@ type AdminTask = { id: number; title: string; icon: string | null; is_active: bo
 
 type TierForm = {
   title: string
+  title_en: string
   description: string
+  description_en: string
   icon: string
   xp_threshold: string // '' means unset -- kept as a string so an empty input doesn't coerce to 0
   reward_type: RewardType
@@ -63,7 +67,9 @@ type TierForm = {
 
 const EMPTY_FORM: TierForm = {
   title: '',
+  title_en: '',
   description: '',
+  description_en: '',
   icon: '🎁',
   xp_threshold: '',
   reward_type: 'premium_days',
@@ -130,7 +136,9 @@ export function RewardTiers() {
     mutationFn: async () => {
       const body = {
         title: form.title,
+        title_en: form.title_en || null,
         description: form.description || null,
+        description_en: form.description_en || null,
         icon: form.icon,
         xp_threshold: form.xp_threshold === '' ? null : Number(form.xp_threshold),
         reward_type: form.reward_type,
@@ -173,7 +181,9 @@ export function RewardTiers() {
         ? EMPTY_FORM
         : {
             title: tier.title,
+            title_en: tier.title_en ?? '',
             description: tier.description ?? '',
+            description_en: tier.description_en ?? '',
             icon: tier.icon ?? '🎁',
             xp_threshold: tier.xp_threshold === null ? '' : String(tier.xp_threshold),
             reward_type: tier.reward_type,
@@ -314,7 +324,7 @@ export function RewardTiers() {
               <div className='flex-1 space-y-1.5'>
                 <Label>Title</Label>
                 <Input
-                  placeholder='3 Free Days of Premium'
+                  placeholder='3 Araw na Libreng Premium'
                   value={form.title}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, title: e.target.value }))
@@ -323,12 +333,32 @@ export function RewardTiers() {
               </div>
             </div>
             <div className='space-y-1.5'>
+              <Label>Title (English)</Label>
+              <Input
+                placeholder='Falls back to the Title above if left blank'
+                value={form.title_en}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, title_en: e.target.value }))
+                }
+              />
+            </div>
+            <div className='space-y-1.5'>
               <Label>Description</Label>
               <Textarea
                 rows={2}
                 value={form.description}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, description: e.target.value }))
+                }
+              />
+            </div>
+            <div className='space-y-1.5'>
+              <Label>Description (English)</Label>
+              <Textarea
+                rows={2}
+                value={form.description_en}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description_en: e.target.value }))
                 }
               />
             </div>
