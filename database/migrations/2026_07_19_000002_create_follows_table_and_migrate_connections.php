@@ -27,12 +27,21 @@ return new class extends Migration
         //
         // The clear is intentionally irreversible (down() only drops
         // `follows`): dump the connections table before deploying this to
-        // the live server. INSERT IGNORE makes an accidental re-run safe.
+        // the live server. insertOrIgnore() makes an accidental re-run safe
+        // (and, unlike a raw "INSERT IGNORE ... SELECT" statement, compiles
+        // to the right dialect on both MySQL and the SQLite DB the test
+        // suite runs against).
         DB::transaction(function () {
-            DB::statement(
-                'INSERT IGNORE INTO follows (follower_id, followed_id, created_at, updated_at)
-                 SELECT requester_id, recipient_id, created_at, updated_at FROM connections'
-            );
+            $rows = DB::table('connections')
+                ->select('requester_id as follower_id', 'recipient_id as followed_id', 'created_at', 'updated_at')
+                ->get()
+                ->map(fn ($row) => (array) $row)
+                ->all();
+
+            if (! empty($rows)) {
+                DB::table('follows')->insertOrIgnore($rows);
+            }
+
             DB::table('connections')->delete();
         });
     }
