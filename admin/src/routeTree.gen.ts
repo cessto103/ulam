@@ -26,6 +26,7 @@ import { Route as AuthenticatedTechnicalIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSupportTicketsIndexRouteImport } from './routes/_authenticated/support-tickets/index'
 import { Route as AuthenticatedStaplePricesIndexRouteImport } from './routes/_authenticated/staple-prices/index'
+import { Route as AuthenticatedSponsoredAdsIndexRouteImport } from './routes/_authenticated/sponsored-ads/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSellerSubscriptionsIndexRouteImport } from './routes/_authenticated/seller-subscriptions/index'
 import { Route as AuthenticatedRewardTiersIndexRouteImport } from './routes/_authenticated/reward-tiers/index'
@@ -141,6 +142,12 @@ const AuthenticatedStaplePricesIndexRoute =
   AuthenticatedStaplePricesIndexRouteImport.update({
     id: '/staple-prices/',
     path: '/staple-prices/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSponsoredAdsIndexRoute =
+  AuthenticatedSponsoredAdsIndexRouteImport.update({
+    id: '/sponsored-ads/',
+    path: '/sponsored-ads/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSettingsIndexRoute =
@@ -331,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/reward-tiers/': typeof AuthenticatedRewardTiersIndexRoute
   '/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/sponsored-ads/': typeof AuthenticatedSponsoredAdsIndexRoute
   '/staple-prices/': typeof AuthenticatedStaplePricesIndexRoute
   '/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
@@ -374,6 +382,7 @@ export interface FileRoutesByTo {
   '/reward-tiers': typeof AuthenticatedRewardTiersIndexRoute
   '/seller-subscriptions': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/sponsored-ads': typeof AuthenticatedSponsoredAdsIndexRoute
   '/staple-prices': typeof AuthenticatedStaplePricesIndexRoute
   '/support-tickets': typeof AuthenticatedSupportTicketsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
@@ -420,6 +429,7 @@ export interface FileRoutesById {
   '/_authenticated/reward-tiers/': typeof AuthenticatedRewardTiersIndexRoute
   '/_authenticated/seller-subscriptions/': typeof AuthenticatedSellerSubscriptionsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/sponsored-ads/': typeof AuthenticatedSponsoredAdsIndexRoute
   '/_authenticated/staple-prices/': typeof AuthenticatedStaplePricesIndexRoute
   '/_authenticated/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
@@ -466,6 +476,7 @@ export interface FileRouteTypes {
     | '/reward-tiers/'
     | '/seller-subscriptions/'
     | '/settings/'
+    | '/sponsored-ads/'
     | '/staple-prices/'
     | '/support-tickets/'
     | '/tasks/'
@@ -509,6 +520,7 @@ export interface FileRouteTypes {
     | '/reward-tiers'
     | '/seller-subscriptions'
     | '/settings'
+    | '/sponsored-ads'
     | '/staple-prices'
     | '/support-tickets'
     | '/tasks'
@@ -554,6 +566,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reward-tiers/'
     | '/_authenticated/seller-subscriptions/'
     | '/_authenticated/settings/'
+    | '/_authenticated/sponsored-ads/'
     | '/_authenticated/staple-prices/'
     | '/_authenticated/support-tickets/'
     | '/_authenticated/tasks/'
@@ -693,6 +706,13 @@ declare module '@tanstack/react-router' {
       path: '/staple-prices'
       fullPath: '/staple-prices/'
       preLoaderRoute: typeof AuthenticatedStaplePricesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sponsored-ads/': {
+      id: '/_authenticated/sponsored-ads/'
+      path: '/sponsored-ads'
+      fullPath: '/sponsored-ads/'
+      preLoaderRoute: typeof AuthenticatedSponsoredAdsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings/': {
@@ -925,6 +945,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRecipesIndexRoute: typeof AuthenticatedRecipesIndexRoute
   AuthenticatedRewardTiersIndexRoute: typeof AuthenticatedRewardTiersIndexRoute
   AuthenticatedSellerSubscriptionsIndexRoute: typeof AuthenticatedSellerSubscriptionsIndexRoute
+  AuthenticatedSponsoredAdsIndexRoute: typeof AuthenticatedSponsoredAdsIndexRoute
   AuthenticatedStaplePricesIndexRoute: typeof AuthenticatedStaplePricesIndexRoute
   AuthenticatedSupportTicketsIndexRoute: typeof AuthenticatedSupportTicketsIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
@@ -965,6 +986,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRewardTiersIndexRoute: AuthenticatedRewardTiersIndexRoute,
   AuthenticatedSellerSubscriptionsIndexRoute:
     AuthenticatedSellerSubscriptionsIndexRoute,
+  AuthenticatedSponsoredAdsIndexRoute: AuthenticatedSponsoredAdsIndexRoute,
   AuthenticatedStaplePricesIndexRoute: AuthenticatedStaplePricesIndexRoute,
   AuthenticatedSupportTicketsIndexRoute: AuthenticatedSupportTicketsIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
