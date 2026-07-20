@@ -184,11 +184,9 @@ class User extends Authenticatable
         return $this->hasMany(RecipeBook::class);
     }
 
-    public function achievements()
+    public function userTasks()
     {
-        return $this->belongsToMany(Achievement::class, 'user_achievements')
-            ->withPivot('earned_at')
-            ->withTimestamps();
+        return $this->hasMany(UserTask::class);
     }
 
     public function xpLogs()

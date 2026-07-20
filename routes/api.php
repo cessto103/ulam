@@ -168,6 +168,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::get('/user/achievements', [UserController::class, 'achievements']);
     Route::get('/user/daily-tasks', [UserController::class, 'dailyTasks']);
+    Route::get('/user/tasks', [UserController::class, 'tasks']);
     Route::get('/user/stats', [UserController::class, 'stats']);
 
     Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail']);

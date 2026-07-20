@@ -3,16 +3,23 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\DailyTask;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+/**
+ * Compatibility shim for the existing admin "Daily & Weekly Tasks" page --
+ * repointed to the unified Task model, scoped to daily/weekly only, so the
+ * old admin UI keeps working unmodified until Phase 2 of the gamification
+ * revamp replaces this with the full Tasks CRUD (all 4 frequencies, tiers).
+ */
 class DailyTaskController extends Controller
 {
     public function index()
     {
         return response()->json([
-            'tasks' => DailyTask::orderBy('frequency')->orderBy('title')->get(),
+            'tasks' => Task::whereIn('frequency', ['daily', 'weekly'])
+                ->orderBy('frequency')->orderBy('title')->get(),
         ]);
     }
 
@@ -20,15 +27,17 @@ class DailyTaskController extends Controller
     {
         $data = $this->validated($request);
         $data['slug'] = Str::slug($data['title']) . '-' . Str::random(6);
+        $data['description_en'] = null;
+        $data['title_en'] = null;
 
-        $task = DailyTask::create($data);
+        $task = Task::create($data);
 
         return response()->json(['task' => $task], 201);
     }
 
     public function update(Request $request, int $id)
     {
-        $task = DailyTask::findOrFail($id);
+        $task = Task::whereIn('frequency', ['daily', 'weekly'])->findOrFail($id);
         $task->update($this->validated($request));
 
         return response()->json(['task' => $task->fresh()]);
@@ -36,7 +45,7 @@ class DailyTaskController extends Controller
 
     public function destroy(int $id)
     {
-        DailyTask::findOrFail($id)->delete();
+        Task::whereIn('frequency', ['daily', 'weekly'])->findOrFail($id)->delete();
 
         return response()->json(['message' => 'Task deleted.']);
     }

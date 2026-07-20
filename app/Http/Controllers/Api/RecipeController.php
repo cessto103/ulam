@@ -11,6 +11,7 @@ use App\Models\RecipeBook;
 use App\Models\RecipeIngredient;
 use App\Models\RecipeRating;
 use App\Models\RecipeReaction;
+use App\Services\XpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -159,7 +160,7 @@ class RecipeController extends Controller
     public function saveToBook(Request $request, int $id)
     {
         $user = $request->user();
-        Recipe::findOrFail($id);
+        $recipe = Recipe::findOrFail($id);
 
         $existing = RecipeBook::where('user_id', $user->id)->where('recipe_id', $id)->first();
 
@@ -171,7 +172,19 @@ class RecipeController extends Controller
 
         RecipeBook::create(['user_id' => $user->id, 'recipe_id' => $id]);
         Recipe::where('id', $id)->increment('save_count');
-        return response()->json(['saved' => true]);
+
+        // Only on save, never on unsave -- no XP-clawback pattern exists
+        // anywhere else in this codebase, so removing a save doesn't
+        // subtract XP either.
+        $reward = app(XpService::class)->award($user, 5, 'recipe_saved', $recipe);
+
+        return response()->json([
+            'saved'            => true,
+            'xp_earned'        => $reward['xp_awarded'],
+            'leveled_up'       => $reward['leveled_up'],
+            'new_level'        => $reward['new_level'],
+            'new_achievements' => $reward['new_achievements'],
+        ]);
     }
 
     public function react(Request $request, int $id)
