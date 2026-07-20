@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\LegalController;
 use App\Http\Controllers\Api\Admin\CommunityPriceReportController as AdminCommunityPriceReportController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\GovernmentPriceReferenceController as AdminGovernmentPriceReferenceController;
+use App\Http\Controllers\Api\Admin\ContentReportController as AdminContentReportController;
 use App\Http\Controllers\Api\Admin\ListingReportController as AdminListingReportController;
 use App\Http\Controllers\Api\Admin\MarketController as AdminMarketController;
 use App\Http\Controllers\Api\Admin\MarketPriceController as AdminMarketPriceController;
@@ -170,6 +171,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/tasks', [UserController::class, 'tasks']);
     Route::get('/user/reward-tiers', [UserController::class, 'rewardTiers']);
     Route::get('/user/stats', [UserController::class, 'stats']);
+    Route::get('/user/moderation-status', [UserController::class, 'moderationStatus']);
 
     Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail']);
     Route::post('/user/secondary-email/verify',  [UserController::class, 'verifySecondaryEmail']);
@@ -475,4 +477,12 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/listing-reports/{id}/ban-owner',        [AdminListingReportController::class, 'banOwner']);
     Route::post('/listing-reports/{id}/deactivate-listing', [AdminListingReportController::class, 'deactivateListing']);
     Route::post('/listing-reports/{id}/dismiss',           [AdminListingReportController::class, 'dismiss']);
+
+    Route::get('/content-reports',      [AdminContentReportController::class, 'index']);
+    Route::get('/content-reports/{id}', [AdminContentReportController::class, 'show']);
+    Route::delete('/content-reports/{id}', [AdminContentReportController::class, 'destroy']);
+    Route::post('/content-reports/{id}/warn',     [AdminContentReportController::class, 'warn']);
+    Route::post('/content-reports/{id}/restrict', [AdminContentReportController::class, 'restrict']);
+    Route::post('/content-reports/{id}/ban',      [AdminContentReportController::class, 'ban']);
+    Route::post('/content-reports/{id}/dismiss',  [AdminContentReportController::class, 'dismiss']);
 });

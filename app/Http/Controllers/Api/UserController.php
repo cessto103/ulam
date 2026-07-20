@@ -50,6 +50,7 @@ class UserController extends Controller
             'ai_meal_plans_used_this_month' => $user->ai_meal_plans_used_this_month,
             'ai_plans_remaining'           => $user->isPremium() ? null : 0,
             'onboarding_completed'          => (bool) $user->onboarding_completed,
+            'restricted_until'             => $user->restricted_until,
         ]);
     }
 
@@ -374,6 +375,29 @@ class UserController extends Controller
             })->values();
 
         return response()->json(['earned' => $earned, 'locked' => $locked]);
+    }
+
+    public function moderationStatus(Request $request)
+    {
+        $user = $request->user();
+
+        $strikes = $user->strikes()
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($s) => [
+                'level' => $s->level,
+                'level_label' => $s->level_label,
+                'reason' => $s->reason,
+                'created_at' => $s->created_at,
+                'expires_at' => $s->expires_at,
+            ]);
+
+        return response()->json([
+            'restricted_until' => $user->restricted_until,
+            'banned_at' => $user->banned_at,
+            'ban_reason' => $user->ban_reason,
+            'strikes' => $strikes,
+        ]);
     }
 
     public function stats(Request $request)

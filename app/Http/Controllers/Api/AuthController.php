@@ -323,6 +323,7 @@ class AuthController extends Controller
             'streak_days' => $user->streak_days,
             'ai_plans_remaining' => $user->isPremium() ? null : 0,
             'onboarding_completed' => (bool) $user->onboarding_completed,
+            'restricted_until' => $user->restricted_until,
         ];
     }
 }

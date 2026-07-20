@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Http\Controllers\Api\Admin\Concerns\ResolvesModerationReports;
 use App\Http\Controllers\Controller;
 use App\Models\ListingReport;
 use App\Services\UserModerationService;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 // the three actions below, ported from Filament's ListingReportResource row actions.
 class ListingReportController extends Controller
 {
+    use ResolvesModerationReports;
+
     public function __construct(private UserModerationService $moderation)
     {
     }
@@ -49,7 +52,7 @@ class ListingReportController extends Controller
 
     public function banOwner(Request $request, int $id)
     {
-        $report = $this->pendingReport($id);
+        $report = $this->pendingReportOrFail(ListingReport::class, $id, ['reportable']);
         $owner = $report->reportable?->user;
 
         if (! $owner) {
@@ -58,52 +61,30 @@ class ListingReportController extends Controller
 
         $this->moderation->ban($owner, "Reported listing: {$report->reason}", $request->user(), listingReport: $report);
 
-        $this->resolve($report, $request);
+        $this->resolveReport($report, $request);
 
         return response()->json(['report' => $report->fresh(), 'message' => "Banned {$owner->name}."]);
     }
 
     public function deactivateListing(Request $request, int $id)
     {
-        $report = $this->pendingReport($id);
+        $report = $this->pendingReportOrFail(ListingReport::class, $id, ['reportable']);
 
         if (! $report->reportable) {
             return response()->json(['message' => 'Listing no longer exists.'], 422);
         }
 
         $report->reportable->update(['is_active' => false]);
-        $this->resolve($report, $request);
+        $this->resolveReport($report, $request);
 
         return response()->json(['report' => $report->fresh()]);
     }
 
     public function dismiss(Request $request, int $id)
     {
-        $report = $this->pendingReport($id);
-        $report->update([
-            'status' => 'dismissed',
-            'resolved_by' => $request->user()->id,
-            'resolved_at' => now(),
-        ]);
+        $report = $this->pendingReportOrFail(ListingReport::class, $id, ['reportable']);
+        $this->resolveReport($report, $request, 'dismissed');
 
         return response()->json(['report' => $report->fresh()]);
-    }
-
-    private function pendingReport(int $id): ListingReport
-    {
-        $report = ListingReport::with('reportable')->findOrFail($id);
-
-        abort_if($report->status !== 'pending', 422, 'This report has already been resolved.');
-
-        return $report;
-    }
-
-    private function resolve(ListingReport $report, Request $request): void
-    {
-        $report->update([
-            'status' => 'actioned',
-            'resolved_by' => $request->user()->id,
-            'resolved_at' => now(),
-        ]);
     }
 }

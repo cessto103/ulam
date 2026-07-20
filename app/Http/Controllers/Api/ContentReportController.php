@@ -27,7 +27,8 @@ class ContentReportController extends Controller
             'recipe' => Recipe::class,
             'tindahan' => Tindahan::class,
         };
-        abort_unless($model::whereKey($data['content_id'])->exists(), 422, 'The reported content no longer exists.');
+        $content = $model::find($data['content_id']);
+        abort_unless($content, 422, 'The reported content no longer exists.');
 
         $report = ContentReport::firstOrCreate(
             [
@@ -36,6 +37,10 @@ class ContentReportController extends Controller
                 'content_id'   => $data['content_id'],
             ],
             [
+                // Captured now, not resolved later -- if the content is deleted
+                // before an admin reviews the report, this is still how the
+                // right account gets warned/restricted/banned.
+                'reported_user_id' => $content->user_id,
                 'reason'  => $data['reason'],
                 'details' => $data['details'] ?? null,
             ]
