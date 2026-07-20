@@ -72,9 +72,15 @@ class MealPlanController extends Controller
                 $request->preferences,
             );
 
-            app(XpService::class)->award($user, 20, 'generate_meal_plan', $mealPlan);
+            $reward = app(XpService::class)->award($user, 20, 'generate_meal_plan', $mealPlan);
 
-            return response()->json(['meal_plan' => $mealPlan], 201);
+            return response()->json([
+                'meal_plan'        => $mealPlan,
+                'xp_earned'        => $reward['xp_awarded'],
+                'leveled_up'       => $reward['leveled_up'],
+                'new_level'        => $reward['new_level'],
+                'new_achievements' => $reward['new_achievements'],
+            ], 201);
         } catch (\RuntimeException $e) {
             return response()->json([
                 'message'        => $e->getMessage(),

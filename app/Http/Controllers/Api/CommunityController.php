@@ -132,7 +132,7 @@ class CommunityController extends Controller
             Recipe::where('id', $recipeId)->increment('share_count');
         }
 
-        app(XpService::class)->award($user, 30, 'create_post', $post);
+        $reward = app(XpService::class)->award($user, 30, 'create_post', $post);
 
         foreach ($imagePaths as $img) {
             \App\Jobs\ModerateImageJob::dispatchAfterResponse($img, 'post.images', $post->id);
@@ -143,6 +143,10 @@ class CommunityController extends Controller
                 'user:id,name,username,avatar',
                 'recipe:id,title,image_url,image_urls,collage_style,gradient_key,font_key,budget_tag,estimated_cost',
             ]),
+            'xp_earned'        => $reward['xp_awarded'],
+            'leveled_up'       => $reward['leveled_up'],
+            'new_level'        => $reward['new_level'],
+            'new_achievements' => $reward['new_achievements'],
         ], 201);
     }
 
