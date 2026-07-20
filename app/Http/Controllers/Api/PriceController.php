@@ -126,7 +126,10 @@ class PriceController extends Controller
             'status'       => ! empty($validated['tindahan_id']) ? 'pending' : 'accepted',
         ]);
 
-        $reward = app(XpService::class)->award($user, 15, 'report_price', $report);
+        // Once/day, not per-report -- there's no minimum-effort gate and no
+        // delete endpoint even needed to abuse this: nothing stops submitting
+        // endless distinct throwaway reports at the route's 10/min throttle.
+        $reward = app(XpService::class)->awardOncePerDay($user, 15, 'report_price', $report);
 
         if ($photoPath) {
             \App\Jobs\ModerateImageJob::dispatchAfterResponse($photoPath, 'price_report.photo', $report->id);
@@ -134,10 +137,10 @@ class PriceController extends Controller
 
         return response()->json([
             'report'           => $report,
-            'xp_earned'        => $reward['xp_awarded'],
-            'leveled_up'       => $reward['leveled_up'],
-            'new_level'        => $reward['new_level'],
-            'new_achievements' => $reward['new_achievements'],
+            'xp_earned'        => $reward['xp_awarded'] ?? 0,
+            'leveled_up'       => $reward['leveled_up'] ?? false,
+            'new_level'        => $reward['new_level'] ?? null,
+            'new_achievements' => $reward['new_achievements'] ?? [],
         ], 201);
     }
 

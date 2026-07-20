@@ -72,14 +72,18 @@ class MealPlanController extends Controller
                 $request->preferences,
             );
 
-            $reward = app(XpService::class)->award($user, 20, 'generate_meal_plan', $mealPlan);
+            // Once/day, not per-generation -- Premium users are intentionally
+            // allowed unlimited generations (ai_plans_remaining is null for
+            // them by design), so nothing else bounds how many times this
+            // could be called and each one paid out XP unconditionally.
+            $reward = app(XpService::class)->awardOncePerDay($user, 20, 'generate_meal_plan', $mealPlan);
 
             return response()->json([
                 'meal_plan'        => $mealPlan,
-                'xp_earned'        => $reward['xp_awarded'],
-                'leveled_up'       => $reward['leveled_up'],
-                'new_level'        => $reward['new_level'],
-                'new_achievements' => $reward['new_achievements'],
+                'xp_earned'        => $reward['xp_awarded'] ?? 0,
+                'leveled_up'       => $reward['leveled_up'] ?? false,
+                'new_level'        => $reward['new_level'] ?? null,
+                'new_achievements' => $reward['new_achievements'] ?? [],
             ], 201);
         } catch (\RuntimeException $e) {
             return response()->json([

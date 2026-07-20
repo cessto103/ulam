@@ -116,9 +116,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/meal-plan/today', [MealPlanController::class, 'today']);
     Route::get('/meal-plans/today', [MealPlanController::class, 'today']);       // alias
-    Route::post('/meal-plan/generate', [MealPlanController::class, 'generate']);
-    Route::post('/meal-plans/generate', [MealPlanController::class, 'generate']); // alias
-    Route::post('/meal-plan/regenerate', [MealPlanController::class, 'regenerate']);
+    Route::post('/meal-plan/generate', [MealPlanController::class, 'generate'])->middleware('throttle:5,1');
+    Route::post('/meal-plans/generate', [MealPlanController::class, 'generate'])->middleware('throttle:5,1'); // alias
+    Route::post('/meal-plan/regenerate', [MealPlanController::class, 'regenerate'])->middleware('throttle:5,1');
     Route::post('/meal-plan/add-item',   [MealPlanController::class, 'addItem']);
     Route::delete('/meal-plan/items/{id}', [MealPlanController::class, 'removeItem']);
     Route::get('/meal-plans/dates',        [MealPlanController::class, 'datesWithPlans']);
