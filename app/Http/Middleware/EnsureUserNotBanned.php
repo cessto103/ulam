@@ -16,6 +16,7 @@ class EnsureUserNotBanned
 
             return response()->json([
                 'message' => 'Your account has been suspended.' . ($user->ban_reason ? " Reason: {$user->ban_reason}" : ''),
+                'code' => 'banned',
             ], 403);
         }
 
