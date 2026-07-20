@@ -23,6 +23,7 @@ import { Route as AuthenticatedTindahanIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedTindahanCommentsIndexRouteImport } from './routes/_authenticated/tindahan-comments/index'
 import { Route as AuthenticatedThemeIndexRouteImport } from './routes/_authenticated/theme/index'
 import { Route as AuthenticatedTechnicalIndexRouteImport } from './routes/_authenticated/technical/index'
+import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSupportTicketsIndexRouteImport } from './routes/_authenticated/support-tickets/index'
 import { Route as AuthenticatedStaplePricesIndexRouteImport } from './routes/_authenticated/staple-prices/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
@@ -40,7 +41,6 @@ import { Route as AuthenticatedListingReportsIndexRouteImport } from './routes/_
 import { Route as AuthenticatedLegalIndexRouteImport } from './routes/_authenticated/legal/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
-import { Route as AuthenticatedDailyTasksIndexRouteImport } from './routes/_authenticated/daily-tasks/index'
 import { Route as AuthenticatedConnectionLabelsIndexRouteImport } from './routes/_authenticated/connection-labels/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
@@ -125,6 +125,11 @@ const AuthenticatedTechnicalIndexRoute =
     path: '/technical/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSupportTicketsIndexRoute =
   AuthenticatedSupportTicketsIndexRouteImport.update({
     id: '/support-tickets/',
@@ -224,12 +229,6 @@ const AuthenticatedFaqsIndexRoute = AuthenticatedFaqsIndexRouteImport.update({
   path: '/faqs/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedDailyTasksIndexRoute =
-  AuthenticatedDailyTasksIndexRouteImport.update({
-    id: '/daily-tasks/',
-    path: '/daily-tasks/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedConnectionLabelsIndexRoute =
   AuthenticatedConnectionLabelsIndexRouteImport.update({
     id: '/connection-labels/',
@@ -309,7 +308,6 @@ export interface FileRoutesByFullPath {
   '/comments/': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
-  '/daily-tasks/': typeof AuthenticatedDailyTasksIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/legal/': typeof AuthenticatedLegalIndexRoute
@@ -327,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/staple-prices/': typeof AuthenticatedStaplePricesIndexRoute
   '/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
+  '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/technical/': typeof AuthenticatedTechnicalIndexRoute
   '/theme/': typeof AuthenticatedThemeIndexRoute
   '/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
@@ -351,7 +350,6 @@ export interface FileRoutesByTo {
   '/comments': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels': typeof AuthenticatedConnectionLabelsIndexRoute
-  '/daily-tasks': typeof AuthenticatedDailyTasksIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/legal': typeof AuthenticatedLegalIndexRoute
@@ -369,6 +367,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/staple-prices': typeof AuthenticatedStaplePricesIndexRoute
   '/support-tickets': typeof AuthenticatedSupportTicketsIndexRoute
+  '/tasks': typeof AuthenticatedTasksIndexRoute
   '/technical': typeof AuthenticatedTechnicalIndexRoute
   '/theme': typeof AuthenticatedThemeIndexRoute
   '/tindahan-comments': typeof AuthenticatedTindahanCommentsIndexRoute
@@ -396,7 +395,6 @@ export interface FileRoutesById {
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/_authenticated/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
-  '/_authenticated/daily-tasks/': typeof AuthenticatedDailyTasksIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/_authenticated/legal/': typeof AuthenticatedLegalIndexRoute
@@ -414,6 +412,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/staple-prices/': typeof AuthenticatedStaplePricesIndexRoute
   '/_authenticated/support-tickets/': typeof AuthenticatedSupportTicketsIndexRoute
+  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/technical/': typeof AuthenticatedTechnicalIndexRoute
   '/_authenticated/theme/': typeof AuthenticatedThemeIndexRoute
   '/_authenticated/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
@@ -441,7 +440,6 @@ export interface FileRouteTypes {
     | '/comments/'
     | '/community-price-reports/'
     | '/connection-labels/'
-    | '/daily-tasks/'
     | '/faqs/'
     | '/government-price-references/'
     | '/legal/'
@@ -459,6 +457,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/staple-prices/'
     | '/support-tickets/'
+    | '/tasks/'
     | '/technical/'
     | '/theme/'
     | '/tindahan-comments/'
@@ -483,7 +482,6 @@ export interface FileRouteTypes {
     | '/comments'
     | '/community-price-reports'
     | '/connection-labels'
-    | '/daily-tasks'
     | '/faqs'
     | '/government-price-references'
     | '/legal'
@@ -501,6 +499,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/staple-prices'
     | '/support-tickets'
+    | '/tasks'
     | '/technical'
     | '/theme'
     | '/tindahan-comments'
@@ -527,7 +526,6 @@ export interface FileRouteTypes {
     | '/_authenticated/comments/'
     | '/_authenticated/community-price-reports/'
     | '/_authenticated/connection-labels/'
-    | '/_authenticated/daily-tasks/'
     | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
     | '/_authenticated/legal/'
@@ -545,6 +543,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/staple-prices/'
     | '/_authenticated/support-tickets/'
+    | '/_authenticated/tasks/'
     | '/_authenticated/technical/'
     | '/_authenticated/theme/'
     | '/_authenticated/tindahan-comments/'
@@ -660,6 +659,13 @@ declare module '@tanstack/react-router' {
       path: '/technical'
       fullPath: '/technical/'
       preLoaderRoute: typeof AuthenticatedTechnicalIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/': {
+      id: '/_authenticated/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/support-tickets/': {
@@ -781,13 +787,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFaqsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/daily-tasks/': {
-      id: '/_authenticated/daily-tasks/'
-      path: '/daily-tasks'
-      fullPath: '/daily-tasks/'
-      preLoaderRoute: typeof AuthenticatedDailyTasksIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/connection-labels/': {
       id: '/_authenticated/connection-labels/'
       path: '/connection-labels'
@@ -891,7 +890,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
   AuthenticatedConnectionLabelsIndexRoute: typeof AuthenticatedConnectionLabelsIndexRoute
-  AuthenticatedDailyTasksIndexRoute: typeof AuthenticatedDailyTasksIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   AuthenticatedLegalIndexRoute: typeof AuthenticatedLegalIndexRoute
@@ -908,6 +906,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSellerSubscriptionsIndexRoute: typeof AuthenticatedSellerSubscriptionsIndexRoute
   AuthenticatedStaplePricesIndexRoute: typeof AuthenticatedStaplePricesIndexRoute
   AuthenticatedSupportTicketsIndexRoute: typeof AuthenticatedSupportTicketsIndexRoute
+  AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedTechnicalIndexRoute: typeof AuthenticatedTechnicalIndexRoute
   AuthenticatedThemeIndexRoute: typeof AuthenticatedThemeIndexRoute
   AuthenticatedTindahanCommentsIndexRoute: typeof AuthenticatedTindahanCommentsIndexRoute
@@ -927,7 +926,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedCommunityPriceReportsIndexRoute,
   AuthenticatedConnectionLabelsIndexRoute:
     AuthenticatedConnectionLabelsIndexRoute,
-  AuthenticatedDailyTasksIndexRoute: AuthenticatedDailyTasksIndexRoute,
   AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,
@@ -947,6 +945,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedSellerSubscriptionsIndexRoute,
   AuthenticatedStaplePricesIndexRoute: AuthenticatedStaplePricesIndexRoute,
   AuthenticatedSupportTicketsIndexRoute: AuthenticatedSupportTicketsIndexRoute,
+  AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedTechnicalIndexRoute: AuthenticatedTechnicalIndexRoute,
   AuthenticatedThemeIndexRoute: AuthenticatedThemeIndexRoute,
   AuthenticatedTindahanCommentsIndexRoute:

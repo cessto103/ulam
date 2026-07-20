@@ -1,5 +1,17 @@
 # uLam Admin — Changelog
 
+## v1.23.0 (2026-07-20)
+
+### Added
+- **"Daily & Weekly Tasks" is now "Tasks"** — a full gamification revamp merging what used to be two separate systems (Daily/Weekly Tasks, and Achievements, which previously had no admin UI at all and could only be edited via a seeder file). One CRUD screen now manages all of it.
+- **Monthly frequency**, alongside the existing Daily/Weekly, plus a new "Once (lifetime)" frequency for permanent achievement-style tasks.
+- **Tiered lifetime badges**: a lifetime task can be one of 4 tiers (Bronze/Silver/Gold/Diamond) sharing a "Tier group" name, rendering in the app as one progressive badge instead of separate entries. Recipe Collector, Presyo Patrol, the new Mr./Ms. Palengke, Post Creator, and Meal Planner all ship pre-seeded with 4 tiers each.
+- **"Completes when the user..." is now a real, live-fetched list** instead of a hardcoded dropdown — see the new "Task Action Types" — so new trigger types show up in the form the moment they're wired up, without an admin panel redeploy.
+- **Bilingual title/description (English)** fields, matching the pattern already used elsewhere in the app.
+
+### Fixed
+- **"Recipe Collector" could never actually be earned.** Saving a recipe awarded zero XP and never checked any achievement condition — confirmed live, one test account had 24 saved recipes and had never come close to earning it. Recipe saving now awards XP and is wired into the same completion system as everything else.
+
 ## v1.22.2 (2026-07-20)
 
 ### Added

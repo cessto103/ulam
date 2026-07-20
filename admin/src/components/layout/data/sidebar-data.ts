@@ -118,8 +118,8 @@ export const sidebarData: SidebarData = {
       title: 'Gamification',
       items: [
         {
-          title: 'Daily & Weekly Tasks',
-          url: '/daily-tasks',
+          title: 'Tasks',
+          url: '/tasks',
           icon: ListChecks,
         },
         {

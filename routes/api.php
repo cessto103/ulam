@@ -26,7 +26,8 @@ use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
 use App\Http\Controllers\Api\Admin\AppSettingController as AdminAppSettingController;
 use App\Http\Controllers\Api\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Api\Admin\ConnectionLabelController as AdminConnectionLabelController;
-use App\Http\Controllers\Api\Admin\DailyTaskController as AdminDailyTaskController;
+use App\Http\Controllers\Api\Admin\TaskController as AdminTaskController;
+use App\Http\Controllers\Api\Admin\TaskActionTypeController as AdminTaskActionTypeController;
 use App\Http\Controllers\Api\Admin\StaplePriceController as AdminStaplePriceController;
 use App\Http\Controllers\Api\Admin\RewardTierController as AdminRewardTierController;
 use App\Http\Controllers\Api\Admin\SellerPlanController as AdminSellerPlanController;
@@ -447,10 +448,12 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::patch('/faqs/{id}',  [AdminFaqController::class, 'update']);
     Route::delete('/faqs/{id}', [AdminFaqController::class, 'destroy']);
 
-    Route::get('/daily-tasks',         [AdminDailyTaskController::class, 'index']);
-    Route::post('/daily-tasks',        [AdminDailyTaskController::class, 'store']);
-    Route::patch('/daily-tasks/{id}',  [AdminDailyTaskController::class, 'update']);
-    Route::delete('/daily-tasks/{id}', [AdminDailyTaskController::class, 'destroy']);
+    Route::get('/tasks',                    [AdminTaskController::class, 'index']);
+    Route::post('/tasks',                   [AdminTaskController::class, 'store']);
+    Route::patch('/tasks/{id}',             [AdminTaskController::class, 'update']);
+    Route::delete('/tasks/{id}',            [AdminTaskController::class, 'destroy']);
+    Route::get('/task-action-types',        [AdminTaskActionTypeController::class, 'index']);
+    Route::patch('/task-action-types/{id}', [AdminTaskActionTypeController::class, 'update']);
 
     Route::get('/reward-tiers',         [AdminRewardTierController::class, 'index']);
     Route::post('/reward-tiers',        [AdminRewardTierController::class, 'store']);
