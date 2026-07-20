@@ -5,29 +5,39 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\RewardTier;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RewardTierController extends Controller
 {
     public function index()
     {
         return response()->json([
-            'tiers' => RewardTier::orderBy('xp_threshold')->get(),
+            'tiers' => RewardTier::with('requiredTasks:id,title,icon')
+                ->orderByRaw('xp_threshold IS NULL, xp_threshold')
+                ->orderBy('id')
+                ->get(),
         ]);
     }
 
     public function store(Request $request)
     {
-        $tier = RewardTier::create($this->validated($request));
+        $data = $this->validated($request);
 
-        return response()->json(['tier' => $tier], 201);
+        $tier = RewardTier::create($data);
+        $tier->requiredTasks()->sync($data['required_task_ids'] ?? []);
+
+        return response()->json(['tier' => $tier->fresh('requiredTasks')], 201);
     }
 
     public function update(Request $request, int $id)
     {
         $tier = RewardTier::findOrFail($id);
-        $tier->update($this->validated($request));
+        $data = $this->validated($request);
 
-        return response()->json(['tier' => $tier->fresh()]);
+        $tier->update($data);
+        $tier->requiredTasks()->sync($data['required_task_ids'] ?? []);
+
+        return response()->json(['tier' => $tier->fresh('requiredTasks')]);
     }
 
     public function destroy(int $id)
@@ -39,12 +49,29 @@ class RewardTierController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'icon' => ['nullable', 'string', 'max:10'],
-            'xp_threshold' => ['required', 'integer', 'min:0'],
+            'xp_threshold' => ['nullable', 'integer', 'min:0'],
+            'reward_type' => ['required', Rule::in(RewardTier::SELECTABLE_REWARD_TYPES)],
+            'reward_value' => [
+                Rule::requiredIf(in_array($request->input('reward_type'), ['premium_days', 'booster_credit', 'store_boost_credit'])),
+                'nullable', 'integer', 'min:1',
+            ],
+            'required_task_ids' => ['sometimes', 'array'],
+            'required_task_ids.*' => ['integer', 'exists:tasks,id'],
             'is_active' => ['sometimes', 'boolean'],
         ]);
+
+        if (empty($data['required_task_ids']) && ($data['xp_threshold'] ?? null) === null) {
+            abort(422, 'A reward tier needs required tasks, an XP threshold, or both.');
+        }
+
+        if ($data['reward_type'] === 'badge') {
+            $data['reward_value'] = null;
+        }
+
+        return $data;
     }
 }

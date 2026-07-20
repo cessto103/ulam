@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.24.0 (2026-07-20)
+
+### Added
+- **Reward Tiers are now live**, not just scaffolding. A tier can require completing specific Tasks (all of them, not just one), plus an optional XP threshold, and grants one of: days of Premium, a recipe boost credit, a store boost credit, or a cosmetic badge — chosen from a new "Required tasks" checklist and "Reward type" field on the existing Reward Tiers screen.
+
 ## v1.23.0 (2026-07-20)
 
 ### Added
