@@ -37,6 +37,7 @@ class User extends Authenticatable
         'premium_expires_at',
         'premium_source',
         'household_size',
+        'gender',
         'barangay',
         'municipality',
         'province',
