@@ -44,6 +44,8 @@ export function RecipesTable({
   const rowNavigate = useNavigate()
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -74,10 +76,12 @@ export function RecipesTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -98,7 +102,6 @@ export function RecipesTable({
       <DataTableToolbar
         table={table}
         searchPlaceholder='Filter by title...'
-        searchKey='search'
         filters={[
           {
             columnId: 'source',

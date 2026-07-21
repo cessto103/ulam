@@ -44,6 +44,8 @@ export function UsersTable({
   const rowNavigate = useNavigate()
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -74,10 +76,12 @@ export function UsersTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -98,7 +102,6 @@ export function UsersTable({
       <DataTableToolbar
         table={table}
         searchPlaceholder='Filter by name, username, email...'
-        searchKey='search'
         filters={[
           {
             columnId: 'role',

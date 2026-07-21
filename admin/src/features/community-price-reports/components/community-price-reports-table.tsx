@@ -42,6 +42,8 @@ export function CommunityPriceReportsTable({
   const [sorting, setSorting] = useState<SortingState>([])
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -71,10 +73,12 @@ export function CommunityPriceReportsTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -95,7 +99,6 @@ export function CommunityPriceReportsTable({
       <DataTableToolbar
         table={table}
         searchPlaceholder='Filter by item name...'
-        searchKey='search'
         filters={[
           {
             columnId: 'is_verified',

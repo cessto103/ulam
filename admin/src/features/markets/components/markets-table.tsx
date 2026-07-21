@@ -42,6 +42,8 @@ export function MarketsTable({
   const [sorting, setSorting] = useState<SortingState>([])
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -71,10 +73,12 @@ export function MarketsTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -95,7 +99,6 @@ export function MarketsTable({
       <DataTableToolbar
         table={table}
         searchPlaceholder='Filter by name or municipality...'
-        searchKey='search'
         filters={[
           {
             columnId: 'type',

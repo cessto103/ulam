@@ -39,6 +39,8 @@ export function InvoicesTable({ data, pageCount, isLoading, search, navigate }: 
   const [sorting, setSorting] = useState<SortingState>([])
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -64,9 +66,11 @@ export function InvoicesTable({ data, pageCount, isLoading, search, navigate }: 
       pagination,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
@@ -81,7 +85,6 @@ export function InvoicesTable({ data, pageCount, isLoading, search, navigate }: 
       <DataTableToolbar
         table={table}
         searchPlaceholder='Filter by buyer or invoice number...'
-        searchKey='search'
         filters={[
           {
             columnId: 'status',

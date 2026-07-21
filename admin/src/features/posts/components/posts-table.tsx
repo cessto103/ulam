@@ -44,6 +44,8 @@ export function PostsTable({
   const rowNavigate = useNavigate()
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -73,10 +75,12 @@ export function PostsTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -97,7 +101,6 @@ export function PostsTable({
       <DataTableToolbar
         table={table}
         searchPlaceholder='Filter by post content...'
-        searchKey='search'
         filters={[
           {
             columnId: 'post_type',

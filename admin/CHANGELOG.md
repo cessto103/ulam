@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.35.0 (2026-07-21)
+
+### Fixed
+- **The search box on every list page in the admin was silently broken** — Users, Recipes, Posts, Invoices, Sponsored Ads, Payments, Government Price References, Market Prices, Community Price Reports, Tindahan, and Markets all had the same bug just fixed on Comments: the search input was wired to a per-column filter for a column named `search` that doesn't exist on any of these tables, instead of the table's actual global-filter state. Typing into any of these boxes did nothing (and reset every keystroke back to empty). All 11 are now wired correctly and actually filter results.
+
 ## v1.34.0 (2026-07-21)
 
 ### Added

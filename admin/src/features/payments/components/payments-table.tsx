@@ -42,6 +42,8 @@ export function PaymentsTable({
   const [sorting, setSorting] = useState<SortingState>([])
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -69,10 +71,12 @@ export function PaymentsTable({
       pagination,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: false,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
@@ -87,7 +91,6 @@ export function PaymentsTable({
       <DataTableToolbar
         table={table}
         searchPlaceholder='Search by user name, username, email...'
-        searchKey='search'
         filters={[
           {
             columnId: 'plan_type',
