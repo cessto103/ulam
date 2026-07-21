@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   LifeBuoy,
   ListChecks,
+  Mail,
   Megaphone,
   MessageCircle,
   MessagesSquare,
@@ -131,6 +132,11 @@ export const sidebarData: SidebarData = {
           title: 'About the App',
           url: '/about',
           icon: Info,
+        },
+        {
+          title: 'Email Templates',
+          url: '/email-templates',
+          icon: Mail,
         },
         {
           title: 'Technical Guide',

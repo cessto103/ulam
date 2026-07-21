@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.38.0 (2026-07-22)
+
+### Added
+- **Email Templates** (Content → Email Templates): edit the subject and message text for the Welcome (onboarding) email and the 3 verification-code emails (Verify Email, Reset Password, Verify Secondary Email), with an "Insert image" button to drop images into the message and a live preview. Brand colors/layout stay fixed so emails can't be broken by an edit — and for the code emails, the verification code box itself is always fixed and un-editable, so a code can never accidentally be edited away. The header logo now pulls from the same logo already set in Branding. Each editor has a "Send test to myself" button. All 3 verification-code emails now share one underlying template shape (previously 3 separately-hardcoded copies).
+
 ## v1.37.0 (2026-07-21)
 
 ### Added

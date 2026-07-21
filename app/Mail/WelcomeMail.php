@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\RendersEmailTemplate;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -11,16 +12,19 @@ use Illuminate\Queue\SerializesModels;
 
 class WelcomeMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, RendersEmailTemplate;
+
+    private array $rendered;
 
     public function __construct(public User $user)
     {
+        $this->rendered = $this->loadTemplate('welcome', ['{{name}}' => $user->name]);
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Maligayang pagdating sa uLam! 🍚',
+            subject: $this->rendered['subject'],
         );
     }
 
@@ -28,6 +32,12 @@ class WelcomeMail extends Mailable
     {
         return new Content(
             view: 'emails.welcome',
+            with: [
+                'introHtml' => $this->rendered['intro_html'],
+                'noteHtml' => $this->rendered['note_html'],
+                'ctaLabel' => $this->rendered['cta_label'],
+                'logoUrl' => $this->rendered['logo_url'],
+            ],
         );
     }
 }

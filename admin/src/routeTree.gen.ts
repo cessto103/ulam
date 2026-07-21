@@ -44,6 +44,7 @@ import { Route as AuthenticatedLegalIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedInvoicesIndexRouteImport } from './routes/_authenticated/invoices/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
+import { Route as AuthenticatedEmailTemplatesIndexRouteImport } from './routes/_authenticated/email-templates/index'
 import { Route as AuthenticatedContentReportsIndexRouteImport } from './routes/_authenticated/content-reports/index'
 import { Route as AuthenticatedConnectionLabelsIndexRouteImport } from './routes/_authenticated/connection-labels/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
@@ -255,6 +256,12 @@ const AuthenticatedFaqsIndexRoute = AuthenticatedFaqsIndexRouteImport.update({
   path: '/faqs/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEmailTemplatesIndexRoute =
+  AuthenticatedEmailTemplatesIndexRouteImport.update({
+    id: '/email-templates/',
+    path: '/email-templates/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedContentReportsIndexRoute =
   AuthenticatedContentReportsIndexRouteImport.update({
     id: '/content-reports/',
@@ -369,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
   '/content-reports/': typeof AuthenticatedContentReportsIndexRoute
+  '/email-templates/': typeof AuthenticatedEmailTemplatesIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/invoices/': typeof AuthenticatedInvoicesIndexRoute
@@ -419,6 +427,7 @@ export interface FileRoutesByTo {
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels': typeof AuthenticatedConnectionLabelsIndexRoute
   '/content-reports': typeof AuthenticatedContentReportsIndexRoute
+  '/email-templates': typeof AuthenticatedEmailTemplatesIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/invoices': typeof AuthenticatedInvoicesIndexRoute
@@ -472,6 +481,7 @@ export interface FileRoutesById {
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/_authenticated/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
   '/_authenticated/content-reports/': typeof AuthenticatedContentReportsIndexRoute
+  '/_authenticated/email-templates/': typeof AuthenticatedEmailTemplatesIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   '/_authenticated/invoices/': typeof AuthenticatedInvoicesIndexRoute
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/community-price-reports/'
     | '/connection-labels/'
     | '/content-reports/'
+    | '/email-templates/'
     | '/faqs/'
     | '/government-price-references/'
     | '/invoices/'
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/community-price-reports'
     | '/connection-labels'
     | '/content-reports'
+    | '/email-templates'
     | '/faqs'
     | '/government-price-references'
     | '/invoices'
@@ -627,6 +639,7 @@ export interface FileRouteTypes {
     | '/_authenticated/community-price-reports/'
     | '/_authenticated/connection-labels/'
     | '/_authenticated/content-reports/'
+    | '/_authenticated/email-templates/'
     | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
     | '/_authenticated/invoices/'
@@ -912,6 +925,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFaqsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/email-templates/': {
+      id: '/_authenticated/email-templates/'
+      path: '/email-templates'
+      fullPath: '/email-templates/'
+      preLoaderRoute: typeof AuthenticatedEmailTemplatesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/content-reports/': {
       id: '/_authenticated/content-reports/'
       path: '/content-reports'
@@ -1055,6 +1075,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
   AuthenticatedConnectionLabelsIndexRoute: typeof AuthenticatedConnectionLabelsIndexRoute
   AuthenticatedContentReportsIndexRoute: typeof AuthenticatedContentReportsIndexRoute
+  AuthenticatedEmailTemplatesIndexRoute: typeof AuthenticatedEmailTemplatesIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
   AuthenticatedInvoicesIndexRoute: typeof AuthenticatedInvoicesIndexRoute
@@ -1100,6 +1121,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConnectionLabelsIndexRoute:
     AuthenticatedConnectionLabelsIndexRoute,
   AuthenticatedContentReportsIndexRoute: AuthenticatedContentReportsIndexRoute,
+  AuthenticatedEmailTemplatesIndexRoute: AuthenticatedEmailTemplatesIndexRoute,
   AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorControll
 use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\Admin\ThemeController as AdminThemeController;
 use App\Http\Controllers\Api\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Api\Admin\EmailTemplateController as AdminEmailTemplateController;
 use App\Http\Controllers\Api\Admin\BusinessSettingsController as AdminBusinessSettingsController;
 use App\Http\Controllers\Api\Admin\PremiumPricingController as AdminPremiumPricingController;
 use App\Http\Controllers\Api\Admin\PremiumFeatureController as AdminPremiumFeatureController;
@@ -437,6 +438,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/about', [AdminAboutController::class, 'show']);
     Route::put('/about', [AdminAboutController::class, 'update']);
+
+    Route::get('/email-templates',              [AdminEmailTemplateController::class, 'index']);
+    Route::put('/email-templates/{slug}',       [AdminEmailTemplateController::class, 'update']);
+    Route::post('/email-templates/upload-image', [AdminEmailTemplateController::class, 'uploadImage']);
+    Route::post('/email-templates/{slug}/test', [AdminEmailTemplateController::class, 'sendTest'])->middleware('throttle:6,1');
 
     Route::get('/business-settings', [AdminBusinessSettingsController::class, 'show']);
     Route::put('/business-settings', [AdminBusinessSettingsController::class, 'update']);
