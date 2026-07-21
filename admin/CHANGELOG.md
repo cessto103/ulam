@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.29.0 (2026-07-21)
+
+### Added
+- **Invoicing**: full BIR-ready invoicing system for Sponsored Ads advertisers (Monetization section, new "Invoices" screen). Create a draft bill (optionally linked to and pre-filled from a Sponsored Ad deal, editable and deletable, no official number yet) → email it as a payment request → once paid, "Mark as paid" assigns the next official sequential invoice number, permanently locks the invoice, and generates a stored PDF stamped with your business identity from Business & Tax Settings at that exact moment (frozen even if those settings change later) → download or email the official invoice → optionally void it later (keeps its number and PDF forever, just flagged cancelled — never deleted, never renumbered). Business & Tax Settings gained a new "Invoice Numbering" card (prefix + digit padding) to format the sequence; the counter itself starts at 1 automatically.
+
 ## v1.28.0 (2026-07-21)
 
 ### Added

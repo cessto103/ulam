@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Api\Admin\BoostController as AdminBoostController;
 use App\Http\Controllers\Api\Admin\SponsoredAdController as AdminSponsoredAdController;
+use App\Http\Controllers\Api\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Api\Admin\TindahanCommentController as AdminTindahanCommentController;
 use App\Http\Controllers\Api\Admin\TindahanRatingController as AdminTindahanRatingController;
 use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorController;
@@ -396,6 +397,16 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/sponsored-ads/{id}',          [AdminSponsoredAdController::class, 'show']);
     Route::patch('/sponsored-ads/{id}',        [AdminSponsoredAdController::class, 'update']);
     Route::delete('/sponsored-ads/{id}',       [AdminSponsoredAdController::class, 'destroy']);
+
+    Route::get('/invoices',                 [AdminInvoiceController::class, 'index']);
+    Route::post('/invoices',                [AdminInvoiceController::class, 'store']);
+    Route::get('/invoices/{id}',            [AdminInvoiceController::class, 'show']);
+    Route::patch('/invoices/{id}',          [AdminInvoiceController::class, 'update']);
+    Route::delete('/invoices/{id}',         [AdminInvoiceController::class, 'destroy']);
+    Route::post('/invoices/{id}/mark-paid', [AdminInvoiceController::class, 'markAsPaid']);
+    Route::post('/invoices/{id}/void',      [AdminInvoiceController::class, 'void']);
+    Route::get('/invoices/{id}/pdf',        [AdminInvoiceController::class, 'pdf']);
+    Route::post('/invoices/{id}/email',     [AdminInvoiceController::class, 'email']);
 
     Route::get('/2fa/status',   [AdminTwoFactorController::class, 'status']);
     Route::post('/2fa/setup',   [AdminTwoFactorController::class, 'setup']);

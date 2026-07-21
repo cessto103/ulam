@@ -34,6 +34,8 @@ type BusinessSettings = {
   biz_contact_email: string | null
   biz_contact_phone: string | null
   biz_notes: string | null
+  invoice_number_prefix: string | null
+  invoice_number_padding: string | null
 }
 
 const QUERY_KEY = 'admin-business-settings'
@@ -82,8 +84,8 @@ export function BusinessSettingsPage() {
           <p className='text-muted-foreground'>
             Registered business identity and BIR receipting details. Everything here is optional
             and admin-only — fill it in whenever your registration paperwork is ready. Nothing
-            here is shown to app users, and nothing yet generates an invoice or receipt document
-            from it.
+            here is shown to app users; the business fields are stamped onto an invoice only once
+            it's marked as paid, frozen at that moment even if you edit these later.
           </p>
         </div>
 
@@ -165,8 +167,33 @@ export function BusinessSettingsPage() {
 
             <Card>
               <CardHeader>
+                <CardTitle className='text-base'>Invoice numbering</CardTitle>
+                <CardDescription>
+                  How official invoice numbers are formatted once an invoice is marked as paid.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                <div className='grid grid-cols-2 gap-3'>
+                  <div className='space-y-1.5'>
+                    <Label>Prefix</Label>
+                    <Input placeholder='INV-2026-' {...field('invoice_number_prefix')} />
+                  </div>
+                  <div className='space-y-1.5'>
+                    <Label>Digits (padding)</Label>
+                    <Input type='number' min={1} max={10} placeholder='6' {...field('invoice_number_padding')} />
+                  </div>
+                </div>
+                <p className='text-xs text-muted-foreground'>
+                  The counter itself starts at 1 automatically and only advances when an invoice is
+                  marked as paid — it isn't editable here.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle className='text-base'>Contact & notes</CardTitle>
-                <CardDescription>Shown on invoices/receipts once those exist — not used anywhere yet.</CardDescription>
+                <CardDescription>Stamped onto generated invoices alongside your business identity above.</CardDescription>
               </CardHeader>
               <CardContent className='space-y-4'>
                 <div className='grid grid-cols-2 gap-3'>

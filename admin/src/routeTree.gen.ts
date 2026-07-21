@@ -40,6 +40,7 @@ import { Route as AuthenticatedMarketsIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedMarketPricesIndexRouteImport } from './routes/_authenticated/market-prices/index'
 import { Route as AuthenticatedListingReportsIndexRouteImport } from './routes/_authenticated/listing-reports/index'
 import { Route as AuthenticatedLegalIndexRouteImport } from './routes/_authenticated/legal/index'
+import { Route as AuthenticatedInvoicesIndexRouteImport } from './routes/_authenticated/invoices/index'
 import { Route as AuthenticatedGovernmentPriceReferencesIndexRouteImport } from './routes/_authenticated/government-price-references/index'
 import { Route as AuthenticatedFaqsIndexRouteImport } from './routes/_authenticated/faqs/index'
 import { Route as AuthenticatedContentReportsIndexRouteImport } from './routes/_authenticated/content-reports/index'
@@ -227,6 +228,12 @@ const AuthenticatedLegalIndexRoute = AuthenticatedLegalIndexRouteImport.update({
   path: '/legal/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInvoicesIndexRoute =
+  AuthenticatedInvoicesIndexRouteImport.update({
+    id: '/invoices/',
+    path: '/invoices/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedGovernmentPriceReferencesIndexRoute =
   AuthenticatedGovernmentPriceReferencesIndexRouteImport.update({
     id: '/government-price-references/',
@@ -333,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/content-reports/': typeof AuthenticatedContentReportsIndexRoute
   '/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  '/invoices/': typeof AuthenticatedInvoicesIndexRoute
   '/legal/': typeof AuthenticatedLegalIndexRoute
   '/listing-reports/': typeof AuthenticatedListingReportsIndexRoute
   '/market-prices/': typeof AuthenticatedMarketPricesIndexRoute
@@ -378,6 +386,7 @@ export interface FileRoutesByTo {
   '/content-reports': typeof AuthenticatedContentReportsIndexRoute
   '/faqs': typeof AuthenticatedFaqsIndexRoute
   '/government-price-references': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  '/invoices': typeof AuthenticatedInvoicesIndexRoute
   '/legal': typeof AuthenticatedLegalIndexRoute
   '/listing-reports': typeof AuthenticatedListingReportsIndexRoute
   '/market-prices': typeof AuthenticatedMarketPricesIndexRoute
@@ -426,6 +435,7 @@ export interface FileRoutesById {
   '/_authenticated/content-reports/': typeof AuthenticatedContentReportsIndexRoute
   '/_authenticated/faqs/': typeof AuthenticatedFaqsIndexRoute
   '/_authenticated/government-price-references/': typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  '/_authenticated/invoices/': typeof AuthenticatedInvoicesIndexRoute
   '/_authenticated/legal/': typeof AuthenticatedLegalIndexRoute
   '/_authenticated/listing-reports/': typeof AuthenticatedListingReportsIndexRoute
   '/_authenticated/market-prices/': typeof AuthenticatedMarketPricesIndexRoute
@@ -474,6 +484,7 @@ export interface FileRouteTypes {
     | '/content-reports/'
     | '/faqs/'
     | '/government-price-references/'
+    | '/invoices/'
     | '/legal/'
     | '/listing-reports/'
     | '/market-prices/'
@@ -519,6 +530,7 @@ export interface FileRouteTypes {
     | '/content-reports'
     | '/faqs'
     | '/government-price-references'
+    | '/invoices'
     | '/legal'
     | '/listing-reports'
     | '/market-prices'
@@ -566,6 +578,7 @@ export interface FileRouteTypes {
     | '/_authenticated/content-reports/'
     | '/_authenticated/faqs/'
     | '/_authenticated/government-price-references/'
+    | '/_authenticated/invoices/'
     | '/_authenticated/legal/'
     | '/_authenticated/listing-reports/'
     | '/_authenticated/market-prices/'
@@ -819,6 +832,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLegalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/invoices/': {
+      id: '/_authenticated/invoices/'
+      path: '/invoices'
+      fullPath: '/invoices/'
+      preLoaderRoute: typeof AuthenticatedInvoicesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/government-price-references/': {
       id: '/_authenticated/government-price-references/'
       path: '/government-price-references'
@@ -954,6 +974,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedContentReportsIndexRoute: typeof AuthenticatedContentReportsIndexRoute
   AuthenticatedFaqsIndexRoute: typeof AuthenticatedFaqsIndexRoute
   AuthenticatedGovernmentPriceReferencesIndexRoute: typeof AuthenticatedGovernmentPriceReferencesIndexRoute
+  AuthenticatedInvoicesIndexRoute: typeof AuthenticatedInvoicesIndexRoute
   AuthenticatedLegalIndexRoute: typeof AuthenticatedLegalIndexRoute
   AuthenticatedListingReportsIndexRoute: typeof AuthenticatedListingReportsIndexRoute
   AuthenticatedMarketPricesIndexRoute: typeof AuthenticatedMarketPricesIndexRoute
@@ -995,6 +1016,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFaqsIndexRoute: AuthenticatedFaqsIndexRoute,
   AuthenticatedGovernmentPriceReferencesIndexRoute:
     AuthenticatedGovernmentPriceReferencesIndexRoute,
+  AuthenticatedInvoicesIndexRoute: AuthenticatedInvoicesIndexRoute,
   AuthenticatedLegalIndexRoute: AuthenticatedLegalIndexRoute,
   AuthenticatedListingReportsIndexRoute: AuthenticatedListingReportsIndexRoute,
   AuthenticatedMarketPricesIndexRoute: AuthenticatedMarketPricesIndexRoute,
