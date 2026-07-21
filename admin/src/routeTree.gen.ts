@@ -54,6 +54,7 @@ import { Route as AuthenticatedAboutIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings/security'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedRecipesRecipeIdRouteImport } from './routes/_authenticated/recipes/$recipeId'
 import { Route as AuthenticatedPostsPostIdRouteImport } from './routes/_authenticated/posts/$postId'
 import { Route as AuthenticatedMarketsMarketIdRouteImport } from './routes/_authenticated/markets/$marketId'
 
@@ -311,6 +312,12 @@ const AuthenticatedSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedRecipesRecipeIdRoute =
+  AuthenticatedRecipesRecipeIdRouteImport.update({
+    id: '/recipes/$recipeId',
+    path: '/recipes/$recipeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPostsPostIdRoute =
   AuthenticatedPostsPostIdRouteImport.update({
     id: '/posts/$postId',
@@ -335,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/markets/$marketId': typeof AuthenticatedMarketsMarketIdRoute
   '/posts/$postId': typeof AuthenticatedPostsPostIdRoute
+  '/recipes/$recipeId': typeof AuthenticatedRecipesRecipeIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -382,6 +390,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/markets/$marketId': typeof AuthenticatedMarketsMarketIdRoute
   '/posts/$postId': typeof AuthenticatedPostsPostIdRoute
+  '/recipes/$recipeId': typeof AuthenticatedRecipesRecipeIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -432,6 +441,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/markets/$marketId': typeof AuthenticatedMarketsMarketIdRoute
   '/_authenticated/posts/$postId': typeof AuthenticatedPostsPostIdRoute
+  '/_authenticated/recipes/$recipeId': typeof AuthenticatedRecipesRecipeIdRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -482,6 +492,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/markets/$marketId'
     | '/posts/$postId'
+    | '/recipes/$recipeId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/security'
@@ -529,6 +540,7 @@ export interface FileRouteTypes {
     | '/'
     | '/markets/$marketId'
     | '/posts/$postId'
+    | '/recipes/$recipeId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/security'
@@ -578,6 +590,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/markets/$marketId'
     | '/_authenticated/posts/$postId'
+    | '/_authenticated/recipes/$recipeId'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/security'
@@ -943,6 +956,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/recipes/$recipeId': {
+      id: '/_authenticated/recipes/$recipeId'
+      path: '/recipes/$recipeId'
+      fullPath: '/recipes/$recipeId'
+      preLoaderRoute: typeof AuthenticatedRecipesRecipeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/posts/$postId': {
       id: '/_authenticated/posts/$postId'
       path: '/posts/$postId'
@@ -985,6 +1005,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedMarketsMarketIdRoute: typeof AuthenticatedMarketsMarketIdRoute
   AuthenticatedPostsPostIdRoute: typeof AuthenticatedPostsPostIdRoute
+  AuthenticatedRecipesRecipeIdRoute: typeof AuthenticatedRecipesRecipeIdRoute
   AuthenticatedAboutIndexRoute: typeof AuthenticatedAboutIndexRoute
   AuthenticatedBoostsIndexRoute: typeof AuthenticatedBoostsIndexRoute
   AuthenticatedBrandingIndexRoute: typeof AuthenticatedBrandingIndexRoute
@@ -1024,6 +1045,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedMarketsMarketIdRoute: AuthenticatedMarketsMarketIdRoute,
   AuthenticatedPostsPostIdRoute: AuthenticatedPostsPostIdRoute,
+  AuthenticatedRecipesRecipeIdRoute: AuthenticatedRecipesRecipeIdRoute,
   AuthenticatedAboutIndexRoute: AuthenticatedAboutIndexRoute,
   AuthenticatedBoostsIndexRoute: AuthenticatedBoostsIndexRoute,
   AuthenticatedBrandingIndexRoute: AuthenticatedBrandingIndexRoute,

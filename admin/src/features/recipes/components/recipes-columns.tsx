@@ -164,6 +164,30 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
     meta: { className: 'hidden lg:table-cell' },
   },
   {
+    accessorKey: 'views_count',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Views' />
+    ),
+    cell: ({ row }) => <div>{row.getValue('views_count') ?? 0}</div>,
+    meta: { className: 'hidden lg:table-cell' },
+  },
+  {
+    accessorKey: 'vote_up_count',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Thumbs Up' />
+    ),
+    cell: ({ row }) => <div>{row.getValue('vote_up_count') ?? 0}</div>,
+    meta: { className: 'hidden lg:table-cell' },
+  },
+  {
+    accessorKey: 'vote_down_count',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Thumbs Down' />
+    ),
+    cell: ({ row }) => <div>{row.getValue('vote_down_count') ?? 0}</div>,
+    meta: { className: 'hidden lg:table-cell' },
+  },
+  {
     accessorKey: 'created_at',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Created' />

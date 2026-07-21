@@ -14,12 +14,16 @@ type RecipeDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow: Recipe
+  /** Fires only on a real successful delete -- unlike onOpenChange(false),
+   * which also fires on a plain Cancel. */
+  onDeleted?: () => void
 }
 
 export function RecipesDeleteDialog({
   open,
   onOpenChange,
   currentRow,
+  onDeleted,
 }: RecipeDeleteDialogProps) {
   const [value, setValue] = useState('')
   const { mutate: deleteRecipe, isPending } = useDeleteRecipe()
@@ -30,6 +34,7 @@ export function RecipesDeleteDialog({
     deleteRecipe(currentRow.id, {
       onSuccess: () => {
         onOpenChange(false)
+        onDeleted?.()
         toast.success(`Deleted ${currentRow.title}.`)
       },
       onError: (error: any) => {

@@ -60,6 +60,11 @@ class Recipe extends Model
         return $this->hasMany(RecipeBook::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(RecipeComment::class)->whereNull('parent_id');
+    }
+
     public function contentViews()
     {
         return $this->morphMany(ContentView::class, 'viewable');

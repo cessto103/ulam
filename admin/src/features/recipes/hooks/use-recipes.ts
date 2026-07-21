@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import apiClient from '@/lib/api-client'
-import { type Recipe } from '../data/schema'
+import { type Recipe, type RecipeDetail } from '../data/schema'
 
 type RecipesSearch = {
   page?: number
@@ -41,6 +41,14 @@ export function useRecipesQuery(search: RecipesSearch) {
       return data
     },
     placeholderData: (prev) => prev,
+  })
+}
+
+export function useRecipeQuery(id: number | null) {
+  return useQuery({
+    queryKey: ['admin-recipes', 'detail', id],
+    queryFn: async () => (await apiClient.get<{ recipe: RecipeDetail }>(`/admin/recipes/${id}`)).data.recipe,
+    enabled: id !== null,
   })
 }
 

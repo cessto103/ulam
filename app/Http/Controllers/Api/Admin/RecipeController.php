@@ -11,7 +11,7 @@ class RecipeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Recipe::with('user:id,name');
+        $query = Recipe::with('user:id,name')->withCount(['contentViews as views_count']);
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->string('search') . '%');
@@ -36,7 +36,13 @@ class RecipeController extends Controller
 
     public function show(int $id)
     {
-        $recipe = Recipe::with(['user:id,name', 'ingredients'])->findOrFail($id);
+        $recipe = Recipe::with([
+            'user:id,name,username,avatar,barangay,municipality',
+            'ingredients',
+            'comments' => fn ($q) => $q->with('user:id,name,username,avatar')->with('replies.user:id,name,username,avatar')->orderBy('created_at'),
+        ])
+            ->withCount(['contentViews as views_count'])
+            ->findOrFail($id);
 
         return response()->json(['recipe' => $recipe]);
     }
