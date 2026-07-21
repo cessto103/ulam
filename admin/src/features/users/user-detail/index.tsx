@@ -13,22 +13,14 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { useUserQuery } from '../hooks/use-users'
 import { UserContentTab } from '../components/user-content-tab'
+import { UserModerationTab } from '../components/user-moderation-tab'
+import { UserMonetizationTab } from '../components/user-monetization-tab'
 import { UserOverviewTab } from '../components/user-overview-tab'
 import { UserSecurityTab } from '../components/user-security-tab'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/api\/?$/, '') ?? ''
 
 const route = getRouteApi('/_authenticated/users/$userId')
-
-function NotBuiltYet({ label }: { label: string }) {
-  return (
-    <Card>
-      <CardContent className='pt-6'>
-        <p className='text-sm text-muted-foreground'>{label} — not built yet.</p>
-      </CardContent>
-    </Card>
-  )
-}
 
 export function UserDetailPage() {
   const { userId } = route.useParams()
@@ -101,10 +93,10 @@ export function UserDetailPage() {
                 <UserContentTab userId={user.id} />
               </TabsContent>
               <TabsContent value='monetization' className='mt-4'>
-                <NotBuiltYet label='Monetization (premium, subscriptions, payments, refunds)' />
+                <UserMonetizationTab userId={user.id} />
               </TabsContent>
               <TabsContent value='moderation' className='mt-4'>
-                <NotBuiltYet label='Moderation (reports, tickets, strikes)' />
+                <UserModerationTab userId={user.id} />
               </TabsContent>
               <TabsContent value='security' className='mt-4'>
                 <UserSecurityTab userId={user.id} />

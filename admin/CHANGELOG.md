@@ -1,5 +1,12 @@
 # uLam Admin — Changelog
 
+## v1.33.0 (2026-07-21)
+
+### Added
+- **User Detail — Monetization tab**: premium status (plan/source/expiry), seller subscriptions (store, plan, amount, status), consumer Premium subscriptions, full payment history, and refund history — everything needed to answer "what has this user paid for" without leaving the page.
+- **User Detail — Moderation tab**: strike history (warning/restriction/ban, who issued it, active/expired), content reports filed against this user's posts/recipes/stores, reports this user has filed against others, and their support tickets.
+- This completes the User Detail page — all 5 tabs (Overview, Content, Monetization, Moderation, Security) are now fully built.
+
 ## v1.32.0 (2026-07-21)
 
 ### Added

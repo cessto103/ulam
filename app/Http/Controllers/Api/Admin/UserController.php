@@ -3,7 +3,13 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContentReport;
+use App\Models\ListingReport;
+use App\Models\Payment;
+use App\Models\Refund;
+use App\Models\SupportTicket;
 use App\Models\User;
+use App\Models\UserStrike;
 use App\Services\UserModerationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -203,6 +209,51 @@ class UserController extends Controller
                 'last_used_at' => $lastSession->last_used_at,
             ] : null,
             'xp_history' => $xpHistory,
+        ]);
+    }
+
+    /** GET /admin/users/{id}/monetization — premium status, subscriptions, payments, refunds. */
+    public function monetization(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $payments = Payment::where('user_id', $id)->latest()->get();
+        $refunds = Refund::whereIn('payment_id', $payments->pluck('id'))->latest()->get();
+
+        return response()->json([
+            'premium' => [
+                'plan' => $user->plan,
+                'is_premium' => $user->isPremium(),
+                'premium_source' => $user->premium_source,
+                'premium_expires_at' => $user->premium_expires_at,
+            ],
+            'subscriptions' => $user->subscriptions()
+                ->with(['plan:id,name,slug', 'price:id,duration,price'])
+                ->latest()
+                ->get(),
+            'seller_subscriptions' => $user->sellerSubscriptions()
+                ->with('tindahan:id,name')
+                ->latest()
+                ->get(),
+            'payments' => $payments,
+            'refunds' => $refunds,
+        ]);
+    }
+
+    /** GET /admin/users/{id}/moderation — strikes, reports filed/against, support tickets. */
+    public function moderation(int $id)
+    {
+        User::findOrFail($id);
+
+        return response()->json([
+            'strikes' => UserStrike::where('user_id', $id)
+                ->with('issuedBy:id,name')
+                ->latest()
+                ->get(),
+            'content_reports_filed' => ContentReport::where('user_id', $id)->latest()->get(),
+            'content_reports_against' => ContentReport::where('reported_user_id', $id)->latest()->get(),
+            'listing_reports_filed' => ListingReport::where('reporter_id', $id)->latest()->get(),
+            'support_tickets' => SupportTicket::where('user_id', $id)->latest()->get(),
         ]);
     }
 
