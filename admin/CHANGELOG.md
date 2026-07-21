@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.36.0 (2026-07-21)
+
+### Added
+- **Content Reports and Listing Reports are now searchable.** Both previously had global search deliberately disabled with no real replacement, leaving a non-functional stray search box on each page. Search now matches the report reason (and details, for Content Reports), the reporter's name/username, the reported user (Content Reports), and the reported listing's name (Listing Reports, via the store/market it points to).
+
 ## v1.35.0 (2026-07-21)
 
 ### Fixed

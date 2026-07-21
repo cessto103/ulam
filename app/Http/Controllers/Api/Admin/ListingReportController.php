@@ -31,6 +31,16 @@ class ListingReportController extends Controller
             $query->where('reportable_type', $type);
         }
 
+        if ($request->filled('search')) {
+            $term = $request->string('search');
+            $query->where(function ($q) use ($term) {
+                $q->where('reason', 'like', "%{$term}%")
+                    ->orWhereHas('reporter', fn ($u) => $u->where('name', 'like', "%{$term}%")
+                        ->orWhere('username', 'like', "%{$term}%"))
+                    ->orWhereHasMorph('reportable', [\App\Models\Market::class, \App\Models\Tindahan::class], fn ($r) => $r->where('name', 'like', "%{$term}%"));
+            });
+        }
+
         return response()->json(
             $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
         );

@@ -38,6 +38,18 @@ class ContentReportController extends Controller
             $query->where('content_type', $request->string('content_type'));
         }
 
+        if ($request->filled('search')) {
+            $term = $request->string('search');
+            $query->where(function ($q) use ($term) {
+                $q->where('reason', 'like', "%{$term}%")
+                    ->orWhere('details', 'like', "%{$term}%")
+                    ->orWhereHas('reporter', fn ($u) => $u->where('name', 'like', "%{$term}%")
+                        ->orWhere('username', 'like', "%{$term}%"))
+                    ->orWhereHas('reportedUser', fn ($u) => $u->where('name', 'like', "%{$term}%")
+                        ->orWhere('username', 'like', "%{$term}%"));
+            });
+        }
+
         $reports = $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15));
 
         $reports->getCollection()->transform(fn ($report) => $this->withContentPreview($report));

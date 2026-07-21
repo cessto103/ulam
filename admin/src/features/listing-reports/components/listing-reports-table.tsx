@@ -42,6 +42,8 @@ export function ListingReportsTable({
   const [sorting, setSorting] = useState<SortingState>([])
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -51,7 +53,7 @@ export function ListingReportsTable({
     search,
     navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: false },
+    globalFilter: { enabled: true, key: 'search' },
     columnFilters: [
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'reportable_type', searchKey: 'reportable_type', type: 'array' },
@@ -71,10 +73,12 @@ export function ListingReportsTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -94,6 +98,7 @@ export function ListingReportsTable({
     >
       <DataTableToolbar
         table={table}
+        searchPlaceholder='Search by reason, reporter, or listing name...'
         filters={[
           {
             columnId: 'status',
