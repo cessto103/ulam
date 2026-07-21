@@ -1,5 +1,11 @@
 # uLam Admin — Changelog
 
+## v1.31.0 (2026-07-21)
+
+### Added
+- **User Detail page**: rows in the Users list are now clickable, opening a full page with the user's avatar/name/username/plan/role/banned badges, and a tabbed layout (Overview, Content, Monetization, Moderation, Security — only Security is built so far, the rest are explicit placeholders for a future session).
+- **Security tab — devices & login sessions**: shows every device that has logged into that user's account (device name, app version, last active, IP), with a "Sign out" action per device that immediately revokes that login. Backed by new `personal_access_tokens` columns (device name/platform/app version/IP), captured automatically on mobile login/register going forward (existing sessions show as "Unknown device" until their next fresh login). Same backend also powers a new mobile-side "My Devices" settings screen (uLam-app), so users can see and sign out their own devices too.
+
 ## v1.30.0 (2026-07-21)
 
 ### Added

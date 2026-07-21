@@ -28,6 +28,9 @@ class AuthController extends Controller
             'barangay' => ['nullable', 'string', 'max:100'],
             'municipality' => ['nullable', 'string', 'max:100'],
             'province' => ['nullable', 'string', 'max:100'],
+            'device_name' => ['nullable', 'string', 'max:150'],
+            'platform' => ['nullable', 'string', 'max:20'],
+            'app_version' => ['nullable', 'string', 'max:20'],
         ]);
 
         $user = User::create([
@@ -69,11 +72,12 @@ class AuthController extends Controller
             Log::error('Email verification mail failed', ['user_id' => $user->id, 'error' => $e->getMessage()]);
         }
 
-        $token = $user->createToken('mobile', expiresAt: now()->addDays(60))->plainTextToken;
+        $newToken = $user->createToken('mobile', expiresAt: now()->addDays(60));
+        $this->captureDeviceInfo($request, $newToken, $validated);
 
         return response()->json([
             'user' => $this->formatUser($user),
-            'token' => $token,
+            'token' => $newToken->plainTextToken,
         ], 201);
     }
 
@@ -137,9 +141,12 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'device_name' => ['nullable', 'string', 'max:150'],
+            'platform' => ['nullable', 'string', 'max:20'],
+            'app_version' => ['nullable', 'string', 'max:20'],
         ]);
 
         $field = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -154,11 +161,12 @@ class AuthController extends Controller
         }
 
         $user->update(['last_active_date' => now()->toDateString()]);
-        $token = $user->createToken('mobile', expiresAt: now()->addDays(60))->plainTextToken;
+        $newToken = $user->createToken('mobile', expiresAt: now()->addDays(60));
+        $this->captureDeviceInfo($request, $newToken, $validated);
 
         return response()->json([
             'user' => $this->formatUser($user),
-            'token' => $token,
+            'token' => $newToken->plainTextToken,
         ]);
     }
 
@@ -166,6 +174,41 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Naka-logout na.']);
+    }
+
+    /** GET /auth/sessions — this user's own devices/logins, most recently active first. */
+    public function sessions(Request $request)
+    {
+        $currentId = $request->user()->currentAccessToken()->id;
+
+        $sessions = $request->user()->tokens()
+            ->orderByDesc('last_used_at')
+            ->get()
+            ->map(fn ($t) => [
+                'id' => $t->id,
+                'device_name' => $t->device_name,
+                'platform' => $t->platform,
+                'app_version' => $t->app_version,
+                'ip_address' => $t->ip_address,
+                'last_used_at' => $t->last_used_at,
+                'created_at' => $t->created_at,
+                'is_current' => $t->id === $currentId,
+            ]);
+
+        return response()->json(['sessions' => $sessions]);
+    }
+
+    /**
+     * DELETE /auth/sessions/{id} — revoke one of this user's own sessions.
+     * Scoped to the caller's own tokens() relation, never a global lookup --
+     * a user must never be able to revoke someone else's token by guessing
+     * an id.
+     */
+    public function revokeSession(Request $request, int $id)
+    {
+        $request->user()->tokens()->where('id', $id)->firstOrFail()->delete();
+
+        return response()->json(['message' => 'Signed out of that device.']);
     }
 
     /**
@@ -301,6 +344,24 @@ class AuthController extends Controller
         });
 
         return response()->json(['message' => 'Your account has been deleted.']);
+    }
+
+    /**
+     * Stamps device metadata onto a freshly-created token. forceFill(), not
+     * fill()/an array on createToken() itself -- the vendor PersonalAccessToken's
+     * $fillable doesn't include these columns and createToken()'s own
+     * signature has no way to pass extra fields through, so this is the one
+     * place allowed to bypass that guard (same technique used for Invoice
+     * earlier this session).
+     */
+    private function captureDeviceInfo(Request $request, \Laravel\Sanctum\NewAccessToken $token, array $validated): void
+    {
+        $token->accessToken->forceFill([
+            'device_name' => $validated['device_name'] ?? null,
+            'platform' => $validated['platform'] ?? null,
+            'app_version' => $validated['app_version'] ?? null,
+            'ip_address' => $request->ip(),
+        ])->save();
     }
 
     private function formatUser(User $user): array

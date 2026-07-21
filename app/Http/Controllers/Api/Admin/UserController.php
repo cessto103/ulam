@@ -130,6 +130,36 @@ class UserController extends Controller
         return response()->json(['user' => $user->fresh()]);
     }
 
+    /** GET /admin/users/{id}/sessions — this user's devices/logins. No "current" concept -- the admin isn't logged in as them. */
+    public function sessions(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $sessions = $user->tokens()
+            ->orderByDesc('last_used_at')
+            ->get()
+            ->map(fn ($t) => [
+                'id' => $t->id,
+                'device_name' => $t->device_name,
+                'platform' => $t->platform,
+                'app_version' => $t->app_version,
+                'ip_address' => $t->ip_address,
+                'last_used_at' => $t->last_used_at,
+                'created_at' => $t->created_at,
+            ]);
+
+        return response()->json(['sessions' => $sessions]);
+    }
+
+    /** DELETE /admin/users/{id}/sessions/{tokenId} — force sign-out of one specific device. */
+    public function revokeSession(int $id, int $tokenId)
+    {
+        $user = User::findOrFail($id);
+        $user->tokens()->where('id', $tokenId)->firstOrFail()->delete();
+
+        return response()->json(['message' => 'Device signed out.']);
+    }
+
     // Consumer Premium is a plain User attribute (plan/premium_expires_at/
     // premium_source), not a row in the seller Subscription table — this is
     // the "who currently has Premium" view the Monetization section was

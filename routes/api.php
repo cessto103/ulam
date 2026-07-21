@@ -110,6 +110,8 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::delete('/auth/account', [AuthController::class, 'deleteAccount'])->middleware('throttle:3,1');
+    Route::get('/auth/sessions', [AuthController::class, 'sessions']);
+    Route::delete('/auth/sessions/{id}', [AuthController::class, 'revokeSession']);
 
     Route::get('/budget/current', [BudgetController::class, 'current']);
     Route::get('/budget/today', [BudgetController::class, 'current']); // alias
@@ -314,6 +316,8 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::delete('/users/{id}',   [AdminUserController::class, 'destroy']);
     Route::post('/users/{id}/ban', [AdminUserController::class, 'ban']);
     Route::post('/users/{id}/unban', [AdminUserController::class, 'unban']);
+    Route::get('/users/{id}/sessions', [AdminUserController::class, 'sessions']);
+    Route::delete('/users/{id}/sessions/{tokenId}', [AdminUserController::class, 'revokeSession']);
 
     Route::get('/premium-subscribers',         [AdminUserController::class, 'premiumSubscribers']);
     Route::get('/premium-subscribers/summary', [AdminUserController::class, 'premiumSubscribersSummary']);

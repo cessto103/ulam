@@ -18,6 +18,17 @@ type PaginatedResponse<T> = {
   total: number
 }
 
+export function useUserQuery(id: number | null) {
+  return useQuery({
+    queryKey: ['admin-user', id],
+    queryFn: async () => {
+      const { data } = await apiClient.get<{ user: User }>(`/admin/users/${id}`)
+      return data.user
+    },
+    enabled: id != null,
+  })
+}
+
 export function useUsersQuery(search: UsersSearch) {
   return useQuery({
     queryKey: ['admin-users', search],
