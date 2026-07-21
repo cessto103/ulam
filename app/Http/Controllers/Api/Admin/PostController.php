@@ -10,7 +10,8 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Post::with('user:id,name,username,avatar')->withCount('comments');
+        $query = Post::with('user:id,name,username,avatar')
+            ->withCount(['comments', 'dislikes as dislike_count', 'contentViews as views_count']);
 
         if ($request->filled('search')) {
             $query->where('body', 'like', '%' . $request->string('search') . '%');
@@ -35,7 +36,12 @@ class PostController extends Controller
 
     public function show(int $id)
     {
-        $post = Post::with('user:id,name,username,avatar')->withCount('comments')->findOrFail($id);
+        $post = Post::with([
+            'user:id,name,username,avatar,barangay,municipality',
+            'comments' => fn ($q) => $q->with('user:id,name,username,avatar')->with('replies.user:id,name,username,avatar')->orderBy('created_at'),
+        ])
+            ->withCount(['dislikes as dislike_count', 'contentViews as views_count'])
+            ->findOrFail($id);
 
         return response()->json(['post' => $post]);
     }

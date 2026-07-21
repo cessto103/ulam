@@ -92,11 +92,29 @@ export const postsColumns: ColumnDef<Post>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: 'views_count',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Views' />
+    ),
+    cell: ({ row }) => <div>{row.getValue('views_count') ?? 0}</div>,
+    meta: { className: 'hidden lg:table-cell' },
+    enableSorting: false,
+  },
+  {
     accessorKey: 'puso_count',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Puso' />
+      <DataTableColumnHeader column={column} title='Thumbs Up' />
     ),
     cell: ({ row }) => <div>{row.getValue('puso_count')}</div>,
+    meta: { className: 'hidden lg:table-cell' },
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'dislike_count',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Thumbs Down' />
+    ),
+    cell: ({ row }) => <div>{row.getValue('dislike_count')}</div>,
     meta: { className: 'hidden lg:table-cell' },
     enableSorting: false,
   },

@@ -10,12 +10,18 @@ type PostDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow: Post
+  /** Fires only on a real successful delete -- unlike onOpenChange(false),
+   * which also fires on a plain Cancel, so callers that need to react
+   * specifically to deletion (e.g. navigating away from a detail page) can't
+   * tell the two apart through onOpenChange alone. */
+  onDeleted?: () => void
 }
 
 export function PostsDeleteDialog({
   open,
   onOpenChange,
   currentRow,
+  onDeleted,
 }: PostDeleteDialogProps) {
   const { mutate: deletePost, isPending } = useDeletePost()
 
@@ -23,6 +29,7 @@ export function PostsDeleteDialog({
     deletePost(currentRow.id, {
       onSuccess: () => {
         onOpenChange(false)
+        onDeleted?.()
         toast.success(`Deleted post #${currentRow.id}.`)
       },
       onError: (error: any) => {

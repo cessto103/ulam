@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import apiClient from '@/lib/api-client'
-import { type Post } from '../data/schema'
+import { type Post, type PostDetail } from '../data/schema'
 
 type PostsSearch = {
   page?: number
@@ -41,6 +41,14 @@ export function usePostsQuery(search: PostsSearch) {
       return data
     },
     placeholderData: (prev) => prev,
+  })
+}
+
+export function usePostQuery(id: number | null) {
+  return useQuery({
+    queryKey: ['admin-posts', 'detail', id],
+    queryFn: async () => (await apiClient.get<{ post: PostDetail }>(`/admin/posts/${id}`)).data.post,
+    enabled: id !== null,
   })
 }
 

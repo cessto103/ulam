@@ -38,6 +38,11 @@ class Post extends Model
         return $this->hasMany(PostReaction::class);
     }
 
+    public function dislikes()
+    {
+        return $this->hasMany(PostDislike::class);
+    }
+
     public function comments()
     {
         return $this->hasMany(PostComment::class)->whereNull('parent_id');

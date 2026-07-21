@@ -28,8 +28,32 @@ const postSchema = z.object({
   puso_count: z.number(),
   dislike_count: z.number(),
   comments_count: z.number(),
+  views_count: z.number().optional(),
   recipe_id: z.number().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 })
 export type Post = z.infer<typeof postSchema>
+
+const postCommentAuthorSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  username: z.string().nullable(),
+  avatar: z.string().nullable(),
+})
+
+export type PostCommentDetail = {
+  id: number
+  body: string
+  created_at: string
+  user: z.infer<typeof postCommentAuthorSchema> | null
+  replies: PostCommentDetail[]
+}
+
+export type PostDetail = Post & {
+  user: z.infer<typeof postAuthorSchema> & {
+    barangay: string | null
+    municipality: string | null
+  }
+  comments: PostCommentDetail[]
+}

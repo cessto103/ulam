@@ -54,6 +54,7 @@ import { Route as AuthenticatedAboutIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings/security'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedPostsPostIdRouteImport } from './routes/_authenticated/posts/$postId'
 import { Route as AuthenticatedMarketsMarketIdRouteImport } from './routes/_authenticated/markets/$marketId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -310,6 +311,12 @@ const AuthenticatedSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedPostsPostIdRoute =
+  AuthenticatedPostsPostIdRouteImport.update({
+    id: '/posts/$postId',
+    path: '/posts/$postId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMarketsMarketIdRoute =
   AuthenticatedMarketsMarketIdRouteImport.update({
     id: '/markets/$marketId',
@@ -327,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/markets/$marketId': typeof AuthenticatedMarketsMarketIdRoute
+  '/posts/$postId': typeof AuthenticatedPostsPostIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -373,6 +381,7 @@ export interface FileRoutesByTo {
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
   '/markets/$marketId': typeof AuthenticatedMarketsMarketIdRoute
+  '/posts/$postId': typeof AuthenticatedPostsPostIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -422,6 +431,7 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/markets/$marketId': typeof AuthenticatedMarketsMarketIdRoute
+  '/_authenticated/posts/$postId': typeof AuthenticatedPostsPostIdRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
@@ -471,6 +481,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/markets/$marketId'
+    | '/posts/$postId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/security'
@@ -517,6 +528,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/'
     | '/markets/$marketId'
+    | '/posts/$postId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/security'
@@ -565,6 +577,7 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/'
     | '/_authenticated/markets/$marketId'
+    | '/_authenticated/posts/$postId'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/security'
@@ -930,6 +943,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/posts/$postId': {
+      id: '/_authenticated/posts/$postId'
+      path: '/posts/$postId'
+      fullPath: '/posts/$postId'
+      preLoaderRoute: typeof AuthenticatedPostsPostIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/markets/$marketId': {
       id: '/_authenticated/markets/$marketId'
       path: '/markets/$marketId'
@@ -964,6 +984,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedMarketsMarketIdRoute: typeof AuthenticatedMarketsMarketIdRoute
+  AuthenticatedPostsPostIdRoute: typeof AuthenticatedPostsPostIdRoute
   AuthenticatedAboutIndexRoute: typeof AuthenticatedAboutIndexRoute
   AuthenticatedBoostsIndexRoute: typeof AuthenticatedBoostsIndexRoute
   AuthenticatedBrandingIndexRoute: typeof AuthenticatedBrandingIndexRoute
@@ -1002,6 +1023,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedMarketsMarketIdRoute: AuthenticatedMarketsMarketIdRoute,
+  AuthenticatedPostsPostIdRoute: AuthenticatedPostsPostIdRoute,
   AuthenticatedAboutIndexRoute: AuthenticatedAboutIndexRoute,
   AuthenticatedBoostsIndexRoute: AuthenticatedBoostsIndexRoute,
   AuthenticatedBrandingIndexRoute: AuthenticatedBrandingIndexRoute,
