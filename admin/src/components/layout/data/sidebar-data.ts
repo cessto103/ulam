@@ -8,6 +8,7 @@ import {
   Crown,
   Flag,
   Gift,
+  IdCard,
   Image as ImageIcon,
   Info,
   Landmark,
@@ -98,6 +99,11 @@ export const sidebarData: SidebarData = {
           title: 'Legal Documents',
           url: '/legal',
           icon: ScrollText,
+        },
+        {
+          title: 'Business & Tax Settings',
+          url: '/business-settings',
+          icon: IdCard,
         },
         {
           title: 'Branding',

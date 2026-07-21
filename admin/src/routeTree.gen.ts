@@ -46,6 +46,7 @@ import { Route as AuthenticatedContentReportsIndexRouteImport } from './routes/_
 import { Route as AuthenticatedConnectionLabelsIndexRouteImport } from './routes/_authenticated/connection-labels/index'
 import { Route as AuthenticatedCommunityPriceReportsIndexRouteImport } from './routes/_authenticated/community-price-reports/index'
 import { Route as AuthenticatedCommentsIndexRouteImport } from './routes/_authenticated/comments/index'
+import { Route as AuthenticatedBusinessSettingsIndexRouteImport } from './routes/_authenticated/business-settings/index'
 import { Route as AuthenticatedBrandingIndexRouteImport } from './routes/_authenticated/branding/index'
 import { Route as AuthenticatedBoostsIndexRouteImport } from './routes/_authenticated/boosts/index'
 import { Route as AuthenticatedAboutIndexRouteImport } from './routes/_authenticated/about/index'
@@ -261,6 +262,12 @@ const AuthenticatedCommentsIndexRoute =
     path: '/comments/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBusinessSettingsIndexRoute =
+  AuthenticatedBusinessSettingsIndexRouteImport.update({
+    id: '/business-settings/',
+    path: '/business-settings/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBrandingIndexRoute =
   AuthenticatedBrandingIndexRouteImport.update({
     id: '/branding/',
@@ -319,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AuthenticatedAboutIndexRoute
   '/boosts/': typeof AuthenticatedBoostsIndexRoute
   '/branding/': typeof AuthenticatedBrandingIndexRoute
+  '/business-settings/': typeof AuthenticatedBusinessSettingsIndexRoute
   '/comments/': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
@@ -363,6 +371,7 @@ export interface FileRoutesByTo {
   '/about': typeof AuthenticatedAboutIndexRoute
   '/boosts': typeof AuthenticatedBoostsIndexRoute
   '/branding': typeof AuthenticatedBrandingIndexRoute
+  '/business-settings': typeof AuthenticatedBusinessSettingsIndexRoute
   '/comments': typeof AuthenticatedCommentsIndexRoute
   '/community-price-reports': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/connection-labels': typeof AuthenticatedConnectionLabelsIndexRoute
@@ -410,6 +419,7 @@ export interface FileRoutesById {
   '/_authenticated/about/': typeof AuthenticatedAboutIndexRoute
   '/_authenticated/boosts/': typeof AuthenticatedBoostsIndexRoute
   '/_authenticated/branding/': typeof AuthenticatedBrandingIndexRoute
+  '/_authenticated/business-settings/': typeof AuthenticatedBusinessSettingsIndexRoute
   '/_authenticated/comments/': typeof AuthenticatedCommentsIndexRoute
   '/_authenticated/community-price-reports/': typeof AuthenticatedCommunityPriceReportsIndexRoute
   '/_authenticated/connection-labels/': typeof AuthenticatedConnectionLabelsIndexRoute
@@ -457,6 +467,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/boosts/'
     | '/branding/'
+    | '/business-settings/'
     | '/comments/'
     | '/community-price-reports/'
     | '/connection-labels/'
@@ -501,6 +512,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/boosts'
     | '/branding'
+    | '/business-settings'
     | '/comments'
     | '/community-price-reports'
     | '/connection-labels'
@@ -547,6 +559,7 @@ export interface FileRouteTypes {
     | '/_authenticated/about/'
     | '/_authenticated/boosts/'
     | '/_authenticated/branding/'
+    | '/_authenticated/business-settings/'
     | '/_authenticated/comments/'
     | '/_authenticated/community-price-reports/'
     | '/_authenticated/connection-labels/'
@@ -848,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommentsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/business-settings/': {
+      id: '/_authenticated/business-settings/'
+      path: '/business-settings'
+      fullPath: '/business-settings/'
+      preLoaderRoute: typeof AuthenticatedBusinessSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/branding/': {
       id: '/_authenticated/branding/'
       path: '/branding'
@@ -927,6 +947,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAboutIndexRoute: typeof AuthenticatedAboutIndexRoute
   AuthenticatedBoostsIndexRoute: typeof AuthenticatedBoostsIndexRoute
   AuthenticatedBrandingIndexRoute: typeof AuthenticatedBrandingIndexRoute
+  AuthenticatedBusinessSettingsIndexRoute: typeof AuthenticatedBusinessSettingsIndexRoute
   AuthenticatedCommentsIndexRoute: typeof AuthenticatedCommentsIndexRoute
   AuthenticatedCommunityPriceReportsIndexRoute: typeof AuthenticatedCommunityPriceReportsIndexRoute
   AuthenticatedConnectionLabelsIndexRoute: typeof AuthenticatedConnectionLabelsIndexRoute
@@ -963,6 +984,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAboutIndexRoute: AuthenticatedAboutIndexRoute,
   AuthenticatedBoostsIndexRoute: AuthenticatedBoostsIndexRoute,
   AuthenticatedBrandingIndexRoute: AuthenticatedBrandingIndexRoute,
+  AuthenticatedBusinessSettingsIndexRoute:
+    AuthenticatedBusinessSettingsIndexRoute,
   AuthenticatedCommentsIndexRoute: AuthenticatedCommentsIndexRoute,
   AuthenticatedCommunityPriceReportsIndexRoute:
     AuthenticatedCommunityPriceReportsIndexRoute,

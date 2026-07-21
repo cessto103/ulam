@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\TwoFactorController as AdminTwoFactorControll
 use App\Http\Controllers\Api\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\Admin\ThemeController as AdminThemeController;
 use App\Http\Controllers\Api\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Api\Admin\BusinessSettingsController as AdminBusinessSettingsController;
 use App\Http\Controllers\Api\Admin\PremiumPricingController as AdminPremiumPricingController;
 use App\Http\Controllers\Api\Admin\PremiumFeatureController as AdminPremiumFeatureController;
 use App\Http\Controllers\Api\Admin\LegalDocumentController as AdminLegalDocumentController;
@@ -417,6 +418,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/about', [AdminAboutController::class, 'show']);
     Route::put('/about', [AdminAboutController::class, 'update']);
+
+    Route::get('/business-settings', [AdminBusinessSettingsController::class, 'show']);
+    Route::put('/business-settings', [AdminBusinessSettingsController::class, 'update']);
 
     Route::get('/theme/presets',                          [AdminThemeController::class, 'index']);
     Route::post('/theme/presets',                         [AdminThemeController::class, 'store']);

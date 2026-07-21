@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.28.0 (2026-07-21)
+
+### Added
+- **Business & Tax Settings**: new admin-only screen (Content section) to hold registered business identity and BIR receipting details ahead of actually completing business registration — registered/trade name, address, TIN, VAT status, Authority to Print number + dates, business contact info, and free-text notes. Every field is optional and starts blank; this is purely a data-entry surface for now, filled in whenever the paperwork is ready. Nothing reads or generates a document from these values yet.
+
 ## v1.27.0 (2026-07-21)
 
 ### Added
