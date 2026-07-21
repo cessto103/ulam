@@ -18,6 +18,7 @@ import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
+import { Route as AuthenticatedWebhooksIndexRouteImport } from './routes/_authenticated/webhooks/index'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTindahanIndexRouteImport } from './routes/_authenticated/tindahan/index'
 import { Route as AuthenticatedTindahanCommentsIndexRouteImport } from './routes/_authenticated/tindahan-comments/index'
@@ -102,6 +103,12 @@ const AuthenticatedSettingsRouteRoute =
   AuthenticatedSettingsRouteRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWebhooksIndexRoute =
+  AuthenticatedWebhooksIndexRouteImport.update({
+    id: '/webhooks/',
+    path: '/webhooks/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
@@ -387,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/webhooks/': typeof AuthenticatedWebhooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/sign-in': typeof authSignInRoute
@@ -436,6 +444,7 @@ export interface FileRoutesByTo {
   '/tindahan-comments': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan': typeof AuthenticatedTindahanIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/webhooks': typeof AuthenticatedWebhooksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -488,6 +497,7 @@ export interface FileRoutesById {
   '/_authenticated/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/_authenticated/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/webhooks/': typeof AuthenticatedWebhooksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/tindahan-comments/'
     | '/tindahan/'
     | '/users/'
+    | '/webhooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign-in'
@@ -589,6 +600,7 @@ export interface FileRouteTypes {
     | '/tindahan-comments'
     | '/tindahan'
     | '/users'
+    | '/webhooks'
   id:
     | '__root__'
     | '/_authenticated'
@@ -640,6 +652,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tindahan-comments/'
     | '/_authenticated/tindahan/'
     | '/_authenticated/users/'
+    | '/_authenticated/webhooks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/webhooks/': {
+      id: '/_authenticated/webhooks/'
+      path: '/webhooks'
+      fullPath: '/webhooks/'
+      preLoaderRoute: typeof AuthenticatedWebhooksIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/users/': {
@@ -1059,6 +1079,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTindahanCommentsIndexRoute: typeof AuthenticatedTindahanCommentsIndexRoute
   AuthenticatedTindahanIndexRoute: typeof AuthenticatedTindahanIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedWebhooksIndexRoute: typeof AuthenticatedWebhooksIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1107,6 +1128,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedTindahanCommentsIndexRoute,
   AuthenticatedTindahanIndexRoute: AuthenticatedTindahanIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedWebhooksIndexRoute: AuthenticatedWebhooksIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

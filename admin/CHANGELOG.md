@@ -1,5 +1,11 @@
 # uLam Admin — Changelog
 
+## v1.37.0 (2026-07-21)
+
+### Added
+- **Webhooks page** (Monetization → Webhooks): new diagnostic list of every incoming PayMongo webhook event — event type, status (received/processed/ignored/failed), error message, live/test mode, and the raw event ID — filterable by status and searchable by event type/ID/error. Built to actually see what's happening the next time a webhook gets disabled, instead of only finding out after the fact.
+- **Technical Guide is now vertical tabs**, one per numbered topic (Local Development, Deploying, Environment Variables, Security Runbook, Mobile Builds, Backups) instead of one long scrolling page — still rendered live from `TECHNICAL.md`, just split into topic-sized chunks.
+
 ## v1.36.0 (2026-07-21)
 
 ### Added

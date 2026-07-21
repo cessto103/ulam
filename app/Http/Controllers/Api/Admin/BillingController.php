@@ -46,6 +46,14 @@ class BillingController extends Controller
     {
         return WebhookEvent::query()->select(['id', 'provider_event_id', 'event_type', 'livemode', 'status', 'processed_at', 'error', 'created_at'])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $term = $request->string('search');
+                $q->where(function ($w) use ($term) {
+                    $w->where('event_type', 'like', "%{$term}%")
+                        ->orWhere('provider_event_id', 'like', "%{$term}%")
+                        ->orWhere('error', 'like', "%{$term}%");
+                });
+            })
             ->latest()->paginate(min($request->integer('per_page', 20), 100));
     }
 

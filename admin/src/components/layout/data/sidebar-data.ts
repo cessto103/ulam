@@ -29,6 +29,7 @@ import {
   Tags,
   UserCog,
   Users,
+  Webhook,
   Wrench,
 } from 'lucide-react'
 import { Logo } from '@/assets/logo'
@@ -95,6 +96,11 @@ export const sidebarData: SidebarData = {
           title: 'Invoices',
           url: '/invoices',
           icon: FileText,
+        },
+        {
+          title: 'Webhooks',
+          url: '/webhooks',
+          icon: Webhook,
         },
       ],
     },
