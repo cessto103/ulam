@@ -1,5 +1,15 @@
 # uLam Admin — Changelog
 
+## v1.30.0 (2026-07-21)
+
+### Added
+- **Posts detail page**: rows in the Posts list are now clickable, opening a full page with the body, images, author (with location), and thumbs up/down + views + comment counts, plus the comment thread (with replies) below. List columns gained Views and Thumbs Down (Thumbs Up already existed as "Puso").
+- **Recipes detail page**: same treatment — clickable rows open a page with images, steps, ingredients, author (handling recipes with no owner, e.g. official/system recipes), the same four stat counts, and comments. List columns gained Views, Thumbs Up, and Thumbs Down.
+- **Sidebar footer** now shows the running build version (e.g. "v1.30.0"), baked in at build time — a fast way to tell whether a deployment was actually rebuilt after a `git pull`, since the compiled bundle is gitignored and pulling alone never updates it.
+
+### Fixed
+- **Content area now stretches full width on every page.** Previously capped to a centered 1280px box on wide screens; confirmed no page ever used the escape hatch that would have kept the old behavior, so this applies everywhere at once.
+
 ## v1.29.0 (2026-07-21)
 
 ### Added
