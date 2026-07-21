@@ -43,7 +43,11 @@ class PayMongoWebhookController extends Controller
         } catch (\Throwable $e) {
             $event->update(['status' => 'failed', 'error' => mb_substr($e->getMessage(), 0, 2000)]);
             Log::error('PayMongo webhook processing failed', ['event_id' => $providerId, 'exception' => $e]);
-            return response()->json(['message' => 'Processing failed.'], 500);
+            // Always 200 once the event is verified and received — a 4xx/5xx
+            // here tells PayMongo *delivery* failed, and enough of those get
+            // the webhook auto-disabled. Processing failures are ours to
+            // find and fix (via the log line above / WebhookEvent.status),
+            // not something PayMongo should be told to retry indefinitely.
         }
 
         return response()->json(['received' => true]);
