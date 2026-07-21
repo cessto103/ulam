@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { playwright } from '@vitest/browser-playwright'
+import { version as appVersion } from './package.json'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
@@ -16,6 +17,17 @@ export default defineConfig(({ command, mode }) => ({
   // /uLam/public/admin-panel — same shape as production, just local, so you
   // can test a real build before uploading it.
   base: command === 'build' ? (mode === 'wamp' ? '/uLam/public/admin-panel/' : '/admin-panel/') : '/',
+  // Baked in at build time so the sidebar footer can show exactly which
+  // build is actually being served -- `git pull` alone never updates this
+  // (public/admin-panel is gitignored build output), so a stale-looking
+  // number here is the fast way to tell "the deployed bundle wasn't
+  // rebuilt after pulling" apart from "it was rebuilt, this really is
+  // current." Only the version string is injected, not the whole
+  // package.json (which would leak the full dependency list into the
+  // client bundle).
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+  },
   build: {
     outDir: '../public/admin-panel',
     emptyOutDir: true,
