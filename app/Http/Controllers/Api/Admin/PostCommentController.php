@@ -15,7 +15,13 @@ class PostCommentController extends Controller
         $query = PostComment::with(['user:id,name,username,avatar', 'post:id,body']);
 
         if ($request->filled('search')) {
-            $query->where('body', 'like', '%' . $request->string('search') . '%');
+            $term = $request->string('search');
+            $query->where(function ($q) use ($term) {
+                $q->where('body', 'like', "%{$term}%")
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$term}%")
+                        ->orWhere('username', 'like', "%{$term}%"))
+                    ->orWhereHas('post', fn ($p) => $p->where('body', 'like', "%{$term}%"));
+            });
         }
 
         if ($request->filled('post_id')) {

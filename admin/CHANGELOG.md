@@ -1,5 +1,16 @@
 # uLam Admin — Changelog
 
+## v1.34.0 (2026-07-21)
+
+### Added
+- **Recipes list**: new Author column, linking straight to that author's User Detail page (shows "System" for official/system recipes with no owner).
+- **Comments list**: Author and On Post cells are now links — Author goes to that user's User Detail page, On Post goes to the post's detail page.
+- **Recipe Comments**: User and Recipe cells are now links, to the User Detail page and the recipe's detail page respectively.
+- Search on both comment lists now also matches the author's name/username and the post/recipe title, not just the comment text.
+
+### Fixed
+- **Comments list search box didn't work at all** — typing into "Filter by comment content" silently did nothing (and even reset each keystroke back to empty). The search input was wired to a per-column filter for a column named `search` that doesn't exist, instead of the table's actual global-filter state, so nothing ever reached the backend.
+
 ## v1.33.0 (2026-07-21)
 
 ### Added

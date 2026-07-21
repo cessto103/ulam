@@ -15,7 +15,13 @@ class RecipeCommentController extends Controller
         $query = RecipeComment::with(['user:id,name,username,avatar', 'recipe:id,title']);
 
         if ($request->filled('search')) {
-            $query->where('body', 'like', '%' . $request->string('search') . '%');
+            $term = $request->string('search');
+            $query->where(function ($q) use ($term) {
+                $q->where('body', 'like', "%{$term}%")
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$term}%")
+                        ->orWhere('username', 'like', "%{$term}%"))
+                    ->orWhereHas('recipe', fn ($r) => $r->where('title', 'like', "%{$term}%"));
+            });
         }
 
         if ($request->filled('recipe_id')) {

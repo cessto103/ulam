@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { CheckCircle2, Crown, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -52,6 +53,27 @@ export const recipesColumns: ColumnDef<Recipe>[] = [
       ),
     },
     enableHiding: false,
+  },
+  {
+    id: 'author',
+    accessorFn: (row) => row.user?.name,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Author' />
+    ),
+    cell: ({ row }) =>
+      row.original.user ? (
+        <Link
+          to='/users/$userId'
+          params={{ userId: String(row.original.user.id) }}
+          onClick={(e) => e.stopPropagation()}
+          className='text-primary hover:underline'
+        >
+          {row.original.user.name}
+        </Link>
+      ) : (
+        <span className='text-muted-foreground'>System</span>
+      ),
+    enableSorting: false,
   },
   {
     accessorKey: 'category',

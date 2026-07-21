@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -41,9 +42,18 @@ export const commentsColumns: ColumnDef<PostComment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Author' />
     ),
-    cell: ({ row }) => (
-      <LongText className='max-w-36 ps-3'>{row.original.user?.name}</LongText>
-    ),
+    cell: ({ row }) =>
+      row.original.user ? (
+        <Link
+          to='/users/$userId'
+          params={{ userId: String(row.original.user.id) }}
+          className='ps-3 text-primary hover:underline'
+        >
+          <LongText className='max-w-36'>{row.original.user.name}</LongText>
+        </Link>
+      ) : (
+        <LongText className='max-w-36 ps-3'>Deleted user</LongText>
+      ),
     meta: {
       className: 'inset-s-6 ps-0.5 max-md:sticky @4xl/content:table-cell',
     },
@@ -56,11 +66,18 @@ export const commentsColumns: ColumnDef<PostComment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='On Post' />
     ),
-    cell: ({ row }) => (
-      <LongText className='max-w-48 text-muted-foreground'>
-        {row.original.post?.body}
-      </LongText>
-    ),
+    cell: ({ row }) =>
+      row.original.post ? (
+        <Link
+          to='/posts/$postId'
+          params={{ postId: String(row.original.post.id) }}
+          className='text-primary hover:underline'
+        >
+          <LongText className='max-w-48'>{row.original.post.body}</LongText>
+        </Link>
+      ) : (
+        <LongText className='max-w-48 text-muted-foreground'>Deleted post</LongText>
+      ),
     enableSorting: false,
   },
   {

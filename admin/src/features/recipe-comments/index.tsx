@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -44,7 +45,7 @@ export function RecipeComments() {
         </div>
 
         <Input
-          placeholder='Search comment text…'
+          placeholder='Search comment, user, or recipe…'
           className='h-9 w-64'
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1) }}
@@ -70,10 +71,24 @@ export function RecipeComments() {
                 comments.data!.data.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell>
-                      <div className='font-medium'>{row.user?.name ?? 'Deleted user'}</div>
-                      <div className='text-xs text-muted-foreground'>@{row.user?.username}</div>
+                      {row.user ? (
+                        <Link to='/users/$userId' params={{ userId: String(row.user.id) }} className='text-primary hover:underline'>
+                          <div className='font-medium'>{row.user.name}</div>
+                          <div className='text-xs text-muted-foreground'>@{row.user.username}</div>
+                        </Link>
+                      ) : (
+                        <div className='font-medium'>Deleted user</div>
+                      )}
                     </TableCell>
-                    <TableCell>{row.recipe?.title ?? '-'}</TableCell>
+                    <TableCell>
+                      {row.recipe ? (
+                        <Link to='/recipes/$recipeId' params={{ recipeId: String(row.recipe.id) }} className='text-primary hover:underline'>
+                          {row.recipe.title}
+                        </Link>
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
                     <TableCell className='max-w-96'>{row.body}</TableCell>
                     <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
                     <TableCell className='text-right'>

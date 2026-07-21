@@ -41,6 +41,8 @@ export function CommentsTable({
   const [sorting, setSorting] = useState<SortingState>([])
 
   const {
+    globalFilter,
+    onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
     pagination,
@@ -69,10 +71,12 @@ export function CommentsTable({
       rowSelection,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
     enableRowSelection: true,
     onPaginationChange,
     onColumnFiltersChange,
+    onGlobalFilterChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -92,8 +96,7 @@ export function CommentsTable({
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter by comment content...'
-        searchKey='search'
+        searchPlaceholder='Search comment, author, or post...'
         filters={[
           {
             columnId: 'is_reply',
