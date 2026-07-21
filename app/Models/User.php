@@ -175,6 +175,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function recipes()
+    {
+        return $this->hasMany(Recipe::class);
+    }
+
     public function connections()
     {
         return $this->hasMany(Connection::class, 'requester_id');

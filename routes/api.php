@@ -318,6 +318,8 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/users/{id}/unban', [AdminUserController::class, 'unban']);
     Route::get('/users/{id}/sessions', [AdminUserController::class, 'sessions']);
     Route::delete('/users/{id}/sessions/{tokenId}', [AdminUserController::class, 'revokeSession']);
+    Route::get('/users/{id}/overview', [AdminUserController::class, 'overview']);
+    Route::get('/users/{id}/content', [AdminUserController::class, 'content']);
 
     Route::get('/premium-subscribers',         [AdminUserController::class, 'premiumSubscribers']);
     Route::get('/premium-subscribers/summary', [AdminUserController::class, 'premiumSubscribersSummary']);

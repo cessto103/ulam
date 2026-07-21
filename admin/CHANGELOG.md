@@ -1,5 +1,11 @@
 # uLam Admin — Changelog
 
+## v1.32.0 (2026-07-21)
+
+### Added
+- **User Detail — Overview tab**: stat cards (XP, level, streak, posts/recipes/stores/followers counts), a 30-day XP-earned chart, a profile card (location, household size, gender, joined date, email-verified badge, bio), and a last-login summary (also links out to the full device list on the Security tab).
+- **User Detail — Content tab**: this user's posts, recipes, and stores in one place — each post/recipe row shows its thumbnail, reaction/view/comment counts, and is clickable straight through to that item's existing detail page; stores show item counts, market, and verified/active status.
+
 ## v1.31.0 (2026-07-21)
 
 ### Added

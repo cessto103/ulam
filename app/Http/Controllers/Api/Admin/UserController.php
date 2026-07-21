@@ -160,6 +160,78 @@ class UserController extends Controller
         return response()->json(['message' => 'Device signed out.']);
     }
 
+    /** GET /admin/users/{id}/overview — profile stats, counts, last login, XP trend. */
+    public function overview(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $lastSession = $user->tokens()->orderByDesc('last_used_at')->first();
+
+        $xpHistory = $user->xpLogs()
+            ->selectRaw('DATE(created_at) as date, SUM(xp_amount) as xp')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(fn ($row) => ['date' => $row->date, 'xp' => (int) $row->xp]);
+
+        return response()->json([
+            'stats' => [
+                'xp' => $user->xp,
+                'level' => $user->level,
+                'streak_days' => $user->streak_days,
+                'joined_at' => $user->created_at,
+                'email_verified_at' => $user->email_verified_at,
+                'last_active_date' => $user->last_active_date,
+                'household_size' => $user->household_size,
+                'gender' => $user->gender,
+                'location' => collect([$user->barangay, $user->municipality, $user->province])
+                    ->filter()->implode(', '),
+                'bio' => $user->bio,
+            ],
+            'counts' => [
+                'posts' => $user->posts()->count(),
+                'recipes' => $user->recipes()->count(),
+                'stores' => $user->tindahan()->count(),
+                'followers' => $user->followers()->count(),
+                'following' => $user->following()->count(),
+            ],
+            'last_session' => $lastSession ? [
+                'device_name' => $lastSession->device_name,
+                'platform' => $lastSession->platform,
+                'ip_address' => $lastSession->ip_address,
+                'last_used_at' => $lastSession->last_used_at,
+            ] : null,
+            'xp_history' => $xpHistory,
+        ]);
+    }
+
+    /** GET /admin/users/{id}/content — this user's posts, recipes, and stores (with item counts). */
+    public function content(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $posts = $user->posts()
+            ->withCount(['dislikes as dislike_count', 'contentViews as views_count'])
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        $recipes = $user->recipes()
+            ->withCount(['contentViews as views_count'])
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        $stores = $user->tindahan()
+            ->withCount(['prices as items_count'])
+            ->with('market:id,name')
+            ->latest()
+            ->get();
+
+        return response()->json(compact('posts', 'recipes', 'stores'));
+    }
+
     // Consumer Premium is a plain User attribute (plan/premium_expires_at/
     // premium_source), not a row in the seller Subscription table — this is
     // the "who currently has Premium" view the Monetization section was

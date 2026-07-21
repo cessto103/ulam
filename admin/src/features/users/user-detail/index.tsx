@@ -12,6 +12,8 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { useUserQuery } from '../hooks/use-users'
+import { UserContentTab } from '../components/user-content-tab'
+import { UserOverviewTab } from '../components/user-overview-tab'
 import { UserSecurityTab } from '../components/user-security-tab'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/api\/?$/, '') ?? ''
@@ -93,10 +95,10 @@ export function UserDetailPage() {
                 <TabsTrigger value='security'>Security</TabsTrigger>
               </TabsList>
               <TabsContent value='overview' className='mt-4'>
-                <NotBuiltYet label='Overview' />
+                <UserOverviewTab userId={user.id} />
               </TabsContent>
               <TabsContent value='content' className='mt-4'>
-                <NotBuiltYet label='Content (posts, recipes, store, items)' />
+                <UserContentTab userId={user.id} />
               </TabsContent>
               <TabsContent value='monetization' className='mt-4'>
                 <NotBuiltYet label='Monetization (premium, subscriptions, payments, refunds)' />
