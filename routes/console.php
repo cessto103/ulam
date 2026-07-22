@@ -11,6 +11,10 @@ Artisan::command('inspire', function () {
 // Daily spending-log reminder — runs every morning at 8:00 AM
 Schedule::command('ulam:daily-reminders')->dailyAt('08:00');
 
+// Daily weather notification, per user location — runs early so it's
+// waiting when people check their phone in the morning.
+Schedule::command('ulam:weather-daily')->dailyAt('06:00');
+
 // Nightly AI price refresh — runs at 2:00 AM when traffic is low
 Schedule::command('prices:refresh-ai')->dailyAt('02:00');
 

@@ -4,6 +4,7 @@ import {
   ChefHat,
   CircleHelp,
   ClipboardList,
+  CloudRain,
   CreditCard,
   Crown,
   FileText,
@@ -84,7 +85,7 @@ export const sidebarData: SidebarData = {
           icon: Tags,
         },
         {
-          title: 'Boost Review',
+          title: 'Boosts',
           url: '/boosts',
           icon: Rocket,
         },
@@ -137,6 +138,11 @@ export const sidebarData: SidebarData = {
           title: 'Email Templates',
           url: '/email-templates',
           icon: Mail,
+        },
+        {
+          title: 'Weather Phrases',
+          url: '/weather-phrases',
+          icon: CloudRain,
         },
         {
           title: 'Technical Guide',

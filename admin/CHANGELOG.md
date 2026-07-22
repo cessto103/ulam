@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.40.0 (2026-07-23)
+
+### Added
+- **Weather Phrases** (Content → Weather Phrases): manage the wording shown in the mobile app's daily weather notification. Each phrase belongs to a weather category (Sunny, Cloudy, Light rain, Heavy rain, Extended rain — 3+ rainy days in a row) and a variant (Info, Meal promo, Premium promo), supports `{{recipe_name}}`/`{{recipe_author}}`/`{{rating}}`/`{{thumbs_count}}`/`{{days}}` tokens, and can be toggled active/inactive without deleting it. Seeded with 15 starter "info" phrases per category so the daily notification doesn't repeat the same wording (paired uLam app v1.47.0, which sends the actual notification on a daily cron and recomputes forecasts once per rough location, not per user).
+
 ## v1.39.0 (2026-07-22)
 
 ### Added

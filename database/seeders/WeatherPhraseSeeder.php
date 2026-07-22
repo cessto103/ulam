@@ -1,0 +1,197 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\WeatherPhrase;
+use Illuminate\Database\Seeder;
+
+/**
+ * Safe to re-run any time -- every row is upserted by category+variant+text.
+ * Standalone: php artisan db:seed --class=WeatherPhraseSeeder
+ * 15 "info" phrases per weather category so the daily rotation doesn't
+ * repeat the same wording every time. The admin owner adds/edits more (or
+ * more meal_promo / premium_promo variants) over time from Content ->
+ * Weather Phrases at their own pace.
+ */
+class WeatherPhraseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $phrases = [
+            // ── sunny / info ──────────────────────────────────────────────
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 10,
+                'phrase_text' => "It's a good day to go to the market today, we'll be having a sunny day!"],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 11,
+                'phrase_text' => 'Clear skies ahead today. Great time to stock up at the palengke.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 12,
+                'phrase_text' => 'Sunny and dry today, perfect for a market run.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 13,
+                'phrase_text' => 'Blue skies today, no rain in sight. Good day to shop around.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 14,
+                'phrase_text' => "Today's looking bright and sunny. A great day to visit the wet market early."],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 15,
+                'phrase_text' => 'Sunshine all day today, no need for an umbrella.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 16,
+                'phrase_text' => "It's a sunny one today, perfect for airing out the laundry after your market trip."],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 17,
+                'phrase_text' => 'Clear and sunny today, ideal weather for a walk to the palengke.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 18,
+                'phrase_text' => "Today's forecast: sunny skies. Good time to buy fresh ingredients."],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 19,
+                'phrase_text' => 'No clouds in sight today, a great day to be outdoors.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 20,
+                'phrase_text' => 'Warm and sunny today, stay hydrated while you shop.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 21,
+                'phrase_text' => "It's a beautiful sunny day, perfect for fresh produce shopping."],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 22,
+                'phrase_text' => 'Sunny skies today, a great chance to catch the freshest catch at the market.'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 23,
+                'phrase_text' => 'Today is dry and sunny, great weather for grilling later!'],
+            ['weather_category' => 'sunny', 'variant_type' => 'info', 'sort' => 24,
+                'phrase_text' => 'Bright sunny day ahead, ideal for that outdoor market trip you\'ve been planning.'],
+
+            // ── cloudy / info ─────────────────────────────────────────────
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 20,
+                'phrase_text' => 'Cloudy but dry today. Still a fine day to head out and shop.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 21,
+                'phrase_text' => 'Overcast today, but no rain expected. Good day to run your errands.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 22,
+                'phrase_text' => 'Skies are gray today, but it should stay dry. Safe to go to the market.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 23,
+                'phrase_text' => 'Cloudy weather today, cooler than usual, good day to walk to the palengke.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 24,
+                'phrase_text' => "It's overcast today, but rain isn't in the forecast, go ahead with your plans."],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 25,
+                'phrase_text' => 'Cloudy skies today, a comfortable day to be out and about.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 26,
+                'phrase_text' => 'No sun today, but also no rain, a good in-between day for errands.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 27,
+                'phrase_text' => "Today's cloudy and mild. Great weather for a market stroll."],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 28,
+                'phrase_text' => 'Gray skies today but dry conditions, feel free to head out.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 29,
+                'phrase_text' => 'Cloudy today, keep a light jacket handy just in case it gets breezy.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 30,
+                'phrase_text' => 'Overcast skies expected all day, but conditions should stay dry.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 31,
+                'phrase_text' => "It's a cloudy day today, cooler and comfortable for outdoor shopping."],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 32,
+                'phrase_text' => 'Skies will stay cloudy today, a mild day to get things done outside.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 33,
+                'phrase_text' => 'Today looks cloudy but calm, a decent day to visit the market.'],
+            ['weather_category' => 'cloudy', 'variant_type' => 'info', 'sort' => 34,
+                'phrase_text' => 'Cloud cover today with no rain expected, good conditions for errands.'],
+
+            // ── light_rain / info ─────────────────────────────────────────
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 30,
+                'phrase_text' => "If you're heading to the market today, be early, we might have a shower before lunch time."],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 31,
+                'phrase_text' => 'Light rain is possible later today. Bring an umbrella just in case.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 32,
+                'phrase_text' => "There's a chance of scattered showers today, best to shop early before it starts."],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 33,
+                'phrase_text' => 'Expect a bit of drizzle today, keep an umbrella handy when you go out.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 34,
+                'phrase_text' => 'Light showers possible this afternoon, plan your market trip for the morning.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 35,
+                'phrase_text' => 'A little rain might fall today, nothing too heavy, just bring a raincoat.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 36,
+                'phrase_text' => 'Some clouds with a chance of light rain today, better to go out early.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 37,
+                'phrase_text' => 'Scattered light showers expected today, an umbrella should be enough.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 38,
+                'phrase_text' => "There's a slight chance of rain today, best to finish errands before midday."],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 39,
+                'phrase_text' => 'Passing showers possible today, keep your umbrella within reach.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 40,
+                'phrase_text' => 'Light rain may fall on and off today, plan around a possible short shower.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 41,
+                'phrase_text' => 'A bit of drizzle expected later today, good idea to shop early.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 42,
+                'phrase_text' => 'Chance of light rain this afternoon, morning is your best window to go out.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 43,
+                'phrase_text' => "Occasional light showers today, nothing that should stop your plans."],
+            ['weather_category' => 'light_rain', 'variant_type' => 'info', 'sort' => 44,
+                'phrase_text' => 'Rain showers are possible today, keep dry with an umbrella just in case.'],
+            ['weather_category' => 'light_rain', 'variant_type' => 'meal_promo', 'sort' => 32,
+                'phrase_text' => "A bit of rain expected today. Perfect time to try {{recipe_name}} by {{recipe_author}}, {{rating}}★ and {{thumbs_count}} thumbs up!"],
+
+            // ── heavy_rain / info ─────────────────────────────────────────
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 40,
+                'phrase_text' => "Heavy rain expected today. Best to prepare your ulam at home instead of going out."],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 41,
+                'phrase_text' => 'Expect strong rain today, better to stay in and cook with what you have.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 42,
+                'phrase_text' => 'Today looks like a heavy downpour, best to postpone your market trip if you can.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 43,
+                'phrase_text' => 'Heavy rain is forecasted today, take extra care if you need to go out.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 44,
+                'phrase_text' => 'Strong rainfall expected today, a good day to stay indoors and cook something warm.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 45,
+                'phrase_text' => "It's going to pour heavily today, best to avoid unnecessary trips outside."],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 46,
+                'phrase_text' => "Today's forecast calls for heavy rain, stay safe and dry at home."],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 47,
+                'phrase_text' => 'Expect heavy showers all day today, a warm meal at home is your best bet.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 48,
+                'phrase_text' => 'Heavy rain today, flooding is possible in low-lying areas, please stay cautious.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 49,
+                'phrase_text' => 'Downpours expected today, best to stay in if your errands can wait.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 50,
+                'phrase_text' => 'Today looks stormy with heavy rain, keep safe and avoid flooded streets.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 51,
+                'phrase_text' => 'Strong rain showers today, a good day to cook a warm ulam at home.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 52,
+                'phrase_text' => 'Heavy rainfall expected, best to hold off on market trips until it clears.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 53,
+                'phrase_text' => "It's a rainy, heavy downpour kind of day, stay dry and warm indoors."],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'info', 'sort' => 54,
+                'phrase_text' => 'Expect continuous heavy rain today, please be careful if you must go out.'],
+            ['weather_category' => 'heavy_rain', 'variant_type' => 'meal_promo', 'sort' => 41,
+                'phrase_text' => "Rainy day today, perfect for a warm comfort meal! Try {{recipe_name}} by {{recipe_author}}, {{rating}}★ and {{thumbs_count}} thumbs up."],
+
+            // ── extended_rain / info ──────────────────────────────────────
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 50,
+                'phrase_text' => "It looks like it'll be rainy for the next {{days}} days. Good time to plan your meals ahead."],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 51,
+                'phrase_text' => 'Rainy days are expected for the next {{days}} days, might be a good time to stock up on pantry staples.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 52,
+                'phrase_text' => 'Expect wet weather for the next {{days}} days, plan your ulam ahead of time.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 53,
+                'phrase_text' => 'The next {{days}} days look rainy, a good stretch to prepare comfort meals at home.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 54,
+                'phrase_text' => 'Rain is expected to continue for {{days}} days, plan your grocery runs accordingly.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 55,
+                'phrase_text' => "It's shaping up to be a rainy {{days}} days, good time to plan ahead so you're not caught off guard."],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 56,
+                'phrase_text' => 'Wet weather is expected for the next {{days}} days, stock up while you can.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 57,
+                'phrase_text' => 'A stretch of rainy days ({{days}} days) is coming, good time to prepare your meals in advance.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 58,
+                'phrase_text' => 'Expect rain for {{days}} straight days, might be worth planning your ulam early.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 59,
+                'phrase_text' => 'The forecast shows rain for the next {{days}} days, a good moment to prep ahead.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 60,
+                'phrase_text' => '{{days}} days of rain are expected, plan your meals so you\'re always ready.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 61,
+                'phrase_text' => 'It looks like a rainy week ahead ({{days}} days), a good time to think ahead about meals.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 62,
+                'phrase_text' => 'Rain is expected to linger for {{days}} days, plan your market trips carefully.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 63,
+                'phrase_text' => "With {{days}} rainy days ahead, now's a good time to prepare your meals in advance."],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'info', 'sort' => 64,
+                'phrase_text' => 'Expect continuous rain for {{days}} days, a good stretch to plan your ulam ahead of time.'],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'meal_promo', 'sort' => 51,
+                'phrase_text' => "Rainy for the next {{days}} days. Warm up with {{recipe_name}} by {{recipe_author}}, {{rating}}★ and {{thumbs_count}} thumbs up!"],
+            ['weather_category' => 'extended_rain', 'variant_type' => 'premium_promo', 'sort' => 52,
+                'phrase_text' => "It's going to be rainy for the next {{days}} days. Subscribe to Premium and plan your meals ahead so you're never caught off guard!"],
+        ];
+
+        foreach ($phrases as $p) {
+            WeatherPhrase::updateOrCreate(
+                ['weather_category' => $p['weather_category'], 'variant_type' => $p['variant_type'], 'phrase_text' => $p['phrase_text']],
+                $p + ['is_active' => true]
+            );
+        }
+    }
+}

@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Api\Admin\RecipeController as AdminRecipeController;
 use App\Http\Controllers\Api\Admin\AppSettingController as AdminAppSettingController;
 use App\Http\Controllers\Api\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Api\Admin\WeatherPhraseController as AdminWeatherPhraseController;
 use App\Http\Controllers\Api\Admin\ConnectionLabelController as AdminConnectionLabelController;
 use App\Http\Controllers\Api\Admin\TaskController as AdminTaskController;
 use App\Http\Controllers\Api\Admin\TaskActionTypeController as AdminTaskActionTypeController;
@@ -65,6 +66,7 @@ use App\Http\Controllers\Api\TindahanController;
 use App\Http\Controllers\Api\TindahanCommentController;
 use App\Http\Controllers\Api\UpgradeController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WeatherController;
 use Illuminate\Support\Facades\Route;
 
 // Public
@@ -210,6 +212,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::post('/notifications/{id}/read',[NotificationController::class, 'markRead']);
 
+    Route::get('/weather/today', [WeatherController::class, 'today']);
+
     Route::get('/users/{id}',             [ConnectionController::class, 'profile']);
     Route::post('/users/{id}/follow',     [ConnectionController::class, 'follow']);
     Route::delete('/users/{id}/follow',   [ConnectionController::class, 'unfollow']);
@@ -283,6 +287,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/boosts',        [BoostController::class, 'index']);
     Route::post('/boosts',       [BoostController::class, 'store']);
+    Route::post('/boosts/checkout', [BoostController::class, 'checkout'])->middleware('throttle:10,1');
     Route::delete('/boosts/{id}', [BoostController::class, 'destroy']);
 
     // Help & Support
@@ -399,9 +404,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/seller-subscriptions/{id}/reject',  [AdminSellerSubscriptionController::class, 'reject']);
     Route::post('/seller-subscriptions/{id}/refund',  [AdminSellerSubscriptionController::class, 'refund']);
 
-    Route::get('/boosts',               [AdminBoostController::class, 'index']);
-    Route::post('/boosts/{id}/approve', [AdminBoostController::class, 'approve']);
-    Route::post('/boosts/{id}/reject',  [AdminBoostController::class, 'reject']);
+    Route::get('/boosts', [AdminBoostController::class, 'index']);
 
     Route::get('/sponsored-ads',               [AdminSponsoredAdController::class, 'index']);
     Route::post('/sponsored-ads',              [AdminSponsoredAdController::class, 'store']);
@@ -493,6 +496,11 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/faqs',        [AdminFaqController::class, 'store']);
     Route::patch('/faqs/{id}',  [AdminFaqController::class, 'update']);
     Route::delete('/faqs/{id}', [AdminFaqController::class, 'destroy']);
+
+    Route::get('/weather-phrases',         [AdminWeatherPhraseController::class, 'index']);
+    Route::post('/weather-phrases',        [AdminWeatherPhraseController::class, 'store']);
+    Route::patch('/weather-phrases/{id}',  [AdminWeatherPhraseController::class, 'update']);
+    Route::delete('/weather-phrases/{id}', [AdminWeatherPhraseController::class, 'destroy']);
 
     Route::get('/tasks',                    [AdminTaskController::class, 'index']);
     Route::post('/tasks',                   [AdminTaskController::class, 'store']);
