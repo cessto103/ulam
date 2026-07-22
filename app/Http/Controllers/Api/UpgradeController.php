@@ -201,7 +201,8 @@ class UpgradeController extends Controller
         }
 
         $timestamp = $parts['t'] ?? '';
-        $signature = $parts['li'] ?? $parts['te'] ?? '';
+        $live = (bool) data_get(json_decode($rawBody, true), 'data.attributes.livemode', false);
+        $signature = $parts[$live ? 'li' : 'te'] ?? '';
 
         if ($timestamp === '' || $signature === '') {
             return false;
