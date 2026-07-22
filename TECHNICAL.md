@@ -51,7 +51,8 @@ php artisan ulam:daily-reminders      # daily spending-log reminder pushes
 3. Copy `.env.example` → `.env`, fill in production values (see §3), `php artisan key:generate` **only on first ever deploy** (losing APP_KEY breaks all encrypted columns — 2FA secrets!).
 4. `php artisan migrate --force` then `php artisan db:seed --class=LegalDocumentSeeder` (and `SellerPlanSeeder`) — **not** the full DatabaseSeeder (that's demo data).
 5. Point the web root at `/public`. Enable HTTPS (Let's Encrypt).
-6. `php artisan config:cache && php artisan route:cache`  (re-run after every deploy).
+6. `php artisan storage:link` — **easy to miss, breaks every uploaded image if skipped.** Without this, `public/storage` never gets created, so any `/storage/...` URL (branding logos, favicon, theme background images, About page images, recipe/post photos) 404s in production even though the upload itself "succeeded" and looks fine in the admin locally. One-time only — re-running is a harmless no-op if the symlink already exists.
+7. `php artisan config:cache && php artisan route:cache`  (re-run after every deploy).
 
 ### 2.2 CRON — scheduled jobs (REQUIRED in production)
 

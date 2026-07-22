@@ -33,7 +33,7 @@ import {
   Webhook,
   Wrench,
 } from 'lucide-react'
-import { Logo } from '@/assets/logo'
+import { AdminLogo } from '@/components/admin-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -45,7 +45,7 @@ export const sidebarData: SidebarData = {
   teams: [
     {
       name: 'uLam Admin',
-      logo: Logo,
+      logo: AdminLogo,
       plan: 'Household Budgeting',
     },
   ],

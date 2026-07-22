@@ -12,7 +12,8 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 
-type Branding = { logo: string | null; logo_light: string | null }
+type Branding = { logo: string | null; logo_light: string | null; admin_logo: string | null; favicon: string | null }
+type Variant = 'default' | 'light' | 'admin_logo' | 'favicon'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/api\/?$/, '') ?? ''
 
@@ -22,12 +23,16 @@ function LogoCard({
   description,
   previewBg,
   currentUrl,
+  accept = 'image/png,image/jpeg,image/webp',
+  compact = false,
 }: {
-  variant: 'default' | 'light'
+  variant: Variant
   title: string
   description: string
   previewBg: string
   currentUrl: string | null
+  accept?: string
+  compact?: boolean
 }) {
   const qc = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -40,7 +45,7 @@ function LogoCard({
       form.append('logo', file)
       form.append('variant', variant)
       await apiClient.post('/admin/branding/logo', form, { headers: { 'Content-Type': 'multipart/form-data' } })
-      toast.success('Logo updated: the app picks it up on its next refresh.')
+      toast.success('Updated: takes effect on the next refresh.')
       qc.invalidateQueries({ queryKey: ['admin-branding'] })
     } catch (e: any) {
       toast.error(e?.response?.data?.message ?? 'Upload failed.')
@@ -53,7 +58,7 @@ function LogoCard({
   const reset = useMutation({
     mutationFn: async () => apiClient.delete('/admin/branding/logo', { params: { variant } }),
     onSuccess: () => {
-      toast.success('Back to the built-in uLam logo.')
+      toast.success('Back to the built-in default.')
       qc.invalidateQueries({ queryKey: ['admin-branding'] })
     },
     onError: (e: any) => toast.error(e?.response?.data?.message ?? 'Could not reset.'),
@@ -67,11 +72,15 @@ function LogoCard({
       </CardHeader>
       <CardContent className='space-y-4'>
         <div
-          className='flex h-28 items-center justify-center rounded-md border'
+          className={compact ? 'flex h-28 items-center justify-center rounded-md border' : 'flex h-28 items-center justify-center rounded-md border'}
           style={{ background: previewBg }}
         >
           {currentUrl ? (
-            <img src={`${API_ORIGIN}${currentUrl}`} alt={title} className='max-h-20 max-w-[80%] object-contain' />
+            <img
+              src={`${API_ORIGIN}${currentUrl}`}
+              alt={title}
+              className={compact ? 'size-10 object-contain' : 'max-h-20 max-w-[80%] object-contain'}
+            />
           ) : (
             <span className={variant === 'light' ? 'text-2xl font-extrabold tracking-tight text-white' : 'text-2xl font-extrabold tracking-tight text-[#E7653B]'}>
               uLam <span className='align-super text-xs font-medium opacity-80'>(built-in)</span>
@@ -82,7 +91,7 @@ function LogoCard({
         <input
           ref={fileRef}
           type='file'
-          accept='image/png,image/jpeg,image/webp'
+          accept={accept}
           className='hidden'
           onChange={(e) => {
             const f = e.target.files?.[0]
@@ -92,7 +101,7 @@ function LogoCard({
         <div className='flex gap-2'>
           <Button onClick={() => fileRef.current?.click()} disabled={busy}>
             {busy ? <Loader2 className='animate-spin' /> : <ImageUp />}
-            Upload new logo
+            Upload new
           </Button>
           {currentUrl && (
             <Button variant='outline' onClick={() => reset.mutate()} disabled={reset.isPending}>
@@ -100,9 +109,6 @@ function LogoCard({
             </Button>
           )}
         </div>
-        <p className='text-xs text-muted-foreground'>
-          PNG with transparency recommended, up to 2 MB. Wide/horizontal logos display best.
-        </p>
       </CardContent>
     </Card>
   )
@@ -121,10 +127,13 @@ export function BrandingPage() {
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>Branding</h2>
           <p className='text-muted-foreground'>
-            Replace the app logo anywhere it appears (welcome, login, home, and page headers) without an app update.
-            Leave a slot empty to keep the built-in uLam script logo.
+            Replace the app logo anywhere it appears (welcome, login, home, and page headers), the admin
+            dashboard's own logo, and its browser-tab favicon, all without an app update or rebuild.
+            Leave a slot empty to keep the built-in default.
           </p>
         </div>
+
+        <h3 className='text-sm font-semibold text-muted-foreground'>Mobile app</h3>
         <div className='grid gap-4 lg:grid-cols-2'>
           <LogoCard
             variant='default'
@@ -141,6 +150,31 @@ export function BrandingPage() {
             currentUrl={data?.logo_light ?? null}
           />
         </div>
+
+        <h3 className='mt-2 text-sm font-semibold text-muted-foreground'>Admin dashboard</h3>
+        <div className='grid gap-4 lg:grid-cols-2'>
+          <LogoCard
+            variant='admin_logo'
+            title='Admin logo'
+            description="Shown in this dashboard’s sidebar and login page, separate from the mobile app logo above."
+            previewBg='#FFF8E8'
+            currentUrl={data?.admin_logo ?? null}
+          />
+          <LogoCard
+            variant='favicon'
+            title='Favicon'
+            description='The browser-tab icon for this admin dashboard. Square images work best.'
+            previewBg='#f4f4f5'
+            currentUrl={data?.favicon ?? null}
+            accept='image/png,image/x-icon,image/svg+xml'
+            compact
+          />
+        </div>
+
+        <p className='text-xs text-muted-foreground'>
+          PNG with transparency recommended, up to 2 MB. Wide/horizontal images display best for the logo
+          slots; the favicon should be roughly square.
+        </p>
       </Main>
     </>
   )

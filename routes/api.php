@@ -73,11 +73,14 @@ Route::post('/auth/login',    [AuthController::class, 'login'])->middleware('thr
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:4,1');
 Route::post('/auth/reset-password',  [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
 
-// Public branding — the app needs the logo before login (welcome screen).
+// Public branding — the mobile app needs the logo before login (welcome screen),
+// and the admin panel's own login page needs its logo/favicon pre-auth too.
 Route::get('/branding', function () {
     return response()->json([
         'logo' => \App\Models\AppSetting::get('branding_logo'),
         'logo_light' => \App\Models\AppSetting::get('branding_logo_light'),
+        'admin_logo' => \App\Models\AppSetting::get('branding_admin_logo'),
+        'favicon' => \App\Models\AppSetting::get('branding_favicon'),
     ]);
 });
 

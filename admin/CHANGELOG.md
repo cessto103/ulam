@@ -1,5 +1,14 @@
 # uLam Admin — Changelog
 
+## v1.39.0 (2026-07-22)
+
+### Added
+- **Branding**: two new upload slots, an admin dashboard logo (sidebar + login page, separate from the mobile app logo) and a favicon for this admin panel's browser tab. Both take effect immediately on refresh, no rebuild needed, the same as the existing mobile logo slots.
+
+### Fixed
+- **Found the real cause of "branding isn't applying live"**: production deploys never ran `php artisan storage:link`, so every uploaded image (`/storage/...` URLs) silently 404s on the live server even though the upload succeeds and looks fine in the admin locally. Documented in the Technical Guide's server setup checklist so it isn't missed again. Also made the mobile app's logo component fall back to the built-in logo if the uploaded image fails to load, instead of rendering blank.
+- Bumped the app logo size in the everyday header spots (bottom-tab header, page headers, Profile) for better visibility.
+
 ## v1.38.0 (2026-07-22)
 
 ### Added

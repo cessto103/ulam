@@ -110,7 +110,7 @@ export function EmailTemplateEditor({ template }: { template: EmailTemplate }) {
                 Message{' '}
                 {meta.hasCode && (
                   <span className='font-normal text-muted-foreground'>
-                    (shown above the code — the code itself is always fixed)
+                    (shown above the code; the code itself is always fixed)
                   </span>
                 )}
               </Label>
@@ -133,7 +133,7 @@ export function EmailTemplateEditor({ template }: { template: EmailTemplate }) {
             </div>
             <Textarea ref={introRef} rows={8} value={introMd} onChange={(e) => setIntroMd(e.target.value)} />
             <p className='text-xs text-muted-foreground'>
-              Supports markdown: **bold**, - lists, and images. Written text only — no raw HTML.
+              Supports markdown: **bold**, - lists, and images. Written text only, no raw HTML.
             </p>
           </div>
 
@@ -168,7 +168,7 @@ export function EmailTemplateEditor({ template }: { template: EmailTemplate }) {
           </div>
           {dirty && (
             <p className='text-xs text-muted-foreground'>
-              "Send test" sends the last saved version — save first to test your latest edits.
+              "Send test" sends the last saved version, save first to test your latest edits.
             </p>
           )}
         </CardContent>

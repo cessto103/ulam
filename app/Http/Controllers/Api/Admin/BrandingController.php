@@ -12,6 +12,8 @@ class BrandingController extends Controller
     private const KEYS = [
         'default' => 'branding_logo',
         'light' => 'branding_logo_light',
+        'admin_logo' => 'branding_admin_logo',
+        'favicon' => 'branding_favicon',
     ];
 
     /** GET /admin/branding */
@@ -20,19 +22,23 @@ class BrandingController extends Controller
         return response()->json([
             'logo' => AppSetting::get('branding_logo'),
             'logo_light' => AppSetting::get('branding_logo_light'),
+            'admin_logo' => AppSetting::get('branding_admin_logo'),
+            'favicon' => AppSetting::get('branding_favicon'),
         ]);
     }
 
     /**
-     * POST /admin/branding/logo — upload a replacement logo.
+     * POST /admin/branding/logo — upload a replacement image.
      * variant 'default' shows on light/cream backgrounds; 'light' is the
-     * white version for terracotta headers.
+     * white version for terracotta headers (both mobile app). 'admin_logo'
+     * replaces the admin dashboard's own sidebar/login mark. 'favicon' is
+     * the admin panel's browser-tab icon.
      */
     public function upload(Request $request)
     {
         $request->validate([
-            'logo' => ['required', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
-            'variant' => ['required', 'in:default,light'],
+            'logo' => ['required', 'file', 'mimes:png,jpg,jpeg,webp,svg,ico', 'max:2048'],
+            'variant' => ['required', 'in:default,light,admin_logo,favicon'],
         ]);
 
         $key = self::KEYS[$request->variant];
@@ -49,10 +55,10 @@ class BrandingController extends Controller
         return response()->json(['url' => '/storage/' . $path]);
     }
 
-    /** DELETE /admin/branding/logo?variant=… — back to the built-in uLam logo. */
+    /** DELETE /admin/branding/logo?variant=… — back to the built-in default. */
     public function reset(Request $request)
     {
-        $request->validate(['variant' => ['required', 'in:default,light']]);
+        $request->validate(['variant' => ['required', 'in:default,light,admin_logo,favicon']]);
 
         $key = self::KEYS[$request->variant];
 
@@ -63,6 +69,6 @@ class BrandingController extends Controller
 
         AppSetting::set($key, null);
 
-        return response()->json(['message' => 'Reset to the built-in logo.']);
+        return response()->json(['message' => 'Reset to the built-in default.']);
     }
 }
