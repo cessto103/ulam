@@ -23,7 +23,7 @@ class MealPlanService
         );
     }
 
-    public function generate(User $user, float $dailyBudget, ?string $preferences = null): MealPlan
+    public function generate(User $user, float $dailyBudget, ?string $preferences = null, ?string $planDate = null): MealPlan
     {
         if (!$user->canGenerateAiMealPlan()) {
             throw new \RuntimeException('AI meal plans are a Premium-only feature.');
@@ -97,10 +97,10 @@ class MealPlanService
         $rawText = $response->content[0]->text ?? '';
         $data = $this->parseJson($rawText);
 
-        return DB::transaction(function () use ($user, $data, $response) {
+        return DB::transaction(function () use ($user, $data, $response, $planDate) {
             $mealPlan = MealPlan::create([
                 'user_id' => $user->id,
-                'plan_date' => now()->toDateString(),
+                'plan_date' => $planDate ?? now()->toDateString(),
                 'source' => 'ai_generated',
                 'total_estimated_cost' => $data['total_estimated_cost'] ?? 0,
                 'ai_prompt_tokens' => $response->usage->inputTokens ?? 0,

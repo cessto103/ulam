@@ -176,12 +176,7 @@ class BudgetController extends Controller
         $user = $request->user();
         $date = $request->query('date');
 
-        // Find the budget period that covered that date
-        $period = BudgetPeriod::where('user_id', $user->id)
-            ->where('start_date', '<=', $date)
-            ->where('end_date',   '>=', $date)
-            ->latest('start_date')
-            ->first();
+        $period = BudgetPeriod::forUserAndDate($user->id, $date);
 
         if (!$period) {
             return response()->json(['has_budget' => false]);

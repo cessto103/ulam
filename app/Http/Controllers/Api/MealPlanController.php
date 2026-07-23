@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
+use App\Models\BudgetPeriod;
 use App\Models\MealPlan;
 use App\Models\MealPlanIngredient;
 use App\Models\MealPlanItem;
 use App\Models\Recipe;
+use App\Models\User;
 use App\Services\MealPlanService;
 use App\Services\XpService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MealPlanController extends Controller
@@ -23,6 +26,28 @@ class MealPlanController extends Controller
     private function aiGenerationDisabled(): bool
     {
         return AppSetting::get('ai_meal_plans_enabled', '1') !== '1';
+    }
+
+    // 7-Day Meal Planning (Premium): a target date must fall within today..+7,
+    // and any date other than today requires Premium. Returns an error
+    // response to short-circuit on, or null when the date is allowed.
+    private function validateDateWindow(string $date, User $user): ?JsonResponse
+    {
+        $today = now()->toDateString();
+        $max = now()->addDays(7)->toDateString();
+
+        if ($date < $today || $date > $max) {
+            return response()->json(['message' => 'Date must be between today and 7 days from now.'], 422);
+        }
+
+        if ($date !== $today && !$user->isPremium()) {
+            return response()->json([
+                'message' => '7-Day Meal Planning is a Premium feature.',
+                'premium_required' => true,
+            ], 403);
+        }
+
+        return null;
     }
 
     public function today(Request $request)
@@ -53,10 +78,17 @@ class MealPlanController extends Controller
 
         $request->validate([
             'preferences' => ['nullable', 'string', 'max:500'],
+            'date' => ['nullable', 'date_format:Y-m-d'],
         ]);
 
         $user = $request->user();
-        $budget = $user->currentBudget;
+        $date = $request->input('date') ?? now()->toDateString();
+
+        if ($windowError = $this->validateDateWindow($date, $user)) {
+            return $windowError;
+        }
+
+        $budget = BudgetPeriod::forUserAndDate($user->id, $date);
 
         if (!$budget) {
             return response()->json([
@@ -70,6 +102,7 @@ class MealPlanController extends Controller
                 $user,
                 (float) $budget->daily_food_budget,
                 $request->preferences,
+                $date,
             );
 
             // Once/day, not per-generation -- Premium users are intentionally
@@ -104,6 +137,16 @@ class MealPlanController extends Controller
 
         $user   = $request->user();
         $recipe = Recipe::findOrFail($data['recipe_id']);
+
+        // 7-Day Meal Planning (Premium): manually choosing a recipe for a
+        // future date is gated the same as AI generation. Past/today dates
+        // (e.g. editing spending history) are unaffected.
+        if ($data['date'] > now()->toDateString() && !$user->isPremium()) {
+            return response()->json([
+                'message' => '7-Day Meal Planning is a Premium feature.',
+                'premium_required' => true,
+            ], 403);
+        }
 
         // Find or create today's meal plan for the given date
         $plan = MealPlan::firstOrCreate(
@@ -203,10 +246,17 @@ class MealPlanController extends Controller
 
         $request->validate([
             'preferences' => ['nullable', 'string', 'max:500'],
+            'date' => ['nullable', 'date_format:Y-m-d'],
         ]);
 
         $user = $request->user();
-        $budget = $user->currentBudget;
+        $date = $request->input('date') ?? now()->toDateString();
+
+        if ($windowError = $this->validateDateWindow($date, $user)) {
+            return $windowError;
+        }
+
+        $budget = BudgetPeriod::forUserAndDate($user->id, $date);
 
         if (!$budget) {
             return response()->json([
@@ -222,11 +272,11 @@ class MealPlanController extends Controller
             ], 422);
         }
 
-        // Delete today's existing plan — only reached once we know a
-        // replacement is actually allowed, so a blocked user never loses
+        // Delete the existing plan for that date — only reached once we know
+        // a replacement is actually allowed, so a blocked user never loses
         // their existing plan for nothing.
         MealPlan::where('user_id', $user->id)
-            ->whereDate('plan_date', now()->toDateString())
+            ->whereDate('plan_date', $date)
             ->delete();
 
         try {
@@ -234,6 +284,7 @@ class MealPlanController extends Controller
                 $user,
                 (float) $budget->daily_food_budget,
                 $request->preferences,
+                $date,
             );
 
             return response()->json(['meal_plan' => $mealPlan], 201);

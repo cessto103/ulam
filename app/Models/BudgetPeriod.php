@@ -41,4 +41,14 @@ class BudgetPeriod extends Model
     {
         return $this->hasMany(DailyBudgetLog::class);
     }
+
+    /** The budget period covering a given date (any date, past/today/future), regardless of `is_active`. */
+    public static function forUserAndDate(int $userId, string $date): ?self
+    {
+        return static::where('user_id', $userId)
+            ->where('start_date', '<=', $date)
+            ->where('end_date', '>=', $date)
+            ->latest('start_date')
+            ->first();
+    }
 }
