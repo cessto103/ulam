@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.40.1 (2026-07-23)
+
+### Changed
+- **Weather Phrases now grouped into tabs** (Sunny / Cloudy / Light rain / Heavy rain / Extended rain), each showing its own phrase count, instead of one long flat list.
+
 ## v1.40.0 (2026-07-23)
 
 ### Added
