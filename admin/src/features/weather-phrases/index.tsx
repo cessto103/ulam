@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
@@ -59,6 +60,8 @@ const CATEGORY_LABEL: Record<WeatherCategory, string> = {
   extended_rain: 'Extended rain (3+ days)',
 }
 
+const WEATHER_CATEGORIES = Object.keys(CATEGORY_LABEL) as WeatherCategory[]
+
 const VARIANT_LABEL: Record<VariantType, string> = {
   info: 'Info only',
   meal_promo: 'Meal promo',
@@ -77,6 +80,7 @@ const QUERY_KEY = 'admin-weather-phrases'
 
 export function WeatherPhrases() {
   const qc = useQueryClient()
+  const [tab, setTab] = useState<WeatherCategory>('sunny')
   const [editing, setEditing] = useState<WeatherPhrase | 'new' | null>(null)
   const [deleting, setDeleting] = useState<WeatherPhrase | null>(null)
   const [form, setForm] = useState<WeatherPhraseForm>(EMPTY_FORM)
@@ -119,7 +123,7 @@ export function WeatherPhrases() {
   const openEditor = (phrase: WeatherPhrase | 'new') => {
     setForm(
       phrase === 'new'
-        ? EMPTY_FORM
+        ? { ...EMPTY_FORM, weather_category: tab }
         : {
             weather_category: phrase.weather_category,
             variant_type: phrase.variant_type,
@@ -158,53 +162,73 @@ export function WeatherPhrases() {
           </Button>
         </div>
 
-        <div className='flex flex-col gap-2'>
-          {isLoading ? (
-            <p className='py-12 text-center text-muted-foreground'>Loading...</p>
-          ) : (data ?? []).length === 0 ? (
-            <p className='py-12 text-center text-muted-foreground'>
-              No weather phrases yet.
-            </p>
-          ) : (
-            (data ?? []).map((phrase) => (
-              <div
-                key={phrase.id}
-                className='flex items-start justify-between gap-3 rounded-md border p-3'
-              >
-                <div className='min-w-0'>
-                  <div className='flex flex-wrap items-center gap-2'>
-                    <Badge variant='outline'>{CATEGORY_LABEL[phrase.weather_category]}</Badge>
-                    <Badge variant='secondary'>{VARIANT_LABEL[phrase.variant_type]}</Badge>
-                    {!phrase.is_active && (
-                      <Badge className='bg-muted text-muted-foreground'>Inactive</Badge>
-                    )}
-                  </div>
-                  <p className='mt-0.5 line-clamp-2 text-sm text-muted-foreground'>
-                    {phrase.phrase_text}
-                  </p>
-                </div>
-                <div className='flex shrink-0 gap-1'>
-                  <Button
-                    size='icon'
-                    variant='ghost'
-                    className='size-8'
-                    onClick={() => openEditor(phrase)}
-                  >
-                    <Pencil className='size-4' />
-                  </Button>
-                  <Button
-                    size='icon'
-                    variant='ghost'
-                    className='size-8 text-destructive'
-                    onClick={() => setDeleting(phrase)}
-                  >
-                    <Trash2 className='size-4' />
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        {isLoading ? (
+          <p className='py-12 text-center text-muted-foreground'>Loading...</p>
+        ) : (
+          <Tabs value={tab} onValueChange={(v) => setTab(v as WeatherCategory)}>
+            <TabsList className='flex-wrap'>
+              {WEATHER_CATEGORIES.map((category) => {
+                const count = (data ?? []).filter((p) => p.weather_category === category).length
+                return (
+                  <TabsTrigger key={category} value={category}>
+                    {CATEGORY_LABEL[category]}
+                    <span className='ms-1.5 text-xs text-muted-foreground'>{count}</span>
+                  </TabsTrigger>
+                )
+              })}
+            </TabsList>
+
+            {WEATHER_CATEGORIES.map((category) => {
+              const phrases = (data ?? []).filter((p) => p.weather_category === category)
+              return (
+                <TabsContent key={category} value={category} className='mt-4 flex flex-col gap-2'>
+                  {phrases.length === 0 ? (
+                    <p className='py-12 text-center text-muted-foreground'>
+                      No phrases yet for {CATEGORY_LABEL[category]}.
+                    </p>
+                  ) : (
+                    phrases.map((phrase) => (
+                      <div
+                        key={phrase.id}
+                        className='flex items-start justify-between gap-3 rounded-md border p-3'
+                      >
+                        <div className='min-w-0'>
+                          <div className='flex flex-wrap items-center gap-2'>
+                            <Badge variant='secondary'>{VARIANT_LABEL[phrase.variant_type]}</Badge>
+                            {!phrase.is_active && (
+                              <Badge className='bg-muted text-muted-foreground'>Inactive</Badge>
+                            )}
+                          </div>
+                          <p className='mt-0.5 line-clamp-2 text-sm text-muted-foreground'>
+                            {phrase.phrase_text}
+                          </p>
+                        </div>
+                        <div className='flex shrink-0 gap-1'>
+                          <Button
+                            size='icon'
+                            variant='ghost'
+                            className='size-8'
+                            onClick={() => openEditor(phrase)}
+                          >
+                            <Pencil className='size-4' />
+                          </Button>
+                          <Button
+                            size='icon'
+                            variant='ghost'
+                            className='size-8 text-destructive'
+                            onClick={() => setDeleting(phrase)}
+                          >
+                            <Trash2 className='size-4' />
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </TabsContent>
+              )
+            })}
+          </Tabs>
+        )}
       </Main>
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
