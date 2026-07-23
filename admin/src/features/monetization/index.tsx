@@ -48,9 +48,8 @@ const DEFAULT_PREMIUM_FEATURES: PremiumFeature[] = [
   { emoji: '📢', title_en: 'Price Reporting', title_tl: 'Price Reporting', desc_en: 'Report and check prices', desc_tl: 'Mag-report at makita ang presyo', free: true },
   { emoji: '👥', title_en: 'Community', title_tl: 'Komunidad', desc_en: 'Posts, likes, and tips from neighbors', desc_tl: 'Mga post, puso, at diskarte ng kapitbahay', free: true },
   { emoji: '🔓', title_en: 'Unlimited AI Plans', title_tl: 'Unlimited AI Plans', desc_en: 'No limits, as many times as you want', desc_tl: 'Walang limitasyon, kahit ilang beses', free: false },
-  { emoji: '⭐', title_en: 'Premium Recipes', title_tl: 'Premium Recipes', desc_en: 'Special recipes for the budget-savvy', desc_tl: 'Espesyal na mga recipe para sa matipid', free: false },
-  { emoji: '🔔', title_en: 'Smart Reminders', title_tl: 'Smart Reminders', desc_en: 'Personalized reminders', desc_tl: 'Personalized na mga paalala', free: false },
-  { emoji: '🚫', title_en: 'No Ads', title_tl: 'Walang Ads', desc_en: 'A clean experience, no interruptions', desc_tl: 'Malinis na karanasan, walang abala', free: false },
+  { emoji: '🤝', title_en: 'Shopping List Sharing', title_tl: 'Shopping List Sharing', desc_en: 'Share your shopping list with family', desc_tl: 'Ibahagi ang shopping list mo sa pamilya', free: false },
+  { emoji: '📅', title_en: '7-Day Meal Planning', title_tl: '7-Araw na Meal Planning', desc_en: 'Plan your meals a full week ahead', desc_tl: 'Magplano ng meals para sa isang buong linggo', free: false },
 ]
 
 const DURATIONS = ['7d', '15d', '1m', '1y'] as const

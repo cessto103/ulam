@@ -1,5 +1,10 @@
 # uLam Admin — Changelog
 
+## v1.40.2 (2026-07-23)
+
+### Changed
+- **Premium Features default list updated** (Content → Monetization → Plans & Pricing → uLam Premium: included features): removed Premium Recipes, Smart Reminders, and No Ads (none were actually enforced, or Recipes specifically isn't a commitment we can guarantee); added Shopping List Sharing (already a real Premium-only gate in the app) and 7-Day Meal Planning (upcoming). Only affects the built-in fallback shown until an admin explicitly saves a custom list — no live list was overridden since none had been saved yet.
+
 ## v1.40.1 (2026-07-23)
 
 ### Changed
