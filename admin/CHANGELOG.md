@@ -1,5 +1,13 @@
 # uLam Admin — Changelog
 
+## v1.41.0 (2026-07-23)
+
+### Added
+- **AI feature controls** (Content → Monetization → Plans & Pricing): two new switches — "AI meal plan generation" (today's AI Meal Planning + the 7-Day Advance "Generate AI Meal Plan" action) and "AI price refresh" (the nightly market + government reference price jobs, both of which call Claude with web search). Either can be flipped off instantly, no deploy needed; the mobile app shows "Coming Soon" in place of AI meal plan generation while its switch is off. Manually choosing a recipe for any day (including future days via 7-Day Advance) never uses AI and is unaffected by either switch.
+
+### Changed
+- **Premium Features default list**: removed "AI Meal Planning" and "Unlimited AI Plans" (paused for now — see AI feature controls above) while keeping "7-Day Meal Planning" (still genuinely available via manual recipe picking).
+
 ## v1.40.2 (2026-07-23)
 
 ### Changed

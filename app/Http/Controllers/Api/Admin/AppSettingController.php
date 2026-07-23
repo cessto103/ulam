@@ -15,6 +15,8 @@ class AppSettingController extends Controller
         'gcash_account_name',
         'payment_instructions',
         'payment_support_note',
+        'ai_meal_plans_enabled',
+        'price_refresh_ai_enabled',
     ];
 
     public function index()
@@ -36,6 +38,8 @@ class AppSettingController extends Controller
             'gcash_account_name' => ['nullable', 'string', 'max:100'],
             'payment_instructions' => ['nullable', 'string', 'max:2000'],
             'payment_support_note' => ['nullable', 'string', 'max:500'],
+            'ai_meal_plans_enabled' => ['sometimes', 'boolean'],
+            'price_refresh_ai_enabled' => ['sometimes', 'boolean'],
         ]);
 
         foreach ($validated as $key => $value) {

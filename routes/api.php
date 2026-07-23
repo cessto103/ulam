@@ -99,6 +99,14 @@ Route::get('/premium-features', function () {
     return response()->json(['features' => $raw ? (json_decode($raw, true) ?: []) : []]);
 });
 
+// Public AI feature status — lets the Meal Plan tab show "Coming Soon" as soon
+// as the screen loads, instead of only after a failed generate attempt.
+Route::get('/ai-status', function () {
+    return response()->json([
+        'meal_plans_enabled' => \App\Models\AppSetting::get('ai_meal_plans_enabled', '1') === '1',
+    ]);
+});
+
 // Public premium pricing (base + promo) — reuses the admin controller's show()
 // so the default prices live in one place, same as /about.
 Route::get('/premium-pricing', [AdminPremiumPricingController::class, 'show']);

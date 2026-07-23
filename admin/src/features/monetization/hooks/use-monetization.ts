@@ -35,6 +35,8 @@ export type PaymentSettings = {
   gcash_account_name: string | null
   payment_instructions: string | null
   payment_support_note: string | null
+  ai_meal_plans_enabled: string | null
+  price_refresh_ai_enabled: string | null
 }
 
 export type PremiumFeature = {
@@ -152,6 +154,8 @@ export function useUpdatePaymentSettings() {
       gcash_account_name?: string | null
       payment_instructions?: string | null
       payment_support_note?: string | null
+      ai_meal_plans_enabled?: boolean
+      price_refresh_ai_enabled?: boolean
     }) => {
       const { data } = await apiClient.put('/admin/app-settings', body)
       return data

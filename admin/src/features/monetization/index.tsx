@@ -43,11 +43,9 @@ import {
 // Mirrors the mobile app's compiled-in default (app/upgrade.tsx) — seeds the
 // editor the first time, before the admin has saved anything of their own.
 const DEFAULT_PREMIUM_FEATURES: PremiumFeature[] = [
-  { emoji: '🍳', title_en: 'AI Meal Planning', title_tl: 'AI Meal Planning', desc_en: 'Get a meal plan every day', desc_tl: 'Humingi ng meal plan araw-araw', free: false },
   { emoji: '📊', title_en: 'Budget Tracking', title_tl: 'Budget Tracking', desc_en: 'Log expenses, track your savings', desc_tl: 'Mag-log ng gastos, tingnan ang savings', free: true },
   { emoji: '📢', title_en: 'Price Reporting', title_tl: 'Price Reporting', desc_en: 'Report and check prices', desc_tl: 'Mag-report at makita ang presyo', free: true },
   { emoji: '👥', title_en: 'Community', title_tl: 'Komunidad', desc_en: 'Posts, likes, and tips from neighbors', desc_tl: 'Mga post, puso, at diskarte ng kapitbahay', free: true },
-  { emoji: '🔓', title_en: 'Unlimited AI Plans', title_tl: 'Unlimited AI Plans', desc_en: 'No limits, as many times as you want', desc_tl: 'Walang limitasyon, kahit ilang beses', free: false },
   { emoji: '🤝', title_en: 'Shopping List Sharing', title_tl: 'Shopping List Sharing', desc_en: 'Share your shopping list with family', desc_tl: 'Ibahagi ang shopping list mo sa pamilya', free: false },
   { emoji: '📅', title_en: '7-Day Meal Planning', title_tl: '7-Araw na Meal Planning', desc_en: 'Plan your meals a full week ahead', desc_tl: 'Magplano ng meals para sa isang buong linggo', free: false },
 ]
@@ -352,6 +350,80 @@ function PaymentSettingsCard() {
   )
 }
 
+function AiFeatureControlsCard() {
+  const { data: settings } = usePaymentSettingsQuery()
+  const update = useUpdatePaymentSettings()
+
+  const [mealPlansEnabled, setMealPlansEnabled] = useState(true)
+  const [priceRefreshEnabled, setPriceRefreshEnabled] = useState(true)
+
+  useEffect(() => {
+    if (!settings) return
+    setMealPlansEnabled(settings.ai_meal_plans_enabled !== '0')
+    setPriceRefreshEnabled(settings.price_refresh_ai_enabled !== '0')
+  }, [settings])
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>AI feature controls</CardTitle>
+        <CardDescription>
+          Each of these calls the Anthropic API and costs real money per
+          call. Turning a switch off takes effect instantly, no app update
+          needed — the app shows "Coming Soon" in its place.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='space-y-4'>
+        <div className='flex items-center justify-between rounded-md border p-3'>
+          <div>
+            <p className='text-sm font-medium'>AI meal plan generation</p>
+            <p className='text-xs text-muted-foreground'>
+              Today's AI Meal Planning and the 7-Day Advance "Generate AI
+              Meal Plan" action. Manually choosing a recipe for any day never
+              uses AI and is unaffected by this switch.
+            </p>
+          </div>
+          <Switch checked={mealPlansEnabled} onCheckedChange={setMealPlansEnabled} />
+        </div>
+        <div className='flex items-center justify-between rounded-md border p-3'>
+          <div>
+            <p className='text-sm font-medium'>AI price refresh</p>
+            <p className='text-xs text-muted-foreground'>
+              The nightly market price and government reference price jobs
+              (both use Claude with web search across every active
+              market/region, on a schedule — not tied to any single paying
+              user).
+            </p>
+          </div>
+          <Switch checked={priceRefreshEnabled} onCheckedChange={setPriceRefreshEnabled} />
+        </div>
+        <div className='flex justify-end'>
+          <Button
+            disabled={update.isPending}
+            onClick={() =>
+              update.mutate(
+                {
+                  ai_meal_plans_enabled: mealPlansEnabled,
+                  price_refresh_ai_enabled: priceRefreshEnabled,
+                },
+                {
+                  onSuccess: () => toast.success('AI feature settings saved.'),
+                  onError: (error: any) =>
+                    toast.error(
+                      error?.response?.data?.message ?? 'Could not save.'
+                    ),
+                }
+              )
+            }
+          >
+            Save AI feature settings
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function PremiumFeaturesCard() {
   const { data: saved, isLoading } = usePremiumFeaturesQuery()
   const update = useUpdatePremiumFeatures()
@@ -628,6 +700,8 @@ export function Monetization() {
         </div>
 
         <PaymentSettingsCard />
+
+        <AiFeatureControlsCard />
 
         <Tabs defaultValue='premium'>
           <TabsList>

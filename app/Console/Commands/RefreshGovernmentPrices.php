@@ -13,6 +13,11 @@ class RefreshGovernmentPrices extends Command
 
     public function handle(PriceIntelligenceService $service): int
     {
+        if ($service->aiDisabled()) {
+            $this->warn('AI price refresh is disabled (price_refresh_ai_enabled = 0) — skipping.');
+            return self::SUCCESS;
+        }
+
         $singleRegion = $this->option('region');
 
         $regions = $singleRegion

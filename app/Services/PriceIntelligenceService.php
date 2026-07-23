@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Anthropic\Client;
+use App\Models\AppSetting;
 use App\Models\Market;
 use App\Models\MarketPrice;
 use App\Models\GovernmentPriceReference;
@@ -41,6 +42,15 @@ class PriceIntelligenceService
     public function __construct()
     {
         $this->ai = new Client(apiKey: config('services.anthropic.key'));
+    }
+
+    // Cost kill switch — both refreshMarket() and refreshGovernmentPrices()
+    // call Claude with the web search tool, and run on a nightly cron across
+    // every active market/region regardless of user activity, so this can be
+    // flipped off from AppSettings without a deploy if spend needs to stop.
+    public function aiDisabled(): bool
+    {
+        return AppSetting::get('price_refresh_ai_enabled', '1') !== '1';
     }
 
     /**

@@ -19,6 +19,7 @@ import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedWebhooksIndexRouteImport } from './routes/_authenticated/webhooks/index'
+import { Route as AuthenticatedWeatherPhrasesIndexRouteImport } from './routes/_authenticated/weather-phrases/index'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTindahanIndexRouteImport } from './routes/_authenticated/tindahan/index'
 import { Route as AuthenticatedTindahanCommentsIndexRouteImport } from './routes/_authenticated/tindahan-comments/index'
@@ -110,6 +111,12 @@ const AuthenticatedWebhooksIndexRoute =
   AuthenticatedWebhooksIndexRouteImport.update({
     id: '/webhooks/',
     path: '/webhooks/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWeatherPhrasesIndexRoute =
+  AuthenticatedWeatherPhrasesIndexRouteImport.update({
+    id: '/weather-phrases/',
+    path: '/weather-phrases/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
@@ -402,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/weather-phrases/': typeof AuthenticatedWeatherPhrasesIndexRoute
   '/webhooks/': typeof AuthenticatedWebhooksIndexRoute
 }
 export interface FileRoutesByTo {
@@ -453,6 +461,7 @@ export interface FileRoutesByTo {
   '/tindahan-comments': typeof AuthenticatedTindahanCommentsIndexRoute
   '/tindahan': typeof AuthenticatedTindahanIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/weather-phrases': typeof AuthenticatedWeatherPhrasesIndexRoute
   '/webhooks': typeof AuthenticatedWebhooksIndexRoute
 }
 export interface FileRoutesById {
@@ -507,6 +516,7 @@ export interface FileRoutesById {
   '/_authenticated/tindahan-comments/': typeof AuthenticatedTindahanCommentsIndexRoute
   '/_authenticated/tindahan/': typeof AuthenticatedTindahanIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/weather-phrases/': typeof AuthenticatedWeatherPhrasesIndexRoute
   '/_authenticated/webhooks/': typeof AuthenticatedWebhooksIndexRoute
 }
 export interface FileRouteTypes {
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/tindahan-comments/'
     | '/tindahan/'
     | '/users/'
+    | '/weather-phrases/'
     | '/webhooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -612,6 +623,7 @@ export interface FileRouteTypes {
     | '/tindahan-comments'
     | '/tindahan'
     | '/users'
+    | '/weather-phrases'
     | '/webhooks'
   id:
     | '__root__'
@@ -665,6 +677,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tindahan-comments/'
     | '/_authenticated/tindahan/'
     | '/_authenticated/users/'
+    | '/_authenticated/weather-phrases/'
     | '/_authenticated/webhooks/'
   fileRoutesById: FileRoutesById
 }
@@ -748,6 +761,13 @@ declare module '@tanstack/react-router' {
       path: '/webhooks'
       fullPath: '/webhooks/'
       preLoaderRoute: typeof AuthenticatedWebhooksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/weather-phrases/': {
+      id: '/_authenticated/weather-phrases/'
+      path: '/weather-phrases'
+      fullPath: '/weather-phrases/'
+      preLoaderRoute: typeof AuthenticatedWeatherPhrasesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/users/': {
@@ -1100,6 +1120,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTindahanCommentsIndexRoute: typeof AuthenticatedTindahanCommentsIndexRoute
   AuthenticatedTindahanIndexRoute: typeof AuthenticatedTindahanIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedWeatherPhrasesIndexRoute: typeof AuthenticatedWeatherPhrasesIndexRoute
   AuthenticatedWebhooksIndexRoute: typeof AuthenticatedWebhooksIndexRoute
 }
 
@@ -1150,6 +1171,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedTindahanCommentsIndexRoute,
   AuthenticatedTindahanIndexRoute: AuthenticatedTindahanIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedWeatherPhrasesIndexRoute: AuthenticatedWeatherPhrasesIndexRoute,
   AuthenticatedWebhooksIndexRoute: AuthenticatedWebhooksIndexRoute,
 }
 
