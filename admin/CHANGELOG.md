@@ -1,5 +1,13 @@
 # uLam Admin — Changelog
 
+## v1.42.0 (2026-07-24)
+
+### Added
+- **Settings → System**: a "Run Scheduled Jobs Now" button that runs all 7 production cron jobs on demand (maintenance, billing lifecycle, AI price refresh, government price refresh, strike expiry, weather notifications, daily reminders) — calls each command directly rather than `schedule:run` itself, since `schedule:run` only fires jobs due at the exact current minute and would silently do nothing most of the time if clicked on demand. AI price refresh still respects its own pause switch and reports a skip message instead of running. Confirmation dialog first (this sends real push notifications and processes real billing transitions), throttled to 3 runs/hour. Shows a per-job result card (success/fail + captured output) after running.
+
+### Changed
+- **Markets page**: "Refresh All Prices" and the per-market "Refresh via AI" action are now disabled (with an explanatory tooltip) whenever AI price refresh is paused (Monetization → AI feature controls) — previously they stayed clickable and would just fail server-side once tapped.
+
 ## v1.41.0 (2026-07-23)
 
 ### Added

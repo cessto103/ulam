@@ -10,6 +10,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePaymentSettingsQuery } from '@/features/monetization/hooks/use-monetization'
 import { type Market } from '../data/schema'
 import { useMarkets } from './markets-provider'
 
@@ -19,6 +20,8 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useMarkets()
+  const { data: settings } = usePaymentSettingsQuery()
+  const aiRefreshDisabled = settings?.price_refresh_ai_enabled === '0'
 
   return (
     <>
@@ -45,6 +48,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
+            disabled={aiRefreshDisabled}
+            title={aiRefreshDisabled ? 'AI price refresh is paused' : undefined}
             onClick={() => {
               setCurrentRow(row.original)
               setOpen('refresh-ai')

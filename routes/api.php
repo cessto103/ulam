@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicket
 use App\Http\Controllers\Api\Admin\TindahanController as AdminTindahanController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\Admin\BillingController as AdminBillingController;
+use App\Http\Controllers\Api\Admin\SystemController as AdminSystemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\BoostController;
@@ -497,6 +498,8 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     Route::get('/app-settings', [AdminAppSettingController::class, 'index']);
     Route::put('/app-settings', [AdminAppSettingController::class, 'update']);
+
+    Route::post('/system/run-schedule', [AdminSystemController::class, 'runSchedule'])->middleware('throttle:3,60');
 
     Route::get('/support-tickets',             [AdminSupportTicketController::class, 'index']);
     Route::get('/support-tickets/{id}',        [AdminSupportTicketController::class, 'show']);
