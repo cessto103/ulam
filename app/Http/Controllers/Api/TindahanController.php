@@ -71,6 +71,72 @@ class TindahanController extends Controller
         return $clean ?: null;
     }
 
+    /**
+     * Boosted stores only -- same dedicated placement concept as
+     * RecipeController::recommended. Optional lat/lng (+radius_km, default 5)
+     * narrows to nearby boosted stores for the dashboard's "Recommended
+     * Stores Near You"; without them, returns boosted stores nationwide,
+     * most-recently-boosted first, for the Prices page's plain "Recommended
+     * Stores" strip. Paginated small (default 4 = a 2x2 grid) to match the
+     * mobile "Load More" pattern.
+     */
+    public function recommended(Request $request)
+    {
+        $lat     = $request->query('lat');
+        $lng     = $request->query('lng');
+        $perPage = min(20, max(1, (int) $request->query('per_page', 4)));
+
+        $boosted = function ($q) {
+            $q->selectRaw('1')
+                ->from('ad_boosts')
+                ->whereColumn('ad_boosts.boostable_id', 'tindahan.id')
+                ->where('ad_boosts.boostable_type', Tindahan::class)
+                ->where('ad_boosts.status', 'active')
+                ->where('ad_boosts.expires_at', '>', now());
+        };
+
+        if ($lat !== null && $lng !== null) {
+            $lat      = (float) $lat;
+            $lng      = (float) $lng;
+            $radiusKm = min(30, max(1, (float) $request->query('radius_km', 5)));
+
+            $stores = Tindahan::publiclyVisible()
+                ->whereNotNull('latitude')->whereNotNull('longitude')
+                ->whereExists($boosted)
+                ->selectRaw(
+                    'tindahan.*, ( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) )
+                           * cos( radians(longitude) - radians(?) )
+                           + sin( radians(?) ) * sin( radians(latitude) ) ) ) AS distance_km',
+                    [$lat, $lng, $lat]
+                )
+                ->having('distance_km', '<=', $radiusKm)
+                ->orderBy('distance_km')
+                ->paginate($perPage);
+        } else {
+            $stores = Tindahan::publiclyVisible()
+                ->whereExists($boosted)
+                ->selectRaw(
+                    'tindahan.*,
+                     (SELECT ad_boosts.created_at FROM ad_boosts
+                        WHERE ad_boosts.boostable_type = ? AND ad_boosts.boostable_id = tindahan.id
+                          AND ad_boosts.status = ? AND ad_boosts.expires_at > ?
+                        ORDER BY ad_boosts.created_at DESC LIMIT 1) as boosted_at',
+                    [Tindahan::class, 'active', now()]
+                )
+                ->orderByDesc('boosted_at')
+                ->paginate($perPage);
+        }
+
+        $stores->getCollection()->transform(function ($t) {
+            $priceQ = MarketPrice::where('tindahan_id', $t->id)->where('is_available', true);
+            $t->item_count   = (clone $priceQ)->count();
+            $t->last_updated = (clone $priceQ)->max('updated_at');
+            return $t;
+        });
+
+        return response()->json($stores);
+    }
+
     // A user's own submitted stores/stalls
     /** Pending community price reports for all stores owned by the auth user. */
     public function pendingReports(Request $request)

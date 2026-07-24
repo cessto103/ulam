@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ThemePresetSeeder::class);
         $this->call(FaqSeeder::class);
         $this->call(WeatherPhraseSeeder::class);
+        $this->call(BoostDemoSeeder::class);
     }
 
     private function seedMarkets(): void

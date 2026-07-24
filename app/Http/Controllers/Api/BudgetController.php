@@ -136,6 +136,72 @@ class BudgetController extends Controller
         ], 201);
     }
 
+    /**
+     * Sets a budget for exactly ONE past day -- deliberately separate from
+     * setup() above, which always anchors to today() and (destructively)
+     * deactivates the user's current running period. That makes setup()
+     * completely wrong to reuse here: pointing it at a past day would kill
+     * the user's real, ongoing budget period to make room for a 1-day
+     * period in the past. This endpoint never touches is_active or any
+     * other period at all -- it just inserts a standalone row covering
+     * that single date, which forUserAndDate()/forDate()/logForDate() all
+     * already resolve by date range regardless of is_active.
+     */
+    public function setupForDate(Request $request)
+    {
+        $data = $request->validate([
+            'date'                        => ['required', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'total_amount'                => ['required', 'numeric', 'min:1'],
+            'household_size'              => ['required', 'integer', 'min:1', 'max:20'],
+            'custom_expenses'             => ['nullable', 'array', 'max:10'],
+            'custom_expenses.*.category'  => ['required', 'in:travel,load,baon,other'],
+            'custom_expenses.*.amount'    => ['required', 'numeric', 'min:0'],
+            'custom_expenses.*.label'     => ['nullable', 'string', 'max:40'],
+        ]);
+
+        $user = $request->user();
+
+        if (BudgetPeriod::forUserAndDate($user->id, $data['date'])) {
+            return response()->json(['message' => 'A budget already covers this day.'], 422);
+        }
+
+        // Same custom-expenses-deducted-from-gross-total math as setup(),
+        // just with total_days always 1 (no division needed for one day).
+        $customExpenses = collect($data['custom_expenses'] ?? [])
+            ->map(fn ($e) => [
+                'category' => $e['category'],
+                'amount'   => round((float) $e['amount'], 2),
+                'label'    => $e['category'] === 'other' ? ($e['label'] ?? null) : null,
+            ])
+            ->values()
+            ->all();
+
+        $expensesTotal   = collect($customExpenses)->sum('amount');
+        $dailyFoodBudget = round($data['total_amount'] - $expensesTotal, 2);
+
+        $period = BudgetPeriod::create([
+            'user_id'           => $user->id,
+            'total_amount'      => $data['total_amount'],
+            'total_days'        => 1,
+            'household_size'    => $data['household_size'],
+            'custom_expenses'   => $customExpenses,
+            'daily_food_budget' => $dailyFoodBudget,
+            'start_date'        => $data['date'],
+            'end_date'          => $data['date'],
+            'is_active'         => false,
+        ]);
+
+        return response()->json([
+            'message' => 'Budget na-set!',
+            'period'  => [
+                'id'                => $period->id,
+                'daily_food_budget' => (float) $period->daily_food_budget,
+                'start_date'        => $period->start_date->toDateString(),
+                'end_date'          => $period->end_date->toDateString(),
+            ],
+        ], 201);
+    }
+
     public function history(Request $request)
     {
         $user   = $request->user();
@@ -211,12 +277,15 @@ class BudgetController extends Controller
             'actual_spent'      => ['required', 'numeric', 'min:0'],
             'expense_breakdown' => ['nullable', 'array'],
             'notes'             => ['nullable', 'string', 'max:500'],
+            'date'              => ['nullable', 'date_format:Y-m-d', 'before_or_equal:today'],
         ]);
 
         $user = $request->user();
+        $date = $data['date'] ?? today()->toDateString();
 
-        $result = app(\App\Services\BudgetLogService::class)->logToday(
+        $result = app(\App\Services\BudgetLogService::class)->logForDate(
             $user,
+            $date,
             (float) $data['actual_spent'],
             $data['expense_breakdown'] ?? null,
             $data['notes'] ?? null,

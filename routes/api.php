@@ -132,6 +132,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/budget/for-date', [BudgetController::class, 'forDate']);
     Route::get('/budget/history', [BudgetController::class, 'history']);
     Route::post('/budget/setup', [BudgetController::class, 'setup']);
+    Route::post('/budget/setup-for-date', [BudgetController::class, 'setupForDate']);
     Route::post('/budget/log', [BudgetController::class, 'log']);
 
     Route::get('/meal-plan/today', [MealPlanController::class, 'today']);
@@ -171,6 +172,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/recipe-comments/{id}', [RecipeCommentController::class, 'destroy']);
 
     Route::get('/recipes',               [RecipeController::class, 'index']);
+    Route::get('/recipes/recommended',   [RecipeController::class, 'recommended']);
     Route::post('/recipes',              [RecipeController::class, 'store'])->middleware(['throttle:6,1', 'not-restricted']);
     Route::delete('/recipes',            [RecipeController::class, 'destroyAll']);
     Route::get('/recipes/{id}',          [RecipeController::class, 'show']);
@@ -197,8 +199,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/stats', [UserController::class, 'stats']);
     Route::get('/user/moderation-status', [UserController::class, 'moderationStatus']);
 
-    Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail']);
-    Route::post('/user/secondary-email/verify',  [UserController::class, 'verifySecondaryEmail']);
+    Route::post('/user/secondary-email/request', [UserController::class, 'requestSecondaryEmail'])->middleware('throttle:3,1');
+    Route::post('/user/secondary-email/verify',  [UserController::class, 'verifySecondaryEmail'])->middleware('throttle:6,1');
     Route::delete('/user/secondary-email',       [UserController::class, 'removeSecondaryEmail']);
 
     Route::post('/auth/verify-email',       [AuthController::class, 'verifyEmail'])->middleware('throttle:6,1');
@@ -269,6 +271,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/markets/{id}/refresh',[MarketController::class, 'refreshPrices']);
 
     Route::get('/tindahan/mine',   [TindahanController::class, 'mine']);
+    Route::get('/tindahan/recommended', [TindahanController::class, 'recommended']);
     Route::get('/tindahan-reports',                [TindahanController::class, 'pendingReports']);
     Route::post('/tindahan-reports/{id}/accept',   [TindahanController::class, 'acceptReport']);
     Route::post('/tindahan-reports/{id}/decline',  [TindahanController::class, 'declineReport']);

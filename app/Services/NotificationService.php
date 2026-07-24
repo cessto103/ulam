@@ -40,18 +40,23 @@ class NotificationService
     {
         if (empty($tokens)) return;
 
-        $messages = array_map(fn ($token) => [
-            'to'    => $token,
-            'title' => $title,
-            'body'  => $body,
-            'data'  => $data,
-            'sound' => 'default',
-        ], $tokens);
+        // Expo's push API rejects/truncates batches over 100 messages, so
+        // chunk to keep one bad/oversized batch from silently dropping
+        // everyone else's notification for the day.
+        foreach (array_chunk($tokens, 100) as $chunk) {
+            $messages = array_map(fn ($token) => [
+                'to'    => $token,
+                'title' => $title,
+                'body'  => $body,
+                'data'  => $data,
+                'sound' => 'default',
+            ], $chunk);
 
-        try {
-            Http::timeout(10)->post('https://exp.host/push/send', $messages);
-        } catch (\Throwable $e) {
-            Log::warning('Expo bulk push failed', ['error' => $e->getMessage()]);
+            try {
+                Http::timeout(10)->post('https://exp.host/push/send', $messages);
+            } catch (\Throwable $e) {
+                Log::warning('Expo bulk push failed', ['error' => $e->getMessage()]);
+            }
         }
     }
 

@@ -56,10 +56,13 @@ class RecipeController extends Controller
             });
         }
 
-        // Popularity = boosted first, then real views in the last 7 days,
-        // then all-time saves as the tiebreaker for content without views yet.
-        $recipes = $query->orderByDesc('is_boosted')
-            ->orderByDesc('views_7d')
+        // Purely organic popularity -- real views in the last 7 days, then
+        // all-time saves as the tiebreaker for content without views yet.
+        // Boosted placement is intentionally NOT a sort factor here anymore:
+        // it has its own dedicated "Recommended for you" surface instead, so
+        // a boost buys a real distinct spot rather than just nudging this
+        // general listing (avoids showing the same recipes in both places).
+        $recipes = $query->orderByDesc('views_7d')
             ->orderByDesc('save_count')
             ->paginate(50);
 
@@ -71,6 +74,49 @@ class RecipeController extends Controller
             $r->views_7d    = (int) $r->views_7d;
             return $r;
         });
+
+        return response()->json($recipes);
+    }
+
+    /**
+     * Boosted recipes only -- the dedicated "Recommended for you" placement
+     * a boost buys, separate from the organic "Popular This Week" listing
+     * above (which no longer factors in is_boosted at all). Paginated small
+     * (default 4 = a 2x2 grid) since the mobile dashboard loads this "page
+     * by page" behind a Load More button.
+     */
+    public function recommended(Request $request)
+    {
+        $user    = $request->user();
+        $perPage = min(20, max(1, (int) $request->query('per_page', 4)));
+
+        $recipes = Recipe::with(['user:id,name,username'])
+            ->where(function ($q) use ($user) {
+                $q->where('is_published', true)->orWhere('user_id', $user->id);
+            })
+            ->when(! $user->isPremium(), function ($q) use ($user) {
+                $q->where(function ($qq) use ($user) {
+                    $qq->where('is_premium_only', false)->orWhere('user_id', $user->id);
+                });
+            })
+            ->whereExists(function ($q) {
+                $q->selectRaw('1')
+                    ->from('ad_boosts')
+                    ->whereColumn('ad_boosts.boostable_id', 'recipes.id')
+                    ->where('ad_boosts.boostable_type', Recipe::class)
+                    ->where('ad_boosts.status', 'active')
+                    ->where('ad_boosts.expires_at', '>', now());
+            })
+            ->selectRaw(
+                'recipes.*,
+                 (SELECT ad_boosts.created_at FROM ad_boosts
+                    WHERE ad_boosts.boostable_type = ? AND ad_boosts.boostable_id = recipes.id
+                      AND ad_boosts.status = ? AND ad_boosts.expires_at > ?
+                    ORDER BY ad_boosts.created_at DESC LIMIT 1) as boosted_at',
+                [Recipe::class, 'active', now()]
+            )
+            ->orderByDesc('boosted_at')
+            ->paginate($perPage);
 
         return response()->json($recipes);
     }

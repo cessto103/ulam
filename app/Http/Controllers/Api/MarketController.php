@@ -313,6 +313,10 @@ class MarketController extends Controller
 
     public function refreshPrices(int $id, PriceIntelligenceService $service)
     {
+        if ($service->aiDisabled()) {
+            return response()->json(['message' => 'AI price refresh is temporarily disabled.'], 503);
+        }
+
         $market = Market::where('is_active', true)->findOrFail($id);
 
         // Each refresh is a billed AI call, so cool down per market (same

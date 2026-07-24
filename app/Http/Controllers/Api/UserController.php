@@ -11,6 +11,7 @@ use App\Models\UserTask;
 use App\Services\XpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -151,7 +152,7 @@ class UserController extends Controller
         $user->update([
             'secondary_email' => $validated['email'],
             'secondary_email_verified_at' => null,
-            'secondary_email_otp' => $code,
+            'secondary_email_otp' => Hash::make($code),
             'secondary_email_otp_expires_at' => now()->addMinutes(10),
         ]);
 
@@ -176,7 +177,7 @@ class UserController extends Controller
             throw ValidationException::withMessages(['code' => 'This code has expired. Please request a new one.']);
         }
 
-        if (! hash_equals($user->secondary_email_otp, $validated['code'])) {
+        if (! Hash::check($validated['code'], $user->secondary_email_otp)) {
             throw ValidationException::withMessages(['code' => 'Incorrect code.']);
         }
 

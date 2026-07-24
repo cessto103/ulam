@@ -46,7 +46,10 @@ class ConnectionController extends Controller
             }
         }
 
-        $posts  = Post::with(['user:id,name,username,avatar'])
+        $posts  = Post::with([
+                        'user:id,name,username,avatar',
+                        'recipe:id,title,image_url,image_urls,collage_style,gradient_key,font_key,budget_tag,estimated_cost',
+                    ])
                     ->where('user_id', $id)
                     ->latest()
                     ->paginate(10);

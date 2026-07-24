@@ -10,6 +10,7 @@ use App\Models\Recipe;
 use App\Models\Tindahan;
 use App\Models\User;
 use App\Models\UserRewardTier;
+use App\Services\BillingService;
 use App\Services\BoostService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -17,6 +18,10 @@ use Illuminate\Validation\Rule;
 
 class BoostController extends Controller
 {
+    public function __construct(private BillingService $billing)
+    {
+    }
+
     private const TARGET_MODELS = [
         'recipe' => Recipe::class,
         'tindahan' => Tindahan::class,
@@ -43,24 +48,13 @@ class BoostController extends Controller
         return response()->json(['boosts' => $query->get()]);
     }
 
-    /**
-     * POST /boosts — either a manual GCash payment, or (when
-     * user_reward_tier_id is present) spending a free boost credit earned
-     * from a Reward Tier. The credit path skips payment entirely, so it's
-     * branched off before the payments_enabled gate and the paid-option
-     * lookup, both of which only make sense for real money.
-     */
+    /** POST /boosts — spend a free boost credit earned from a Reward Tier. Real-money boosts go through checkout() instead. */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'target' => ['required', 'string', Rule::in(array_keys(self::TARGET_MODELS))],
             'boostable_id' => ['required', 'integer'],
-            'user_reward_tier_id' => ['nullable', 'integer'],
-            'duration_days' => ['required_without:user_reward_tier_id', 'integer', 'min:1'],
-            'payment_reference' => ['required_without:user_reward_tier_id', 'regex:/^[0-9]{8,20}$/', 'unique:ad_boosts,payment_reference'],
-        ], [
-            'payment_reference.regex' => 'The reference number should be the digits from your GCash receipt.',
-            'payment_reference.unique' => 'This reference number has already been used.',
+            'user_reward_tier_id' => ['required', 'integer'],
         ]);
 
         $user = $request->user();
@@ -71,20 +65,32 @@ class BoostController extends Controller
             return response()->json(['message' => 'You can only boost your own content.'], 403);
         }
 
-        $alreadyBoosted = AdBoost::where('boostable_type', $modelClass)
-            ->where('boostable_id', $boostable->id)
-            ->whereIn('status', ['pending', 'active'])
-            ->where(function ($q) {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->exists();
-
-        if ($alreadyBoosted) {
-            return response()->json(['message' => 'This is already boosted or has a payment awaiting review.'], 422);
+        if ($this->alreadyBoosted($modelClass, $boostable->id)) {
+            return response()->json(['message' => 'This is already boosted or has a payment awaiting confirmation.'], 422);
         }
 
-        if (! empty($validated['user_reward_tier_id'])) {
-            return $this->storeFromCredit($validated, $modelClass, $boostable, $user);
+        return $this->storeFromCredit($validated, $modelClass, $boostable, $user);
+    }
+
+    /** POST /boosts/checkout — starts a PayMongo checkout for a paid boost duration; the boost activates automatically once the webhook confirms payment. */
+    public function checkout(Request $request)
+    {
+        $validated = $request->validate([
+            'target' => ['required', 'string', Rule::in(array_keys(self::TARGET_MODELS))],
+            'boostable_id' => ['required', 'integer'],
+            'duration_days' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $user = $request->user();
+        $modelClass = self::TARGET_MODELS[$validated['target']];
+
+        $boostable = $modelClass::findOrFail($validated['boostable_id']);
+        if ($boostable->user_id !== $user->id) {
+            return response()->json(['message' => 'You can only boost your own content.'], 403);
+        }
+
+        if ($this->alreadyBoosted($modelClass, $boostable->id)) {
+            return response()->json(['message' => 'This is already boosted or has a payment awaiting confirmation.'], 422);
         }
 
         $settings = AppSetting::allCached();
@@ -101,41 +107,36 @@ class BoostController extends Controller
             return response()->json(['message' => 'That boost option is not available.'], 422);
         }
 
-        $boost = AdBoost::create([
-            'user_id' => $user->id,
-            'boostable_type' => $modelClass,
-            'boostable_id' => $boostable->id,
-            'duration_days' => $option->duration_days,
-            'amount_paid' => $option->price,
-            'payment_method' => 'gcash_manual',
-            'payment_reference' => $validated['payment_reference'],
-            'status' => 'pending',
-        ]);
+        $session = $this->billing->checkoutBoost($user, $option, $boostable);
 
         return response()->json([
-            'message' => 'Salamat! Your payment is being verified — usually within 24 hours.',
-            'boost' => $boost,
+            'session_id' => $session->public_id, 'status' => $session->status,
+            'checkout_url' => $session->checkout_url, 'expires_at' => $session->expires_at,
         ], 201);
+    }
+
+    private function alreadyBoosted(string $modelClass, int $boostableId): bool
+    {
+        return AdBoost::where('boostable_type', $modelClass)
+            ->where('boostable_id', $boostableId)
+            ->whereIn('status', ['pending', 'active'])
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->exists();
     }
 
     private function storeFromCredit(array $validated, string $modelClass, Model $boostable, User $user)
     {
-        $credit = UserRewardTier::where('user_id', $user->id)
-            ->where('id', $validated['user_reward_tier_id'])
-            ->whereNull('redeemed_at')
-            ->with('rewardTier')
-            ->first();
-
-        if (! $credit) {
-            return response()->json(['message' => 'That boost credit is not available.'], 404);
-        }
-
         $expectedType = self::CREDIT_REWARD_TYPES[$validated['target']];
-        if ($credit->rewardTier->reward_type !== $expectedType) {
-            return response()->json(['message' => 'This credit cannot be used for that target.'], 422);
-        }
 
-        $boost = app(BoostService::class)->activateFromCredit($boostable, $modelClass, $credit, $user);
+        try {
+            $boost = app(BoostService::class)->activateFromCredit(
+                $boostable, $modelClass, (int) $validated['user_reward_tier_id'], $expectedType, $user,
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json([
             'message' => 'Boost activated! 🚀',

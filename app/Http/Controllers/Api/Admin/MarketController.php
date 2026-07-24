@@ -101,6 +101,10 @@ class MarketController extends Controller
     // the Filament "Refresh via AI" action it replaces.
     public function refreshAi(int $id, PriceIntelligenceService $service)
     {
+        if ($service->aiDisabled()) {
+            return response()->json(['message' => 'AI price refresh is disabled (price_refresh_ai_enabled = 0).'], 503);
+        }
+
         $market = Market::findOrFail($id);
 
         try {
@@ -118,6 +122,10 @@ class MarketController extends Controller
     // market, so cost and request time both scale with market count.
     public function refreshAiAll(PriceIntelligenceService $service)
     {
+        if ($service->aiDisabled()) {
+            return response()->json(['message' => 'AI price refresh is disabled (price_refresh_ai_enabled = 0).'], 503);
+        }
+
         $markets = Market::where('is_active', true)->get();
 
         if ($markets->isEmpty()) {
