@@ -17,9 +17,11 @@ class SendDailyReminders extends Command
     {
         $today = today()->toDateString();
 
-        // Users with a push token who have NOT logged spending today
-        $users = User::whereNotNull('push_token')
-            ->whereNotExists(function ($query) use ($today) {
+        // Every user who hasn't logged spending today -- a push token is no
+        // longer required here. The bell/in-app notification (UserNotification
+        // row below) doesn't need one at all; push is just an extra for
+        // whoever happens to have a token, sent separately below.
+        $users = User::whereNotExists(function ($query) use ($today) {
                 $query->select(DB::raw(1))
                     ->from('daily_budget_logs')
                     ->whereColumn('daily_budget_logs.user_id', 'users.id')
@@ -28,14 +30,14 @@ class SendDailyReminders extends Command
             ->select('id', 'push_token')
             ->get();
 
-        $tokens = $users->pluck('push_token')->filter()->values()->all();
-
-        if (empty($tokens)) {
+        if ($users->isEmpty()) {
             $this->info('No users to notify.');
             return;
         }
 
-        // Bulk push — one HTTP call for all tokens
+        // Bulk push — one HTTP call for whichever subset has a token (sendBulk
+        // already no-ops safely on an empty array)
+        $tokens = $users->pluck('push_token')->filter()->values()->all();
         $notifs->sendBulk(
             $tokens,
             "🍳 Don't forget to log today's spending!",
@@ -43,7 +45,8 @@ class SendDailyReminders extends Command
             ['action_url' => '/log-spending', 'type' => 'daily_reminder'],
         );
 
-        // Create individual DB notification records in one insert
+        // Create individual DB notification records in one insert — for
+        // every relevant user, token or not
         $now  = now();
         $rows = $users->map(fn ($u) => [
             'user_id'    => $u->id,
@@ -61,6 +64,6 @@ class SendDailyReminders extends Command
             UserNotification::insert($chunk);
         }
 
-        $this->info("Sent reminders to {$users->count()} users.");
+        $this->info("Sent reminders to {$users->count()} users (" . count($tokens) . " via push, rest bell-only).");
     }
 }

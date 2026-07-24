@@ -18,9 +18,12 @@ class SendWeatherNotifications extends Command
     {
         $dryRun = (bool) $this->option('dry-run');
 
+        // A push token is NOT required here -- the bell/in-app notification
+        // (written for every user in dispatch() below) doesn't need one;
+        // push is just an extra for whoever has a token. Latitude/longitude
+        // stay required since there's no forecast to show without a location.
         $users = User::whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->whereNotNull('push_token')
             ->select('id', 'latitude', 'longitude', 'plan', 'premium_expires_at', 'push_token')
             ->get()
             ->groupBy(fn (User $u) => $weather->bucketKey($u->latitude, $u->longitude));
